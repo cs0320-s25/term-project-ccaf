@@ -1,5 +1,7 @@
 import { SearchBar } from "@/components/search-bar"
 import { RecommendationFeed } from "@/components/recommendation-feed"
+import "./globals.css";
+
 
 export default function Home() {
   return (
