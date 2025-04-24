@@ -571,6 +571,25 @@ video {
 [hidden]:where(:not([hidden="until-found"])) {
   display: none;
 }
+    .body-text {
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+  
+    h1 {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+  
+    h2 {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
 .container {
   width: 100%;
 }
@@ -620,14 +639,17 @@ video {
   margin-left: auto;
   margin-right: auto;
 }
+.-mb-1 {
+  margin-bottom: -0.25rem;
+}
 .mb-12 {
   margin-bottom: 3rem;
 }
-.mb-4 {
-  margin-bottom: 1rem;
-}
 .block {
   display: block;
+}
+.flex {
+  display: flex;
 }
 .grid {
   display: grid;
@@ -637,6 +659,9 @@ video {
 }
 .h-4 {
   height: 1rem;
+}
+.min-h-screen {
+  min-height: 100vh;
 }
 .w-4 {
   width: 1rem;
@@ -660,8 +685,17 @@ video {
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+.items-center {
+  align-items: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
 .gap-4 {
   gap: 1rem;
+}
+.gap-6 {
+  gap: 1.5rem;
 }
 .overflow-hidden {
   overflow: hidden;
@@ -677,6 +711,9 @@ video {
 }
 .border {
   border-width: 1px;
+}
+.border-b {
+  border-bottom-width: 1px;
 }
 .bg-gray-100 {
   --tw-bg-opacity: 1;
@@ -696,6 +733,10 @@ video {
 .px-4 {
   padding-left: 1rem;
   padding-right: 1rem;
+}
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 .py-16 {
   padding-top: 4rem;
@@ -718,14 +759,6 @@ video {
   font-size: 1.5rem;
   line-height: 2rem;
 }
-.text-4xl {
-  font-size: 2.25rem;
-  line-height: 2.5rem;
-}
-.text-lg {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
 .text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -739,6 +772,9 @@ video {
 .font-semibold {
   font-weight: 600;
 }
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
 .text-black {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1));
@@ -746,10 +782,6 @@ video {
 .text-gray-500 {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity, 1));
-}
-.text-gray-600 {
-  --tw-text-opacity: 1;
-  color: rgb(75 85 99 / var(--tw-text-opacity, 1));
 }
 .transition-transform {
   transition-property: transform;
@@ -771,4 +803,4 @@ video {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
-
+  
