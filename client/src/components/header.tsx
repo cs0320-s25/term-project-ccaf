@@ -14,7 +14,7 @@ export default function Header() {
         </Link>
         <nav className="flex items-center gap-6 text-sm">
           <Link
-            href="/explore"
+            href="/"
             className={pathname === "/explore" ? "font-semibold" : "text-muted-foreground"}
           >
             explore
