@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 // File: /Users/christie/Desktop/cs32/term-project-ccaf/client/src/app/layout.tsx
+=======
+// File: /Users/faithmatthew/Desktop/cs32/term-project-ccaf/client/src/app/layout.tsx
+>>>>>>> Stashed changes
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
