@@ -8,7 +8,7 @@ import Header from "@/components/header"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "Draft - Curated Secondhand Fashion",
+  title: "draft.src.main.java.edu.brown.cs.termproject.draft.Draft - Curated Secondhand Fashion",
   description: "Collect secondhand fashion finds from across the web into curated style Drafts",
 }
 
