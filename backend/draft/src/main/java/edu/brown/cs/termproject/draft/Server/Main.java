@@ -1,11 +1,11 @@
 package edu.brown.cs.termproject.draft.Server;
-
 import edu.brown.cs.termproject.draft.Handlers.SearchHandler;
 import edu.brown.cs.termproject.draft.Piece;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import spark.Spark;
+
 
 public class Main {
   public static void main(String[] args) {
@@ -25,17 +25,37 @@ public class Main {
             "3", "Black Jeans", 24.99, "example.com",
             "https://example.com/jeans", "32", "Black", "Used",
             "/img/jeans.jpg", new HashSet<>(Set.of("black", "jeans", "pants"))
+        ),
+        new Piece(
+            "3", "Blue Jeans", 25.99, "example.com",
+            "https://example.com/jeans", "32", "Black", "Used",
+            "/img/jeans.jpg", new HashSet<>(Set.of("blue", "jeans", "pants"))
         )
     );
 
     int port = 3232;
-    Spark.port(port);; // Set the server port
+    Spark.port(port);; // set the server port
 
-//    get("/search", (req, res) -> {
-//      res.type("application/json");
-//      String query = req.queryParams("query");
-//      return searchHandler.handleSearch(query);
-//    });
+    // set up CORS
+    Spark.options("/*", (request, response) -> {
+      String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+      if (accessControlRequestHeaders != null) {
+        response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
+      }
+
+      String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+      if (accessControlRequestMethod != null) {
+        response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+      }
+
+      return "OK";
+    });
+
+    Spark.before((request, response) -> {
+      response.header("Access-Control-Allow-Origin", "*");
+      response.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    });
 
     Spark.get("/search", new SearchHandler(allPieces));
 
