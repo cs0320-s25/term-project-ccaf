@@ -3,27 +3,17 @@ import com.google.gson.Gson;
 import edu.brown.cs.termproject.draft.Piece;
 import java.util.*;
 import java.util.stream.Collectors;
-public class SearchHandler {
+import spark.Request;
+import spark.Response;
+import spark.Route;
+
+public class SearchHandler implements Route {
   private List<Piece> allPieces;
 
   public SearchHandler(List<Piece> allPieces) {
     this.allPieces = allPieces;
   }
 
-  public String handleSearch(String query) {
-    if (query == null || query.trim().isEmpty()) {
-      return "[]"; // return empty JSON array if no query
-    }
-
-    String normalizedQuery = query.trim().toLowerCase();
-
-    List<Piece> matchingPieces = allPieces.stream()
-        .filter(piece -> piece.getTags().stream()
-            .anyMatch(tag -> tag.toLowerCase().contains(normalizedQuery)))
-        .collect(Collectors.toList());
-
-    return toJson(matchingPieces);
-  }
 
   private String toJson(List<Piece> pieces) {
     // Use a library like Gson to turn Java objects into JSON
@@ -31,4 +21,35 @@ public class SearchHandler {
     return gson.toJson(pieces);
   }
 
+  @Override
+  public Object handle(Request request, Response response) throws Exception {
+    Map<String, Object> responseMap = new HashMap<>();
+
+    String query = request.queryParams("query");
+
+    if (query == null || query.trim().isEmpty()) {
+      return "[]"; // return empty JSON array if no query
+    }
+
+    String normalizedQuery = query.trim().toLowerCase();
+
+    Set<Piece> matchingPieces = new HashSet<>();
+    for (Piece piece : this.allPieces) {
+      System.out.println(piece.getTitle().toLowerCase());
+      System.out.println(piece.getTags());
+      System.out.println(normalizedQuery);
+      if (piece.getTitle().toLowerCase().contains(normalizedQuery) || piece.getTags().contains(normalizedQuery)) {
+        matchingPieces.add(piece);
+      }
+    }
+
+    matchingPieces.forEach(piece -> {
+      System.out.println("Title: " + piece.getTitle());
+      System.out.println("Tags: " + piece.getTags());
+    });
+
+    String matchesJson = toJson(matchingPieces.stream().toList());
+    responseMap.put("matches", matchesJson);
+    return responseMap;
+  }
 }
