@@ -5,15 +5,14 @@
 target/
 .mvn
 .mvn-classpath
-pom.xml.bak
 
-# node, vite
+# node, vite/next
 node_modules/
 client/*.js
-target/
 build/
 dist/
 .env
+.env.local
 test-results/
 playwright-report/
 playwright/.cache/
@@ -23,5 +22,4 @@ playwright/.cache/
 
 # next
 client/.next/
-
 .env.local
