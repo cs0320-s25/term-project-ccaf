@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "title": "Levi's 501 Jeans",
+    "price": 29.99,
+    "sourceWebsite": "ebay",
+    "url": "https://ebay.com/some-item",
+    "size": "M",
+    "color": "Blue",
+    "condition": "Used",
+    "imageUrl": "/mock/ebay-jeans.jpg",
+    "tags": ["jeans", "levi", "denim"]
+  },
+  {
+    "id": "2",
+    "title": "Nike Hoodie",
+    "price": 40,
+    "sourceWebsite": "depop",
+    "url": "https://depop.com/some-item",
+    "size": "L",
+    "color": "Black",
+    "condition": "New with tags",
+    "imageUrl": "/mock/depop-hoodie.jpg",
+    "tags": ["hoodie", "nike", "black"]
+  }
+]
