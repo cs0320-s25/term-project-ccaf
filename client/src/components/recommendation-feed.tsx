@@ -12,8 +12,9 @@ export function RecommendationFeed() {
               id: `${i}`,
               title: "Placeholder",
               price: 99,
-              source: "ebay",
-              image: "/placeholder.svg",
+              url: "https://example.com",
+              sourceWebsite: "ebay",
+              imageUrl: "/placeholder.svg",
             }}
           />
         ))}
