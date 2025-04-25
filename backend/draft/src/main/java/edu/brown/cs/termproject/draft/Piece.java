@@ -1,6 +1,7 @@
 package edu.brown.cs.termproject.draft;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Piece {
@@ -41,4 +42,15 @@ private Set<String> tags;
         this.tags = tags;
     }
 
+    public Piece(String number, String blueDenimJacket, List<String> denim, double v, String url, String url1) {
+    }
+
+    public Set<String> getTags() {
+        return this.tags;
+    }
+    public String getId() { return id; }
+    public String getTitle() { return title; }
+    public double getPrice() { return price; }
+    public String getImageUrl() { return imageUrl; }
+    public String getSourceWebsite() { return sourceWebsite; }
 }
