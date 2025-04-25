@@ -1,12 +1,25 @@
 'use client';
-
-
 import { useEffect, useState } from "react";
 import { useUser, SignedIn, SignedOut, SignInButton, SignOutButton } from '@clerk/nextjs';
 import { OnboardingSurvey } from "@/components/onboarding-survey";
 import { SearchBar } from "@/components/search-bar";
 import { RecommendationFeed } from "@/components/recommendation-feed";
 import "./globals.css";
+import { useSearchParams } from "next/navigation";
+import { ProductCard } from "@/components/product-card";
+
+interface Piece {
+  id: string;
+  title: string;
+  price: number;
+  sourceWebsite: string;
+  url: string;
+  size: string;
+  color: string;
+  condition: string;
+  imageUrl: string;
+}
+
 
 export default function Home() {
 
