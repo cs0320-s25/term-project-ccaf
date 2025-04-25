@@ -53,6 +53,8 @@ interface ProductCardProps {
   product: Product;
 }
 
+export type { Product };
+
 // export function ProductCard({ product }: ProductCardProps) {
 //   const [saved, setSaved] = useState(false);
 
