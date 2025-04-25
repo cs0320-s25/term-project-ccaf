@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1",
+    "title": "Levi's 501 Jeans",
+    "price": 29.99,
+    "sourceWebsite": "ebay",
+    "url": "https://ebay.com/some-item",
+    "size": "M",
+    "color": "Blue",
+    "condition": "Used",
+    "imageUrl": "/placeholder.svg",
+    "tags": ["jeans", "levi", "blue"]
+  }
+]
