@@ -1,6 +1,10 @@
 package edu.brown.cs.termproject.draft.Server;
+import edu.brown.cs.termproject.draft.Handlers.Drafts.CreateDraftHandler;
 import edu.brown.cs.termproject.draft.Handlers.SearchHandler;
 import edu.brown.cs.termproject.draft.Piece;
+import edu.brown.cs.termproject.draft.Utilities.Storage.FirebaseUtilities;
+import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,11 +61,25 @@ public class Main {
       response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
     });
 
-    Spark.get("/search", new SearchHandler(allPieces));
+    StorageInterface firebaseUtils;
+    try {
+      firebaseUtils = new FirebaseUtilities();
 
-    Spark.init();
-    Spark.awaitInitialization();
+      Spark.get("/search", new SearchHandler(allPieces));
+      Spark.get("/create", new CreateDraftHandler(firebaseUtils));
 
-    System.out.println("Server started at http://localhost:" + port);
+      Spark.init();
+      Spark.awaitInitialization();
+
+      System.out.println("Server started at http://localhost:" + port);
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println(
+          "Error: Could not initialize Firebase. Likely due to firebase_config.json not being found. Exiting.");
+      System.exit(1);
+    }
+
+
   }
 }
