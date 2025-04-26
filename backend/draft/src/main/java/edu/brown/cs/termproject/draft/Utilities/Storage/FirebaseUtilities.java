@@ -111,51 +111,24 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
-  // clears the collections inside of a specific user.
-  @Override
-  public void clearUser(String uid) throws IllegalArgumentException {
-    if (uid == null) {
-      throw new IllegalArgumentException("removeUser: uid cannot be null");
+  public void deleteDocument(String uid, String collection_id, String doc_id) throws InterruptedException, ExecutionException {
+    if (uid == null || collection_id == null || doc_id == null) {
+      throw new IllegalArgumentException("deleteDocument: uid, collection_id, or doc_id cannot be null");
     }
-    try {
-      // removes all data for user 'uid'
-      Firestore db = FirestoreClient.getFirestore();
-      // 1: Get a ref to the user document
-      DocumentReference userDoc = db.collection("users").document(uid);
-      // 2: Delete the user document
-      deleteDocumentHelper(userDoc);
-    } catch (Exception e) {
-      System.err.println("Error removing user : " + uid);
-      System.err.println(e.getMessage());
-    }
-  }
 
-  public int deleteUserPinsFromGlobal(String uid) {
+    // Initialize Firestore
     Firestore db = FirestoreClient.getFirestore();
-    CollectionReference globalPinsRef =
-        db.collection("users").document("global").collection("pins");
-    int deletedCount = 0;
 
-    // Fetch all global pins
-    ApiFuture<QuerySnapshot> query = globalPinsRef.get();
-    List<QueryDocumentSnapshot> documents = null;
-    try {
-      documents = query.get().getDocuments();
-    } catch (InterruptedException | ExecutionException e) {
-      System.err.println("Error getting documents");
-    }
+    // Reference to the document to be deleted
+    DocumentReference docRef = db.collection("users").document(uid).collection(collection_id).document(doc_id);
 
-    if (documents != null) {
-      for (QueryDocumentSnapshot doc : documents) {
-        if (uid.equals(doc.getString("userId"))) {
-          System.err.println(doc.getString("userId"));
-          doc.getReference().delete();
-          deletedCount++;
-        }
-      }
-    }
-    return deletedCount;
+    // Delete the document
+    ApiFuture<WriteResult> deleteFuture = docRef.delete();
+    deleteFuture.get();  // Wait for the deletion to complete
+
+    System.out.println("Successfully deleted document with ID: " + doc_id);
   }
+
 
   private void deleteDocumentHelper(DocumentReference doc) {
     // for each subcollection, run deleteCollection()
