@@ -115,7 +115,6 @@ public class SearchHandler implements Route {
   private List<Piece> searchLocalPieces(String query) {
     String normalizedQuery = query.trim().toLowerCase();
     String[] tokens = normalizedQuery.split("\\s+");
-    git commit -m "Remove .env.local from Git history"
 
     Map<Piece, Integer> scoredMatches = new HashMap<>();
 
