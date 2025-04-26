@@ -6,13 +6,12 @@ target/
 .mvn
 .mvn-classpath
 
-# node, vite/next
+# node, vite
 node_modules/
 client/*.js
 build/
 dist/
 .env
-.env.local
 test-results/
 playwright-report/
 playwright/.cache/
@@ -22,4 +21,7 @@ playwright/.cache/
 
 # next
 client/.next/
+client/.env.local
 .env.local
+
+backend/draft/.env
