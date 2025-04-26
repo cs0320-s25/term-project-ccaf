@@ -22,11 +22,7 @@ playwright/.cache/
 
 # next
 client/.next/
-<<<<<<< HEAD
-client/.env.local
 .env.local
 
-backend/draft/.env
-=======
-.env.local
->>>>>>> 66100af14b2b393322c085a9843051b7019d9417
+
+resources/
