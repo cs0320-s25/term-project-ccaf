@@ -122,6 +122,13 @@ public class FirebaseUtilities implements StorageInterface {
     // Reference to the document to be deleted
     DocumentReference docRef = db.collection("users").document(uid).collection(collection_id).document(doc_id);
 
+
+    Iterable<CollectionReference> subcollections = docRef.listCollections();
+    for (CollectionReference subcollection : subcollections) {
+      deleteCollection(subcollection);
+    }
+
+
     // Delete the document
     ApiFuture<WriteResult> deleteFuture = docRef.delete();
     deleteFuture.get();  // Wait for the deletion to complete

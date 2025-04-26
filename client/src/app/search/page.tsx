@@ -34,7 +34,7 @@ export default function SearchPage() {
       imageUrl: "/placeholder.svg?height=300&width=300",
     };
   
-    setResults([placeholderResult]);
+    // setResults([placeholderResult]);
   
     // TODO: uncomment when backend is ready
     fetch(`http://localhost:3232/search?q=${encodeURIComponent(query)}`)
