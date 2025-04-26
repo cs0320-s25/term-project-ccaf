@@ -16,7 +16,7 @@ public class SearchHandler implements Route {
   public SearchHandler(List<Piece> allPieces) {
     this.allPieces = allPieces;
   }
-
+//
 //  /**
 //   * Search with mock data.
 //   */
@@ -69,7 +69,7 @@ public class SearchHandler implements Route {
 //    response.type("application/json");
 //    return new Gson().toJson(sortedResults);
 //  }
-//}
+
 
   /**
    * Search with eBay API integration.

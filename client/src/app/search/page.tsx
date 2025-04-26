@@ -25,16 +25,6 @@ export default function SearchPage() {
 
 
   useEffect(() => {
-<<<<<<< HEAD
-
-  fetch(`http://localhost:3232/search?q=${encodeURIComponent(query)}`)
-    .then(res => res.json())
-    .then(setResults)
-        .catch((error) => {
-          console.error("Error fetching search results:", error);
-          setResults([]); // in case of an error, clear the results
-        });
-=======
     const placeholderResult = {
       id: "1",
       title: "Denim Skirt High Quality",
@@ -47,10 +37,9 @@ export default function SearchPage() {
     setResults([placeholderResult]);
   
     // TODO: uncomment when backend is ready
-    // fetch(`/api/search?q=${encodeURIComponent(query)}`)
-    //   .then((res) => res.json())
-    //   .then(setResults);
->>>>>>> 66100af14b2b393322c085a9843051b7019d9417
+    fetch(`http://localhost:3232/search?q=${encodeURIComponent(query)}`)
+      .then((res) => res.json())
+      .then(setResults);
   }, [query]);
   
 
