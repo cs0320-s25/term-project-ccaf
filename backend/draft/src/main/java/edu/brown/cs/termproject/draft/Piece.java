@@ -42,8 +42,6 @@ private Set<String> tags;
         this.tags = tags;
     }
 
-    public Piece(String number, String blueDenimJacket, List<String> denim, double v, String url, String url1) {
-    }
 
     public Set<String> getTags() {
         return this.tags;
@@ -53,4 +51,8 @@ private Set<String> tags;
     public double getPrice() { return price; }
     public String getImageUrl() { return imageUrl; }
     public String getSourceWebsite() { return sourceWebsite; }
+    public String getUrl() { return url; }
+    public String getSize() { return size; }
+    public String getColor() { return color; }
+    public String getCondition() { return condition; }
 }
