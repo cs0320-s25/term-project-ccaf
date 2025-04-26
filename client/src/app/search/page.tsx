@@ -25,6 +25,7 @@ export default function SearchPage() {
 
 
   useEffect(() => {
+<<<<<<< HEAD
 
   fetch(`http://localhost:3232/search?q=${encodeURIComponent(query)}`)
     .then(res => res.json())
@@ -33,6 +34,23 @@ export default function SearchPage() {
           console.error("Error fetching search results:", error);
           setResults([]); // in case of an error, clear the results
         });
+=======
+    const placeholderResult = {
+      id: "1",
+      title: "Denim Skirt High Quality",
+      price: 110,
+      sourceWebsite: "ebay",
+      url: "https://www.ebay.com",
+      imageUrl: "/placeholder.svg?height=300&width=300",
+    };
+  
+    setResults([placeholderResult]);
+  
+    // TODO: uncomment when backend is ready
+    // fetch(`/api/search?q=${encodeURIComponent(query)}`)
+    //   .then((res) => res.json())
+    //   .then(setResults);
+>>>>>>> 66100af14b2b393322c085a9843051b7019d9417
   }, [query]);
   
 
