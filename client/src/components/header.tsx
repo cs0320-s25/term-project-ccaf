@@ -1,32 +1,39 @@
 "use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import Link from "next/link";
 
 export default function Header() {
-  const pathname = usePathname()
-
   return (
-    <header className="border-b px-6 py-4">
-      <div className="max-w-5xl mx-auto flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold tracking-tight -mb-1">
+    <header className="border-b">
+      <div className="container flex h-16 items-center justify-between px-4">
+        <Link href="/" className="text-2xl font-bold">
           draft
         </Link>
-        <nav className="flex items-center gap-6 text-sm">
-          <Link
-            href="/"
-            className={pathname === "/explore" ? "font-semibold" : "text-muted-foreground"}
-          >
+        <nav className="flex items-center gap-6">
+          <Link href="/explore" className="text-sm">
             explore
           </Link>
-          <Link
-            href="/my-drafts"
-            className={pathname === "/my-drafts" ? "font-semibold" : "text-muted-foreground"}
-          >
+          <Link href="/my-drafts" className="text-sm">
             my drafts
           </Link>
+
+          {/* Show sign-in button if signed out */}
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="px-4 py-2 text-sm font-medium bg-black text-white rounded-full">
+                log in
+              </button>
+            </SignInButton>
+          </SignedOut>
+
+          {/* Show user button if signed in */}
+          <SignedIn>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
         </nav>
       </div>
     </header>
-  )
+  );
 }
+

@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import io.github.cdimascio.dotenv.Dotenv;
 
+
 public class APIUtilities {
 
   private static final String EBAY_API_URL = "https://api.ebay.com/buy/browse/v1/item_summary/search";
@@ -27,6 +28,7 @@ public class APIUtilities {
    */
   public static List<Piece> fetchFromEbay(String query) {
     List<Piece> piecesFromEbay = new ArrayList<>();
+
 
     try {
       // Construct the eBay API URL with the search query
@@ -41,6 +43,7 @@ public class APIUtilities {
 
       // Check for successful response
       int status = connection.getResponseCode();
+      System.out.println("Status code: " + status);
       if (status == HttpURLConnection.HTTP_OK) {
         // Parse the JSON response
         JsonObject jsonResponse = JsonParser.parseReader(new InputStreamReader(connection.getInputStream())).getAsJsonObject();
@@ -84,8 +87,9 @@ public class APIUtilities {
    * @throws IOException if the request fails
    */
   public static String getEbayAccessToken() throws IOException, IOException {
-    String clientId = System.getenv("SANDBOX_APP_ID");
-    String clientSecret = System.getenv("SANDBOX_CERT_ID");
+    Dotenv dotenv = Dotenv.load();
+    String clientId = dotenv.get("SANDBOX_APP_ID");
+    String clientSecret = dotenv.get("SANDBOX_CERT_ID");
 
     if (clientId == null || clientSecret == null) {
       throw new IllegalStateException("Missing SANDBOX_APP_ID or SANDBOX_CERT_ID in environment variables.");

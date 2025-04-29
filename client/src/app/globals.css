@@ -16,3 +16,9 @@
     }
   }
   
+@layer components {
+    .btn-outline-rounded {
+      @apply inline-block px-5 py-2 text-base font-semibold rounded-full bg-gray-100 text-black hover:bg-gray-200 transition;
+    }
+  }
+  

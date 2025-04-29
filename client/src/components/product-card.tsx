@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-"use client";
-
-=======
 // "use client"
 
 // import Image from "next/image"
@@ -40,7 +36,6 @@
 // }
 "use client";
 
->>>>>>> 66100af14b2b393322c085a9843051b7019d9417
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -60,8 +55,6 @@ interface ProductCardProps {
 
 export type { Product };
 
-<<<<<<< HEAD
-=======
 // export function ProductCard({ product }: ProductCardProps) {
 //   const [saved, setSaved] = useState(false);
 
@@ -99,7 +92,6 @@ export type { Product };
 //   );
 // }
 
->>>>>>> 66100af14b2b393322c085a9843051b7019d9417
 export function ProductCard({ product }: ProductCardProps) {
   if (!product.url) {
     return <div className="text-red-500">Invalid product link</div>;

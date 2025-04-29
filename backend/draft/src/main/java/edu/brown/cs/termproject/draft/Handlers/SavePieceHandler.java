@@ -3,7 +3,7 @@ package edu.brown.cs.termproject.draft.Handlers;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import edu.brown.cs.termproject.draft.Piece;
-import edu.brown.cs.termproject.draft.Utilities.*;
+import edu.brown.cs.termproject.draft.Utilities.Storage.FirebaseUtilities;
 import spark.Request;
 import spark.Response;
 import spark.Route;
