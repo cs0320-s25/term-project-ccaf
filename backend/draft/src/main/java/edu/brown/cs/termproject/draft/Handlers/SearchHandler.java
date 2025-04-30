@@ -11,65 +11,100 @@ import spark.Route;
 
 public class SearchHandler implements Route {
 
-  private final List<Piece> allPieces;
-
-  public SearchHandler(List<Piece> allPieces) {
-    this.allPieces = allPieces;
+  public SearchHandler() {
   }
 
-  /**
-   * Search with mock data.
-   */
   @Override
   public Object handle(Request request, Response response) throws Exception {
     String query = request.queryParams("q");
 
     if (query == null || query.trim().isEmpty()) {
-      response.status(400); // bad request
+      response.status(400);
       response.type("application/json");
       return new Gson().toJson(Map.of(
           "error", "No query inputted"
       ));
     }
 
-    String normalizedQuery = query.trim().toLowerCase();
-    String[] tokens = normalizedQuery.split("\\s+");
-
-    Map<Piece, Integer> scoredMatches = new HashMap<>();
-
-    for (Piece piece : this.allPieces) {
-      String searchable = (
-          piece.getTitle() + " " +
-              piece.getColor() + " " +
-              piece.getSize() + " " +
-              piece.getCondition() + " " +
-              String.join(" ", piece.getTags())
-      ).toLowerCase();
-
-      boolean anyMatch = Arrays.stream(tokens).anyMatch(searchable::contains);
-      if (!anyMatch) continue;
-
-      int score = 0;
-      for (String token : tokens) {
-        if (piece.getTitle().toLowerCase().contains(token)) score += 3;
-        if (piece.getTags().stream().anyMatch(tag -> tag.toLowerCase().contains(token))) score += 2;
-        if (piece.getColor().toLowerCase().contains(token)) score += 1;
-        if (piece.getSize().toLowerCase().contains(token)) score += 1;
-        if (piece.getCondition().toLowerCase().contains(token)) score += 1;
-      }
-
-      scoredMatches.put(piece, score);
-    }
-
-    List<Piece> sortedResults = scoredMatches.entrySet().stream()
-        .sorted((a, b) -> b.getValue() - a.getValue())
-        .map(Map.Entry::getKey)
-        .collect(Collectors.toList());
+    List<Piece> ebayResults = APIUtilities.fetchFromEbay(query.trim().toLowerCase());
 
     response.type("application/json");
-    return new Gson().toJson(sortedResults);
+    return new Gson().toJson(Map.of("matches", ebayResults));
   }
+}
 
+
+
+
+
+//  private final List<Piece> allPieces;
+//
+//  public SearchHandler(List<Piece> allPieces) {
+//    this.allPieces = allPieces;
+//  }
+//
+//  /**
+//   * Search with mock data.
+//   */
+//  @Override
+//  public Object handle(Request request, Response response) throws Exception {
+//    String query = request.queryParams("q");
+//
+//    if (query == null || query.trim().isEmpty()) {
+//      response.status(400); // bad request
+//      response.type("application/json");
+//      return new Gson().toJson(Map.of(
+//          "error", "No query inputted"
+//      ));
+//    }
+//
+//    String normalizedQuery = query.trim().toLowerCase();
+//    String[] tokens = normalizedQuery.split("\\s+");
+//
+//    Map<Piece, Integer> scoredMatches = new HashMap<>();
+//
+//    for (Piece piece : this.allPieces) {
+//      String searchable = (
+//          piece.getTitle() + " " +
+//              piece.getColor() + " " +
+//              piece.getSize() + " " +
+//              piece.getCondition() + " " +
+//              String.join(" ", piece.getTags())
+//      ).toLowerCase();
+//
+//      boolean anyMatch = Arrays.stream(tokens).anyMatch(searchable::contains);
+//      if (!anyMatch) continue;
+//
+//      int score = 0;
+//      for (String token : tokens) {
+//        if (piece.getTitle().toLowerCase().contains(token)) score += 3;
+//        if (piece.getTags().stream().anyMatch(tag -> tag.toLowerCase().contains(token))) score += 2;
+//        if (piece.getColor().toLowerCase().contains(token)) score += 1;
+//        if (piece.getSize().toLowerCase().contains(token)) score += 1;
+//        if (piece.getCondition().toLowerCase().contains(token)) score += 1;
+//      }
+//
+//      scoredMatches.put(piece, score);
+//    }
+//
+//    List<Piece> sortedResults = scoredMatches.entrySet().stream()
+//        .sorted((a, b) -> b.getValue() - a.getValue())
+//        .map(Map.Entry::getKey)
+//        .collect(Collectors.toList());
+//
+//    response.type("application/json");
+//    return new Gson().toJson(sortedResults);
+//  }
+
+
+
+
+
+
+
+
+
+// !!!!!!!!!!!!
 //
 //  /**
 //   * Search with eBay API integration.
@@ -149,4 +184,4 @@ public class SearchHandler implements Route {
 //
 //    return sortedResults;
 //  }
-}
+//}

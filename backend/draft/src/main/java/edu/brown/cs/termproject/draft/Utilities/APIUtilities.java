@@ -29,7 +29,6 @@ public class APIUtilities {
   public static List<Piece> fetchFromEbay(String query) {
     List<Piece> piecesFromEbay = new ArrayList<>();
 
-
     try {
       // Construct the eBay API URL with the search query
       String apiUrl = EBAY_API_URL + "?q=" + query + "&limit=5"; // Adjust limit as needed
@@ -46,7 +45,8 @@ public class APIUtilities {
       System.out.println("Status code: " + status);
       if (status == HttpURLConnection.HTTP_OK) {
         // Parse the JSON response
-        JsonObject jsonResponse = JsonParser.parseReader(new InputStreamReader(connection.getInputStream())).getAsJsonObject();
+        JsonObject jsonResponse = JsonParser.parseReader(
+            new InputStreamReader(connection.getInputStream())).getAsJsonObject();
         JsonArray itemsArray = jsonResponse.getAsJsonArray("itemSummaries");
 
         // Iterate through the eBay items and create Piece objects
@@ -80,24 +80,26 @@ public class APIUtilities {
     return piecesFromEbay;
   }
 
-  /**
-   * Fetches an OAuth access token from eBay's Sandbox using client credentials.
-   *
-   * @return OAuth access token string
-   * @throws IOException if the request fails
-   */
-  public static String getEbayAccessToken() throws IOException, IOException {
-    Dotenv dotenv = Dotenv.load();
-    String clientId = dotenv.get("SANDBOX_APP_ID");
-    String clientSecret = dotenv.get("SANDBOX_CERT_ID");
+  private static String cachedToken = null;
+  private static long tokenExpiryTime = 0; // epoch milliseconds
 
-    if (clientId == null || clientSecret == null) {
-      throw new IllegalStateException("Missing SANDBOX_APP_ID or SANDBOX_CERT_ID in environment variables.");
+  public static String getEbayAccessToken() throws IOException {
+    if (cachedToken != null && System.currentTimeMillis() < tokenExpiryTime) {
+      return cachedToken;
     }
 
-    String credentials = Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes());
+    Dotenv dotenv = Dotenv.load();
+    String clientId = dotenv.get("EBAY_CLIENT_ID");
+    String clientSecret = dotenv.get("EBAY_CLIENT_SECRET");
 
-    URL url = new URL("https://api.sandbox.ebay.com/identity/v1/oauth2/token");
+    if (clientId == null || clientSecret == null) {
+      throw new IllegalStateException("Missing EBAY_CLIENT_ID or EBAY_CLIENT_SECRET in .env.");
+    }
+
+    String credentials = Base64.getEncoder()
+        .encodeToString((clientId + ":" + clientSecret).getBytes());
+
+    URL url = new URL("https://api.ebay.com/identity/v1/oauth2/token");
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     conn.setRequestMethod("POST");
     conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -117,10 +119,59 @@ public class APIUtilities {
 
     try (InputStream is = conn.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-
       String response = reader.lines().collect(Collectors.joining());
       JsonObject json = JsonParser.parseString(response).getAsJsonObject();
-      return json.get("access_token").getAsString();
+
+      cachedToken = json.get("access_token").getAsString();
+      int expiresIn = json.get("expires_in").getAsInt(); // in seconds
+      tokenExpiryTime = System.currentTimeMillis() + expiresIn * 1000L;
+
+      return cachedToken;
     }
   }
 }
+
+/**
+ * Fetches an OAuth access token from eBay's Sandbox using client credentials.
+ *
+ * @return OAuth access token string
+ * @throws IOException if the request fails
+ */
+//  public static String getEbayAccessToken() throws IOException, IOException {
+//    Dotenv dotenv = Dotenv.load();
+//    String clientId = dotenv.get("SANDBOX_APP_ID");
+//    String clientSecret = dotenv.get("SANDBOX_CERT_ID");
+//
+//    if (clientId == null || clientSecret == null) {
+//      throw new IllegalStateException("Missing SANDBOX_APP_ID or SANDBOX_CERT_ID in environment variables.");
+//    }
+//
+//    String credentials = Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes());
+//
+//    URL url = new URL("https://api.sandbox.ebay.com/identity/v1/oauth2/token");
+//    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//    conn.setRequestMethod("POST");
+//    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//    conn.setRequestProperty("Authorization", "Basic " + credentials);
+//    conn.setDoOutput(true);
+//
+//    String requestBody = "grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope";
+//
+//    try (OutputStream os = conn.getOutputStream()) {
+//      os.write(requestBody.getBytes());
+//    }
+//
+//    int responseCode = conn.getResponseCode();
+//    if (responseCode != 200) {
+//      throw new IOException("Failed to fetch token. HTTP response code: " + responseCode);
+//    }
+//
+//    try (InputStream is = conn.getInputStream();
+//        BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+//
+//      String response = reader.lines().collect(Collectors.joining());
+//      JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+//      return json.get("access_token").getAsString();
+//    }
+//  }
+//}
