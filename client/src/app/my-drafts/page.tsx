@@ -1,24 +1,43 @@
-import React from "react";
-import "app/globals.css";
+"use client";
 
+import { SearchBar } from "@/components/search-bar";
+import { DraftGrid } from "@/components/draft-grid";
 
-const MyDraftsPage = () => {
+export default function MyDraftsPage() {
   return (
-    <div className="container px-4 py-16 max-w-5xl mx-auto">
-      <div className="text-center mb-12">
-        <h1>your saved drafts</h1>
-        <p className="body-text">
-          here's your collections of drafts!
-          <br />
-          let's get inspired!
-        </p>
+    <div className="container px-4 py-8 max-w-5xl mx-auto">
+      <h1 className="text-4xl font-semibold tracking-tight mb-8">my drafts</h1>
+
+      <div className="mb-8">
+        <SearchBar />
       </div>
 
+      <DraftGrid />
     </div>
   );
-};
+}
 
-export default MyDraftsPage;
+// import React from "react";
+// import "app/globals.css";
+
+
+// const MyDraftsPage = () => {
+//   return (
+//     <div className="container px-4 py-16 max-w-5xl mx-auto">
+//       <div className="text-center mb-12">
+//         <h1>your saved drafts</h1>
+//         <p className="body-text">
+//           here's your collections of drafts!
+//           <br />
+//           let's get inspired!
+//         </p>
+//       </div>
+
+//     </div>
+//   );
+// };
+
+// export default MyDraftsPage;
 // "use client";
 
 // import { useEffect, useState } from "react";
