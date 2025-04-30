@@ -1,5 +1,6 @@
 package edu.brown.cs.termproject.draft.Utilities;
 
+
 import com.google.gson.*;
 import edu.brown.cs.termproject.draft.Piece;
 
@@ -14,6 +15,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.jetbrains.annotations.NotNull;
 
 
 public class APIUtilities {
@@ -56,11 +58,27 @@ public class APIUtilities {
           String title = item.get("title").getAsString();
           double price = item.getAsJsonObject("price").get("value").getAsDouble();
           String url = item.get("itemWebUrl").getAsString();
-          String imageUrl = item.getAsJsonObject("image").get("imageUrl").getAsString();
-          String size = "N/A";  // Modify based on available data, if applicable
-          String color = "N/A"; // Modify based on available data, if applicable
-          String condition = "N/A";  // Modify based on available data, if applicable
 
+          String imageUrl = "https://via.placeholder.com/225"; // fallback image
+
+          if (item.has("image") && item.getAsJsonObject("image").has("imageUrl")) {
+            imageUrl = item.getAsJsonObject("image").get("imageUrl").getAsString();
+          } else if (item.has("thumbnailImages")) {
+            JsonArray thumbnails = item.getAsJsonArray("thumbnailImages");
+            if (!thumbnails.isEmpty() && thumbnails.get(0).getAsJsonObject().has("imageUrl")) {
+              imageUrl = thumbnails.get(0).getAsJsonObject().get("imageUrl").getAsString();
+            }
+          } else if (item.has("additionalImages")) {
+            JsonArray additional = item.getAsJsonArray("additionalImages");
+            if (!additional.isEmpty() && additional.get(0).getAsJsonObject().has("imageUrl")) {
+              imageUrl = additional.get(0).getAsJsonObject().get("imageUrl").getAsString();
+            }
+          }
+
+          String size = getSize(title);
+          String color = getColor(title);
+
+          String condition = item.has("condition") ? item.get("condition").getAsString() : "N/A";
           // Create a new Piece object and add it to the list
           Piece piece = new Piece(
               UUID.randomUUID().toString(),
@@ -80,8 +98,52 @@ public class APIUtilities {
     return piecesFromEbay;
   }
 
+  @NotNull
+  private static String getColor(String title) {
+    String color = "N/A";
+    String loweredTitle = title.toLowerCase();
+
+    if (loweredTitle.contains("red")) color = "Red";
+    else if (loweredTitle.contains("orange")) color = "Orange";
+    else if (loweredTitle.contains("yellow")) color = "Yellow";
+    else if (loweredTitle.contains("green")) color = "Green";
+    else if (loweredTitle.contains("blue")) color = "Blue";
+    else if (loweredTitle.contains("indigo")) color = "Indigo";
+    else if (loweredTitle.contains("violet") || loweredTitle.contains("purple")) color = "Purple";
+    else if (loweredTitle.contains("pink")) color = "Pink";
+    else if (loweredTitle.contains("black")) color = "Black";
+    else if (loweredTitle.contains("white")) color = "White";
+    else if (loweredTitle.contains("grey") || loweredTitle.contains("gray")) color = "Gray";
+    else if (loweredTitle.contains("brown")) color = "Brown";
+    else if (loweredTitle.contains("beige")) color = "Beige";
+    else if (loweredTitle.contains("gold")) color = "Gold";
+    else if (loweredTitle.contains("silver")) color = "Silver";
+    return color;
+  }
+
+  @NotNull
+  private static String getSize(String title) {
+    String size = "N/A";
+    String loweredTitle = title.toLowerCase();
+
+    // Check for clear full-size words first
+    if (loweredTitle.contains("extra small") || loweredTitle.contains("xs")) size = "XS";
+    else if (loweredTitle.contains("small") || loweredTitle.matches(".*\\bs\\b.*")) size = "S";
+    else if (loweredTitle.contains("medium") || loweredTitle.matches(".*\\bm\\b.*")) size = "M";
+    else if (loweredTitle.contains("large") || loweredTitle.matches(".*\\bl\\b.*")) size = "L";
+    else if (loweredTitle.contains("extra large") || loweredTitle.contains("xl")) size = "XL";
+    else if (loweredTitle.contains("xxl") || loweredTitle.contains("2xl")) size = "XXL";
+    else if (loweredTitle.contains("xxxl") || loweredTitle.contains("3xl")) size = "XXXL";
+    else if (loweredTitle.matches(".*\\b[0-9]{2}\\b.*")) {
+      // For numbered sizes like "32", "34", etc.
+      size = loweredTitle.replaceAll(".*\\b([0-9]{2})\\b.*", "$1");
+    }
+
+    return size;
+  }
+
   private static String cachedToken = null;
-  private static long tokenExpiryTime = 0; // epoch milliseconds
+  private static long tokenExpiryTime = 0;
 
   public static String getEbayAccessToken() throws IOException {
     if (cachedToken != null && System.currentTimeMillis() < tokenExpiryTime) {
