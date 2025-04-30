@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.jetbrains.annotations.NotNull;
+import org.apache.commons.text.StringEscapeUtils;
 
 
 public class APIUtilities {
@@ -51,9 +52,21 @@ public class APIUtilities {
             new InputStreamReader(connection.getInputStream())).getAsJsonObject();
         JsonArray itemsArray = jsonResponse.getAsJsonArray("itemSummaries");
 
+
         // Iterate through the eBay items and create Piece objects
         for (JsonElement itemElement : itemsArray) {
           JsonObject item = itemElement.getAsJsonObject();
+          Set<String> tags = new HashSet<>();
+          if (item.has("categories")) {
+            JsonArray categories = item.getAsJsonArray("categories");
+            for (JsonElement categoryElem : categories) {
+              JsonObject categoryObj = categoryElem.getAsJsonObject();
+              String categoryName = categoryObj.get("categoryName").getAsString();
+              tags.add(StringEscapeUtils.unescapeHtml4(categoryName.trim().toLowerCase()));
+
+
+            }
+          }
 
           String title = item.get("title").getAsString();
           double price = item.getAsJsonObject("price").get("value").getAsDouble();
@@ -83,7 +96,7 @@ public class APIUtilities {
           Piece piece = new Piece(
               UUID.randomUUID().toString(),
               title, price, "eBay", url, imageUrl,
-              size, color, condition, new HashSet<>()
+              size, color, condition, tags
           );
 
           piecesFromEbay.add(piece);
