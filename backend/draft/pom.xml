@@ -66,6 +66,29 @@
       <artifactId>moshi-adapters</artifactId>
       <version>1.13.0</version>
     </dependency>
+
+      <!-- HTTP client -->
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+      <version>5.4.4</version>
+    </dependency>
+
+
+    <!-- JSON parsing -->
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.10.1</version>
+      </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>1.10.0</version>
+    </dependency>
+
+
   </dependencies>
 
   <repositories>

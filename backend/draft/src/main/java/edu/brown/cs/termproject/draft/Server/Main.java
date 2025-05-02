@@ -66,7 +66,7 @@ public class Main {
     try {
       firebaseUtils = new FirebaseUtilities();
 
-      Spark.get("/search", new SearchHandler(allPieces));
+      Spark.get("/search", new SearchHandler());
       Spark.get("/create", new CreateDraftHandler(firebaseUtils));
       Spark.get("/delete", new RemoveDraftHandler(firebaseUtils));
 
