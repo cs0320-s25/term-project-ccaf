@@ -1,6 +1,7 @@
 package edu.brown.cs.termproject.draft.Server;
 import edu.brown.cs.termproject.draft.Handlers.Drafts.CreateDraftHandler;
 import edu.brown.cs.termproject.draft.Handlers.Drafts.RemoveDraftHandler;
+import edu.brown.cs.termproject.draft.Handlers.Drafts.ViewDraftHandler;
 import edu.brown.cs.termproject.draft.Handlers.SearchHandler;
 import edu.brown.cs.termproject.draft.Piece;
 import edu.brown.cs.termproject.draft.Utilities.Storage.FirebaseUtilities;
@@ -69,6 +70,7 @@ public class Main {
       Spark.get("/search", new SearchHandler());
       Spark.get("/create", new CreateDraftHandler(firebaseUtils));
       Spark.get("/delete", new RemoveDraftHandler(firebaseUtils));
+      Spark.get("/view-drafts", new ViewDraftHandler(firebaseUtils));
 
       Spark.init();
       Spark.awaitInitialization();

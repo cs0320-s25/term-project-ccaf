@@ -23,7 +23,7 @@ public class CreateDraftHandler implements Route {
 
     try {
       String userId = request.queryParams("userId");
-      String draftName = request.queryParams("name");
+      String draftName = request.queryParams("draftName");
 
       if (userId == null || draftName == null) {
         responseMap.put("response_type", "failure");
