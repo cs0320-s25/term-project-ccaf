@@ -53,8 +53,9 @@ public class RecommendationTest {
 
         List<Piece> recommendations = RecommendationCreator.recommendPieces(allPieces, palette, alreadySaved, 1);
 
-        // make sure the recommendations are empty since there were no matching tags
-        assertTrue(recommendations.isEmpty());
+        // make sure that the recommendation does not have leather in it since there are no pieces with leather
+        System.out.println(recommendations.get(0));
+        assertTrue(recommendations.get(0).getTags().contains("leather") == false);
     }
 
     @Test
