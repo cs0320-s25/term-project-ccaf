@@ -19,25 +19,31 @@ export function DraftGrid() {
 
   return (
     <div>
-      <div className="flex items-center gap-2 mt-4">
-        <input
-          className="border p-2 rounded"
-          type="text"
-          value={name}
-          placeholder="Enter draft name"
-          onChange={(e) => setName(e.target.value)}
-        />
-        <button onClick={handleAddDraft} className="bg-black text-white px-4 py-2 rounded">
-          + Add Draft
-        </button>
-      </div>
 
       {loading ? (
         <p className="mt-8 text-center text-muted-foreground">Loading drafts...</p>
       ) : drafts.length === 0 ? (
-        <p className="text-muted-foreground text-center mt-8">
-          no drafts yet — start saving items!
-        </p>
+        <div>
+        <div>
+          <p className="text-muted-foreground text-center mt-8">
+            no drafts yet — start saving items!
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
+            {/* i styled the plus button to match the vibe but am very flexible if we don't like it! */}
+                    <button
+            onClick={() => {
+              {/* open to making a component to make this a cuter pop */}
+              const name = prompt("Enter the name of your Draft!");
+              if (name) createDraft(name);
+            }}
+            className="border rounded-lg aspect-square flex flex-col items-center justify-center hover:bg-gray-100 transition"
+          >
+            <span className="text-5xl font-bold text-gray-600">+</span>
+            <span className="text-sm mt-2 text-muted-foreground">New Draft</span>
+          </button>
+        </div>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
           {drafts.map((draft) => {
@@ -71,9 +77,21 @@ export function DraftGrid() {
               </Link>
             );
           })}
+
+          {/* i styled the plus button to match the vibe but am very flexible if we don't like it! */}
+          <button
+            onClick={() => {
+              {/* open to making a component to make this a cuter pop */}
+              const name = prompt("Enter the name of your Draft!");
+              if (name) createDraft(name);
+            }}
+            className="border rounded-lg aspect-square flex flex-col items-center justify-center hover:bg-gray-100 transition"
+          >
+            <span className="text-5xl font-bold text-gray-600">+</span>
+            <span className="text-sm mt-2 text-muted-foreground">New Draft</span>
+          </button>
         </div>
       )}
-      {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
     </div>
-  );
+  )
 }
