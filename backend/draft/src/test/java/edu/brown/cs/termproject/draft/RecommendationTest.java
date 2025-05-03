@@ -1,19 +1,10 @@
 package edu.brown.cs.termproject.draft;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import java.util.*;
+import org.junit.jupiter.api.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.jupiter.api.BeforeEach;
-import  org.junit.jupiter.api.Test;
-
-import edu.brown.cs.termproject.draft.Exceptions.DraftException;
-import edu.brown.cs.termproject.draft.Exceptions.PaletteException;
+import edu.brown.cs.termproject.draft.Exceptions.*;
 
 public class RecommendationTest {
     private List<Piece> allPieces;
