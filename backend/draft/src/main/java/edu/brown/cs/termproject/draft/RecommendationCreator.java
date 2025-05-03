@@ -3,44 +3,58 @@ package edu.brown.cs.termproject.draft;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import edu.brown.cs.termproject.draft.Exceptions.DraftException;
+import edu.brown.cs.termproject.draft.Exceptions.PaletteException;
+
 public class RecommendationCreator {
+
+
+    // TODO: should the limit be preset or should users be able to decide?
 
     /**
      * Scores and ranks all pieces based on match with palette
      * 
-     * @param allPieces
-     * @param palette
-     * @param alreadySavedIds
-     * @param topN
-     * @return
+     * @param allPieces is all available pieces
+     * @param palette is the user's weighted preference map
+     * @param alreadySavedIds is a set of item IDs the user already saved (exclude from
+     *                        results)
+     * @param limit is the number of top recommendations to return
+     * @return a ranked list of recommended pieces
+     * @throws DraftException if any input is invalid
      */
     public static List<Piece> recommendPieces(List<Piece> allPieces, Map<String, Double> palette,
-            Set<String> alreadySavedIds, int topN) {
-        if (allPieces == null || palette == null || alreadySavedIds == null)
-            return new ArrayList<>();
+            Set<String> alreadySavedIds, int limit) throws DraftException {
+        if (allPieces == null || palette == null || alreadySavedIds == null) {
+            throw new DraftException("Inputs to recommendation engine cannot be null.");
+        }
 
         Map<Piece, Double> scores = new HashMap<>();
 
+        // for every saved piece
         for (Piece piece : allPieces) {
+            // if the piece's recommendation score hasn't already been computed
             if (piece == null || alreadySavedIds.contains(piece.getId()))
                 continue;
+            
+            // calculate its score and store it
             double score = computeScore(piece, palette);
             scores.put(piece, score);
         }
 
+        // sort this by score (descending) and limit the number of recs to showcase
         return scores.entrySet().stream()
-                .sorted(Map.Entry.<Piece, Double>comparingByValue().reversed())
-                .limit(topN)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+                .sorted(Map.Entry.<Piece, Double>comparingByValue().reversed()) // ensures descending order
+                .limit(limit) // the final list of pieces will only include this many items
+                .map(Map.Entry::getKey) // discard the scores and only keep the pieces from the map
+                .collect(Collectors.toList()); // add all of the pieces together into a list
     }
 
     /**
      * Computes match score between a piece and the user palette.
-     *  
-     * @param piece
-     * @param palette
-     * @return
+     * 
+     * @param piece is the secondhand item to evaluate
+     * @param palette is a keyword to weight map
+     * @return a cumulative score based on tag matches
      */
     private static double computeScore(Piece piece, Map<String, Double> palette) {
         if (piece == null || palette == null || piece.getTags() == null)
@@ -56,20 +70,26 @@ public class RecommendationCreator {
     }
 
     /**
-     * Recommends based only on the current draft’s theme. 
+     * Recommends based only on the current draft’s theme.
      * 
-     * @param draftPieces
-     * @param allPieces
-     * @param alreadySavedIds
-     * @param topN
-     * @return list of draft-specific Piece recommendations
+     * @param draftPieces are the draft's pieces
+     * @param allPieces is the full inventory to recommend from
+     * @param alreadySavedIds user's previously saved item IDs
+     * @param limit is the number of recommendations to return
+     * @return recommendations tailored to the theme of the draft
+     * @throws DraftException if draft data is invalid
+     * @throws PaletteException if palette data is invalid
      */
     public static List<Piece> recommendForDraft(List<Piece> draftPieces, List<Piece> allPieces,
-            Set<String> alreadySavedIds, int topN) {
-        if (draftPieces == null || draftPieces.isEmpty())
-            return new ArrayList<>();
-        Map<String, Double> draftPalette = PaletteCreator.createPalette(draftPieces, List.of());
-        return recommendPieces(allPieces, draftPalette, alreadySavedIds, topN);
-    }
+            Set<String> alreadySavedIds, int limit) throws DraftException, PaletteException {
+        if (draftPieces == null || draftPieces.isEmpty()) {
+            throw new DraftException("Draft pieces must not be null or empty.");
+        }
 
+        // create a palette only using this draft's content
+        Map<String, Double> draftPalette = PaletteCreator.createPalette(draftPieces, List.of(), List.of());
+
+        // return the calculated recommended secondhand items
+        return recommendPieces(allPieces, draftPalette, alreadySavedIds, limit);
+    }
 }
