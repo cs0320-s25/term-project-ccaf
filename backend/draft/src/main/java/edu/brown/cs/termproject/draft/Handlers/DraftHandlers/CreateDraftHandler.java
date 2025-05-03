@@ -1,4 +1,4 @@
-package edu.brown.cs.termproject.draft.Handlers.Drafts;
+package edu.brown.cs.termproject.draft.Handlers.DraftHandlers;
 
 import edu.brown.cs.termproject.draft.Utilities.JSONUtils;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;

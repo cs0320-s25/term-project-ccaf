@@ -1,8 +1,8 @@
 package edu.brown.cs.termproject.draft.Server;
-import edu.brown.cs.termproject.draft.Handlers.Drafts.CreateDraftHandler;
-import edu.brown.cs.termproject.draft.Handlers.Drafts.RemoveDraftHandler;
-import edu.brown.cs.termproject.draft.Handlers.Drafts.ViewDraftHandler;
 import edu.brown.cs.termproject.draft.Handlers.SearchHandler;
+import edu.brown.cs.termproject.draft.Handlers.DraftHandlers.CreateDraftHandler;
+import edu.brown.cs.termproject.draft.Handlers.DraftHandlers.RemoveDraftHandler;
+import edu.brown.cs.termproject.draft.Handlers.DraftHandlers.ViewDraftHandler;
 import edu.brown.cs.termproject.draft.Piece;
 import edu.brown.cs.termproject.draft.Utilities.Storage.FirebaseUtilities;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;

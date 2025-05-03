@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import edu.brown.cs.termproject.draft.Piece;
 import edu.brown.cs.termproject.draft.Utilities.APIUtilities;
 import java.util.*;
-import java.util.stream.Collectors;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -14,6 +13,13 @@ public class SearchHandler implements Route {
   public SearchHandler() {
   }
 
+  /**
+   * Calls on the eBay API to conduct a clothing search.
+   * @param request
+   * @param response
+   * @return
+   * @throws Exception
+   */
   @Override
   public Object handle(Request request, Response response) throws Exception {
     String query = request.queryParams("q");
