@@ -17,7 +17,7 @@ public class RecommendationTest {
     }
 
     @Test
-    public void testWeightedPreferenceAccuracy() throws DraftException, PaletteException {
+    public void testBasicAccuracy() throws DraftException, PaletteException {
         Piece denimPiece = new Piece("1", "Denim Jacket", 50.0, "eBay", "url1",
                 "img1", "M", "Blue", "Good", Set.of("denim"));
         Piece floralPiece = new Piece("2", "Floral Dress", 40.0, "eBay", "url2",
@@ -42,16 +42,19 @@ public class RecommendationTest {
     }
 
     @Test
-    public void testNegativeControl() throws DraftException {
+    public void testNoMatchingTags() throws DraftException {
+        Map<String, Double> palette = Map.of("leather", 1.0);
+
+        // create a piece without matching terms to the palette
         Piece satinPiece = new Piece("3", "Satin Blouse", 35.0, "eBay", "url3",
                 "img3", "M", "Red", "Good", Set.of("satin"));
 
         allPieces.add(satinPiece);
 
-        Map<String, Double> palette = Map.of("leather", 1.0);
-
         List<Piece> recommendations = RecommendationCreator.recommendPieces(allPieces, palette, alreadySaved, 1);
-        assertTrue(recommendations.isEmpty() || recommendations.get(0).getTags().contains("leather") == false);
+
+        // make sure the recommendations are empty since there were no matching tags
+        assertTrue(recommendations.isEmpty());
     }
 
     @Test
