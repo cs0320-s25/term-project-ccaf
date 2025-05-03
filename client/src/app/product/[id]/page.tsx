@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 
-interface ProductPageProps {
-  params: { id: string };
-}
+// interface ProductPageProps {
+//   params: { id: string };
+// }
 
-export default function ProductPage({ params }: ProductPageProps) {
+// export default function ProductPage({ params }: ProductPageProps) {
+export default function ProductPage({ params }: { params: { id: string } }) {
   const product = {
     id: params.id,
     title: "denim skirt high quality",
