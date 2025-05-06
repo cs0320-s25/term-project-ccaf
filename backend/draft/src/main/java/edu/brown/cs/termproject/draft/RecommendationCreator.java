@@ -12,6 +12,8 @@ public class RecommendationCreator {
     // TODO: should the limit be preset or should users be able to decide?
     // TODO: need to track the clicking of pieces on the frontend
     // TODO: need to test recommending on front end using mock data
+    // TODO: add weight if a piece matches recently searched key terms
+    // TODO: recommender has to call eBay API with search query based on a user's palette?
 
     /**
      * Scores and ranks all pieces based on match with palette
