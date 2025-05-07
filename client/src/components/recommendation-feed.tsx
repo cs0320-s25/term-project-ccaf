@@ -3,7 +3,7 @@ import { ProductCard } from "@/components/product-card"
 export function RecommendationFeed() {
   return (
     <section>
-      <h2>recommended for you</h2>
+      <h2 className="mb-6">recommended for you</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
           <ProductCard

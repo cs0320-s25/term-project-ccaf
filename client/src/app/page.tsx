@@ -76,12 +76,6 @@ export default function Home() {
             </div>
 
             <RecommendationFeed />
-
-            <div className="mt-10 text-center">
-              <SignOutButton>
-                <button className="btn-outline-rounded">sign out</button>
-              </SignOutButton>
-            </div>
           </>
         )}
       </SignedIn>
