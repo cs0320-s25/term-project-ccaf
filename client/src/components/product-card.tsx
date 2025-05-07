@@ -7,26 +7,38 @@ import { Star, X } from "lucide-react";
 import { useDrafts } from "@/app/my-drafts/useDrafts";
 import { useUser } from "@clerk/clerk-react";
 
-export interface Product {
+export interface Piece {
   id: string;
   title: string;
   price: number;
   sourceWebsite: string;
-  imageUrl: string;
   url: string;
+  size: string;
+  color: string;
+  condition: string;
+  imageUrl: string;
 }
+
+type Draft = {
+  id: string;
+  name: string;
+  count: number;
+  pieces: any[];
+  thumbnails: string[];
+};
 
 interface ProductCardProps {
-  product: Product;
+  product: Piece;
+  drafts: Draft[];
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, drafts }: ProductCardProps) {
   const { user } = useUser();
   const uid = user?.id;
   const [saved, setSaved] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [draftName, setDraftName] = useState("");
-  const { drafts, loading, error, createDraft } = useDrafts(uid);
+  const { createDraft } = useDrafts(uid);
   
 
 
@@ -52,6 +64,7 @@ export function ProductCard({ product }: ProductCardProps) {
     createDraft(draftName.trim());
     setDraftName("");
   };
+
 
 
   return (

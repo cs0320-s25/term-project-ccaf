@@ -66,5 +66,7 @@ export function useDrafts(uid: string | undefined) {
       });
   };
 
+  
+
   return { drafts, loading, error, createDraft, fetchDrafts };
 }

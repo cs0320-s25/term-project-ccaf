@@ -3,7 +3,9 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProductCard } from "@/components/product-card";
-import type { Product } from "@/components/product-card";
+import type { Piece } from "@/components/product-card";
+import { useUser } from "@clerk/clerk-react";
+import { useDrafts } from "../my-drafts/useDrafts";
 
 // If your backend returns more fields, this helps match its full shape
 interface Piece {
@@ -22,9 +24,13 @@ export default function SearchPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
 
-  const [results, setResults] = useState<Product[]>([]);
+  const [results, setResults] = useState<Piece[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const { user } = useUser();
+  const uid = user?.id;
+  const { drafts } = useDrafts(uid);
 
   useEffect(() => {
     if (!query) return;
@@ -66,9 +72,16 @@ export default function SearchPage() {
       )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {results.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+        {results.map((product, index) => {
+          console.log(`Rendering product #${index}:`, product);
+          return (
+            <ProductCard
+              key={product.id}
+              product={product}
+              drafts={drafts}
+            />
+          );
+        })}
       </div>
     </div>
   );
