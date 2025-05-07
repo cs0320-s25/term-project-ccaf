@@ -12,7 +12,6 @@ import { OnboardingSurvey } from "@/components/onboarding-survey";
 import { SearchBar } from "@/components/search-bar";
 import { RecommendationFeed } from "@/components/recommendation-feed";
 import "./globals.css";
-import Link from "next/link"; // not strictly needed, but just in case
 
 interface Piece {
   id: string;
@@ -29,6 +28,22 @@ interface Piece {
 export default function Home() {
   const { user, isLoaded } = useUser();
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (isLoaded && user) {
+      const onboardingCompleted = localStorage.getItem(`onboardingCompleted-${user.id}`);
+      if (!onboardingCompleted) {
+        setShowOnboarding(true);
+      }
+    }
+  }, [user, isLoaded]);
+
+  const handleCompleteOnboarding = () => {
+    if (user) {
+      localStorage.setItem(`onboardingCompleted-${user.id}`, "true");
+      setShowOnboarding(false);
+    }
+  };
 
   return (
     <div className="container px-4 py-16 max-w-5xl mx-auto">
@@ -52,19 +67,23 @@ export default function Home() {
       </SignedOut>
 
       <SignedIn>
-        {showOnboarding && <OnboardingSurvey />}
+        {showOnboarding ? (
+          <OnboardingSurvey onComplete={handleCompleteOnboarding} />
+        ) : (
+          <>
+            <div className="mb-12">
+              <SearchBar />
+            </div>
 
-        <div className="mb-12">
-          <SearchBar />
-        </div>
+            <RecommendationFeed />
 
-        <RecommendationFeed />
-
-        <div className="mt-10 text-center">
-          <SignOutButton>
-            <button className="btn-outline-rounded">sign out</button>
-          </SignOutButton>
-        </div>
+            <div className="mt-10 text-center">
+              <SignOutButton>
+                <button className="btn-outline-rounded">sign out</button>
+              </SignOutButton>
+            </div>
+          </>
+        )}
       </SignedIn>
     </div>
   );
