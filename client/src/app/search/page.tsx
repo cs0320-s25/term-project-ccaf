@@ -4,8 +4,8 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProductCard } from "@/components/product-card";
 import type { Product } from "@/components/product-card";
+import { SearchBar } from "@/components/search-bar";
 
-// If your backend returns more fields, this helps match its full shape
 interface Piece {
   id: string;
   title: string;
@@ -56,6 +56,12 @@ export default function SearchPage() {
       <h2 className="text-lg font-semibold mb-4">
         Search results for: "{query}"
       </h2>
+
+      <div className="mb-6 flex">
+        <div className="w-[40rem]">
+          <SearchBar />
+        </div>
+      </div>
 
       {loading && <p className="text-gray-500">Loading...</p>}
 
