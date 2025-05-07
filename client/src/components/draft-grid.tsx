@@ -3,19 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useUser } from "@clerk/clerk-react";
-import { useState } from "react";
 import { useDrafts } from "../app/my-drafts/useDrafts";
 
 export function DraftGrid() {
   const { user } = useUser();
   const uid = user?.id;
-  const [name, setName] = useState("");
   const { drafts, loading, error, createDraft } = useDrafts(uid);
 
-  const handleAddDraft = () => {
-    createDraft(name);
-    setName("");
-  };
 
   return (
     <div>
@@ -31,7 +25,7 @@ export function DraftGrid() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
             {/* i styled the plus button to match the vibe but am very flexible if we don't like it! */}
-                    <button
+          <button
             onClick={() => {
               {/* open to making a component to make this a cuter pop */}
               const name = prompt("Enter the name of your Draft!");
