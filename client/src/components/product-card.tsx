@@ -17,6 +17,7 @@ export interface Piece {
   color: string;
   condition: string;
   imageUrl: string;
+  tags: string[];
 }
 
 type Draft = {
