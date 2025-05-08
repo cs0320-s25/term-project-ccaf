@@ -5,6 +5,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.FieldValue;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
@@ -175,13 +176,13 @@ public class FirebaseUtilities implements StorageInterface {
     return FirestoreClient.getFirestore();
   }
 
-  public static void savePieceToDraft(String draftId, Piece piece) throws Exception {
+  public static void savePieceToDraft(String userId, String draftId, Piece piece) throws Exception {
     Firestore db = getDb();
-    CollectionReference drafts = db.collection("drafts");
-
-    // save piece under a subcollection in the draft
-    DocumentReference draftDoc = drafts.document(draftId);
-    CollectionReference pieces = draftDoc.collection("pieces");
+    DocumentReference draftDoc = db
+        .collection("users")
+        .document(userId)
+        .collection("drafts")
+        .document(draftId);
 
     Map<String, Object> pieceData = new HashMap<>();
     pieceData.put("id", piece.getId());
@@ -193,11 +194,12 @@ public class FirebaseUtilities implements StorageInterface {
     pieceData.put("color", piece.getColor());
     pieceData.put("condition", piece.getCondition());
     pieceData.put("imageUrl", piece.getImageUrl());
-    pieceData.put("tags", piece.getTags());
+    pieceData.put("tags", new ArrayList<>(piece.getTags()));
 
-    // Save with the piece's ID as the Firestore doc ID
-    ApiFuture<WriteResult> future = pieces.document(piece.getId()).set(pieceData);
-    future.get(); // wait for the write to complete
+    Map<String, Object> update = new HashMap<>();
+    update.put("pieces", FieldValue.arrayUnion(pieceData));
+
+    draftDoc.update(update).get(); // wait for the write to complete
   }
 
   public static Piece getPieceById(String pieceId) throws Exception {

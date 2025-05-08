@@ -31,6 +31,7 @@ public class APIUtilities {
    */
   public static List<Piece> fetchFromEbay(String query) {
     List<Piece> piecesFromEbay = new ArrayList<>();
+    Set<String> namesOfItems = new HashSet<>();
 
     try {
       // Construct the eBay API URL with the search query
@@ -63,43 +64,48 @@ public class APIUtilities {
               JsonObject categoryObj = categoryElem.getAsJsonObject();
               String categoryName = categoryObj.get("categoryName").getAsString();
               tags.add(StringEscapeUtils.unescapeHtml4(categoryName.trim().toLowerCase()));
-
-
             }
           }
 
           String title = item.get("title").getAsString();
-          double price = item.getAsJsonObject("price").get("value").getAsDouble();
-          String url = item.get("itemWebUrl").getAsString();
+          if (!namesOfItems.contains(title)) {
+            double price = item.getAsJsonObject("price").get("value").getAsDouble();
+            String url = item.get("itemWebUrl").getAsString();
 
-          String imageUrl = "https://via.placeholder.com/225"; // fallback image
+            String imageUrl = "https://via.placeholder.com/225"; // fallback image
 
-          if (item.has("image") && item.getAsJsonObject("image").has("imageUrl")) {
-            imageUrl = item.getAsJsonObject("image").get("imageUrl").getAsString();
-          } else if (item.has("thumbnailImages")) {
-            JsonArray thumbnails = item.getAsJsonArray("thumbnailImages");
-            if (!thumbnails.isEmpty() && thumbnails.get(0).getAsJsonObject().has("imageUrl")) {
-              imageUrl = thumbnails.get(0).getAsJsonObject().get("imageUrl").getAsString();
+            if (item.has("image") && item.getAsJsonObject("image").has("imageUrl")) {
+              imageUrl = item.getAsJsonObject("image").get("imageUrl").getAsString();
+            } else if (item.has("thumbnailImages")) {
+              JsonArray thumbnails = item.getAsJsonArray("thumbnailImages");
+              if (!thumbnails.isEmpty() && thumbnails.get(0).getAsJsonObject().has("imageUrl")) {
+                imageUrl = thumbnails.get(0).getAsJsonObject().get("imageUrl").getAsString();
+              }
+            } else if (item.has("additionalImages")) {
+              JsonArray additional = item.getAsJsonArray("additionalImages");
+              if (!additional.isEmpty() && additional.get(0).getAsJsonObject().has("imageUrl")) {
+                imageUrl = additional.get(0).getAsJsonObject().get("imageUrl").getAsString();
+              }
             }
-          } else if (item.has("additionalImages")) {
-            JsonArray additional = item.getAsJsonArray("additionalImages");
-            if (!additional.isEmpty() && additional.get(0).getAsJsonObject().has("imageUrl")) {
-              imageUrl = additional.get(0).getAsJsonObject().get("imageUrl").getAsString();
-            }
+
+            String size = getSize(title);
+            String color = getColor(title);
+
+            String condition = item.has("condition") ? item.get("condition").getAsString() : "N/A";
+            String uniqueKey = "ebay" + "|" + title;
+            String pieceId = UUID.nameUUIDFromBytes(uniqueKey.getBytes()).toString();
+
+            // Create a new Piece object and add it to the list
+            Piece piece = new Piece(
+                pieceId,
+                title, price, "eBay", url, imageUrl,
+                size, color, condition, tags
+            );
+            System.out.println(pieceId);
+            piecesFromEbay.add(piece);
+            namesOfItems.add(title);
           }
 
-          String size = getSize(title);
-          String color = getColor(title);
-
-          String condition = item.has("condition") ? item.get("condition").getAsString() : "N/A";
-          // Create a new Piece object and add it to the list
-          Piece piece = new Piece(
-              UUID.randomUUID().toString(),
-              title, price, "eBay", url, imageUrl,
-              size, color, condition, tags
-          );
-
-          piecesFromEbay.add(piece);
         }
       } else {
         System.err.println("Error fetching eBay data: " + status);
