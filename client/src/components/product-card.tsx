@@ -4,33 +4,44 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, X } from "lucide-react";
+import { useDrafts } from "@/app/my-drafts/useDrafts";
+import { useUser } from "@clerk/clerk-react";
 
-export interface Product {
+export interface Piece {
   id: string;
   title: string;
   price: number;
   sourceWebsite: string;
-  imageUrl: string;
   url: string;
+  size: string;
+  color: string;
+  condition: string;
+  imageUrl: string;
+  tags: string[];
 }
+
+type Draft = {
+  id: string;
+  name: string;
+  count: number;
+  pieces: any[];
+  thumbnails: string[];
+};
 
 interface ProductCardProps {
-  product: Product;
+  product: Piece;
+  drafts: Draft[];
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, drafts }: ProductCardProps) {
+  const { user } = useUser();
+  const uid = user?.id;
   const [saved, setSaved] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [draftName, setDraftName] = useState("");
+  const { createDraft } = useDrafts(uid);
+  
 
-  useEffect(() => {
-    const drafts = JSON.parse(localStorage.getItem("drafts") || "{}");
-    for (const draft of Object.values(drafts)) {
-      if ((draft as any).pieces?.some((p: Product) => p.id === product.id)) {
-        setSaved(true);
-      }
-    }
-  }, [product.id]);
 
   const toggleModal = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -51,13 +62,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const handleNewDraft = () => {
     if (!draftName.trim()) return;
-    handleSave(draftName.trim());
+    createDraft(draftName.trim());
     setDraftName("");
   };
 
-  const drafts = Object.keys(
-    JSON.parse(localStorage.getItem("drafts") || "{}")
-  );
+
 
   return (
     <div className="border rounded-lg overflow-hidden group relative">
@@ -105,11 +114,11 @@ export function ProductCard({ product }: ProductCardProps) {
               {drafts.length > 0 ? (
                 drafts.map((draft) => (
                   <button
-                    key={draft}
-                    onClick={() => handleSave(draft)}
+                    key={draft.id}
+                    onClick={() => handleSave(draft.name)}
                     className="block w-full text-left p-2 border rounded hover:bg-gray-100"
                   >
-                    {draft}
+                    {draft.name}
                   </button>
                 ))
               ) : (

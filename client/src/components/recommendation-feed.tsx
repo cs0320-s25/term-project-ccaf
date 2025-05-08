@@ -1,6 +1,12 @@
+import { useDrafts } from "@/app/my-drafts/useDrafts";
 import { ProductCard } from "@/components/product-card"
+import { useUser } from "@clerk/clerk-react";
 
 export function RecommendationFeed() {
+  const { user } = useUser();
+  const uid = user?.id;
+  const { drafts } = useDrafts(uid);
+
   return (
     <section>
       <h2 className="mb-6">recommended for you</h2>
@@ -16,6 +22,7 @@ export function RecommendationFeed() {
               sourceWebsite: "ebay",
               imageUrl: "/placeholder.svg",
             }}
+            drafts={drafts}
           />
         ))}
       </div>

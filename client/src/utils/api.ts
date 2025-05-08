@@ -28,3 +28,20 @@ export async function viewDrafts(uid: string) {
         userId: uid
     });
 }
+
+export async function addToDraft(uid: string, draftId: string, pieceId: string, title: string, price: number, sourceWebsite: string, url: string, size: string, color: string, condition: string, imageUrl: string, tags: string[]) {
+  return await queryAPI("save-to-piece", {
+    userId: uid,
+    draftId: draftId,
+    pieceId: pieceId,
+    title: title,
+    price: price.toString(),
+    sourceWebsite: sourceWebsite,
+    url: url,
+    imageUrl: imageUrl,
+    size: size,
+    color: color,
+    condition: condition,
+    tags: tags.toString(),
+  });
+}
