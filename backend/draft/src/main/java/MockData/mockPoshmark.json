@@ -1,0 +1,54 @@
+[
+  {
+    "id": "pshmk-001",
+    "title": "ZARA Oversized Trench Coat - Beige, Size M",
+    "brand": "ZARA",
+    "price": 48.00,
+    "currency": "USD",
+    "condition": "Good",
+    "size": "M",
+    "color": "Beige",
+    "imageUrl": "https://mock.poshmarkcdn.com/item/zara-trench.jpg",
+    "url": "https://poshmark.com/listing/zara-trench-coat-001",
+    "tags": ["coat", "trench", "outerwear", "zara"]
+  },
+  {
+    "id": "pshmk-002",
+    "title": "Vintage Levi's 501 Jeans - W32 L30",
+    "brand": "Levi's",
+    "price": 35.00,
+    "currency": "USD",
+    "condition": "Fair",
+    "size": "32",
+    "color": "Light Wash",
+    "imageUrl": "https://mock.poshmarkcdn.com/item/levis-501.jpg",
+    "url": "https://poshmark.com/listing/levis-501-jeans-002",
+    "tags": ["jeans", "levis", "vintage", "denim"]
+  },
+  {
+    "id": "pshmk-003",
+    "title": "Nike Air Max 90 - Women’s Size 8.5",
+    "brand": "Nike",
+    "price": 60.00,
+    "currency": "USD",
+    "condition": "Like New",
+    "size": "8.5",
+    "color": "White/Crimson",
+    "imageUrl": "https://mock.poshmarkcdn.com/item/nike-airmax.jpg",
+    "url": "https://poshmark.com/listing/nike-air-max-003",
+    "tags": ["shoes", "nike", "sneakers"]
+  },
+  {
+    "id": "pshmk-004",
+    "title": "Free People Floral Maxi Dress",
+    "brand": "Free People",
+    "price": 42.00,
+    "currency": "USD",
+    "condition": "Good",
+    "size": "S",
+    "color": "Multi",
+    "imageUrl": "https://mock.poshmarkcdn.com/item/freepeople-dress.jpg",
+    "url": "https://poshmark.com/listing/freepeople-maxidress-004",
+    "tags": ["dress", "floral", "boho"]
+  }
+]

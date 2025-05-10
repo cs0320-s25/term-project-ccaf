@@ -1,0 +1,55 @@
+[
+  {
+    "id": "depop-101",
+    "title": "Y2K Baby Tee – Angel Graphic, Size S",
+    "brand": "Unknown",
+    "price": 22.00,
+    "currency": "USD",
+    "condition": "Used",
+    "size": "S",
+    "color": "Pink",
+    "imageUrl": "https://mock.depopcdn.com/images/y2k-babytee.jpg",
+    "url": "https://www.depop.com/product/y2k-babytee-101",
+    "tags": ["y2k", "baby tee", "pink", "graphic"]
+  },
+  {
+    "id": "depop-102",
+    "title": "Dickies Work Pants - Charcoal Grey, W34",
+    "brand": "Dickies",
+    "price": 30.00,
+    "currency": "USD",
+    "condition": "Good",
+    "size": "34",
+    "color": "Charcoal",
+    "imageUrl": "https://mock.depopcdn.com/images/dickies-charcoal.jpg",
+    "url": "https://www.depop.com/product/dickies-workpants-102",
+    "tags": ["pants", "workwear", "dickies"]
+  },
+  {
+    "id": "depop-103",
+    "title": "Adidas Track Jacket - Retro Style, Size M",
+    "brand": "Adidas",
+    "price": 45.00,
+    "currency": "USD",
+    "condition": "Very Good",
+    "size": "M",
+    "color": "Black/White",
+    "imageUrl": "https://mock.depopcdn.com/images/adidas-track.jpg",
+    "url": "https://www.depop.com/product/adidas-trackjacket-103",
+    "tags": ["jacket", "adidas", "retro"]
+  },
+  {
+    "id": "depop-104",
+    "title": "Reworked Cropped Hoodie - Champion",
+    "brand": "Champion",
+    "price": 28.00,
+    "currency": "USD",
+    "condition": "Used",
+    "size": "L",
+    "color": "Navy",
+    "imageUrl": "https://mock.depopcdn.com/images/reworked-hoodie.jpg",
+    "url": "https://www.depop.com/product/reworked-hoodie-104",
+    "tags": ["hoodie", "reworked", "streetwear"]
+  }
+]
+
