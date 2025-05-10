@@ -8,17 +8,6 @@ import { SearchBar } from "@/components/search-bar";
 import { useUser } from "@clerk/clerk-react";
 import { useDrafts } from "../my-drafts/useDrafts";
 
-interface Piece {
-  id: string;
-  title: string;
-  price: number;
-  sourceWebsite: string;
-  url: string;
-  size: string;
-  color: string;
-  condition: string;
-  imageUrl: string;
-}
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
