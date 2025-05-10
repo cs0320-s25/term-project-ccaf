@@ -2,6 +2,7 @@ package edu.brown.cs.termproject.draft.Handlers.DraftHandlers;
 
 import edu.brown.cs.termproject.draft.Utilities.JSONUtils;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -37,7 +38,7 @@ public class CreateDraftHandler implements Route {
       draftData.put("id", draftId);
       draftData.put("name", draftName);
       draftData.put("pieces", new ArrayList<>()); // start empty
-  
+      draftData.put("thumbnails", new ArrayList<>());
 
       storage.addDocument(userId, "drafts", draftId, draftData);
 
