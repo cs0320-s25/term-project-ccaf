@@ -36,7 +36,8 @@ public class CreateDraftHandler implements Route {
       Map<String, Object> draftData = new HashMap<>();
       draftData.put("id", draftId);
       draftData.put("name", draftName);
-      draftData.put("pieces", new java.util.ArrayList<>()); // start empty
+      draftData.put("pieces", new ArrayList<>()); // start empty
+  
 
       storage.addDocument(userId, "drafts", draftId, draftData);
 

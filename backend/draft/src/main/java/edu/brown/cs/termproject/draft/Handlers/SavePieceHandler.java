@@ -1,10 +1,15 @@
 package edu.brown.cs.termproject.draft.Handlers;
 
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.Firestore;
+import com.google.firebase.cloud.FirestoreClient;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import edu.brown.cs.termproject.draft.Piece;
 import edu.brown.cs.termproject.draft.Utilities.Storage.FirebaseUtilities;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,6 +65,22 @@ public class SavePieceHandler implements Route {
      }
 
      FirebaseUtilities.savePieceToDraft(userId, draftId, piece);
+     DocumentReference draftRef = FirebaseUtilities.getUserDoc(userId, draftId);
+
+     DocumentSnapshot snapshot = draftRef.get().get(); // blocking call
+     if (snapshot.exists()) {
+       Map<String, Object> draft = snapshot.getData();
+       List<String> thumbnails = (List<String>) draft.getOrDefault("thumbnails", new ArrayList<>());
+
+       if (imageUrl != null && !imageUrl.isEmpty() && !thumbnails.contains(imageUrl)) {
+         if (thumbnails.size() < 4) {
+           thumbnails.add(imageUrl);
+         } else {
+           thumbnails.set(thumbnails.size() - 1, imageUrl);
+         }
+         draftRef.update("thumbnails", thumbnails).get(); // wait for update to complete
+       }
+     }
 
      responseMap.put("status", "success");
      responseMap.put("message", "Piece saved to draft in Firestore");

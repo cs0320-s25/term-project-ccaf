@@ -184,22 +184,10 @@ public class FirebaseUtilities implements StorageInterface {
         .collection("drafts")
         .document(draftId);
 
-    Map<String, Object> pieceData = new HashMap<>();
-    pieceData.put("id", piece.getId());
-    pieceData.put("title", piece.getTitle());
-    pieceData.put("price", piece.getPrice());
-    pieceData.put("sourceWebsite", piece.getSourceWebsite());
-    pieceData.put("url", piece.getUrl());
-    pieceData.put("size", piece.getSize());
-    pieceData.put("color", piece.getColor());
-    pieceData.put("condition", piece.getCondition());
-    pieceData.put("imageUrl", piece.getImageUrl());
-    pieceData.put("tags", new ArrayList<>(piece.getTags()));
-
     Map<String, Object> update = new HashMap<>();
-    update.put("pieces", FieldValue.arrayUnion(pieceData));
+    update.put("pieces", FieldValue.arrayUnion(piece.getId()));  // store just the ID...?
 
-    draftDoc.update(update).get(); // wait for the write to complete
+    draftDoc.update(update).get();
   }
 
   public static Piece getPieceById(String pieceId) throws Exception {
@@ -244,6 +232,18 @@ public class FirebaseUtilities implements StorageInterface {
     pieceData.put("tags", new ArrayList<>(piece.getTags()));
 
     db.collection("pieces").document(piece.getId()).set(pieceData).get();
+  }
+
+  public static DocumentReference getUserDoc(String uid, String docId) {
+    if (uid == null || docId == null) {
+      throw new IllegalArgumentException("getUserDoc: uid, collectionId, and docId cannot be null");
+    }
+
+    return getDb()
+        .collection("users")
+        .document(uid)
+        .collection("drafts")
+        .document(docId);
   }
 
 
