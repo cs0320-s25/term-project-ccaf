@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { addDraft, viewDrafts, addToDraft } from "../../utils/api";
+import { Piece } from "@/components/product-card";
 
 type Draft = {
   id: string;
@@ -66,10 +67,10 @@ export function useDrafts(uid: string | undefined) {
       });
   };
 
-  const addToDraftWrapper = (uid: string, draftId: string, pieceId: string, title: string, price: number, sourceWebsite: string, url: string, size: string, color: string, condition: string, imageUrl: string, tags: string[]) => {
-    if (!uid || !draftId.trim() || !pieceId.trim() || !title.trim() || !price || !sourceWebsite.trim() || !url.trim() || !size.trim() || !color.trim() || !condition.trim() || !imageUrl.trim() || !tags) return;
+  const addToDraftWrapper = (uid: string, draftId: string,  piece: Piece) => {
+    if (!uid || !draftId.trim() || !piece.id.trim() || !piece.title.trim() || !piece.price || !piece.sourceWebsite.trim() || !piece.url.trim() || !piece.size.trim() || !piece.color.trim() || !piece.condition.trim() || !piece.imageUrl.trim() || !piece.tags) return;
 
-    addToDraft(uid, draftId, pieceId, title, price, sourceWebsite, url, size, color, condition, imageUrl, tags)
+    addToDraft(uid, draftId, piece.id, piece.title, piece.price, piece.sourceWebsite, piece.url, piece.size, piece.color, piece.condition, piece.imageUrl, piece.tags)
       .then((res) => {
         if (res.response_type === "success") {
           const draft = res.draft;
@@ -91,5 +92,5 @@ export function useDrafts(uid: string | undefined) {
   };
     
 
-  return { drafts, loading, error, createDraft, fetchDrafts };
+  return { drafts, loading, error, createDraft, fetchDrafts, addToDraftWrapper };
 }

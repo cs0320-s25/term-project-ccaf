@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className="border-b">
+    <header className="fixed top-0 left-0 w-full z-50 bg-white border-b shadow">
       <div className="container flex h-16 items-center justify-between px-4">
         <Link href="/" className="text-2xl font-bold">
           draft

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, X } from "lucide-react";
@@ -20,7 +20,7 @@ export interface Piece {
   tags: string[];
 }
 
-type Draft = {
+export type Draft = {
   id: string;
   name: string;
   count: number;
@@ -39,9 +39,7 @@ export function ProductCard({ product, drafts }: ProductCardProps) {
   const [saved, setSaved] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [draftName, setDraftName] = useState("");
-  const { createDraft } = useDrafts(uid);
-  
-
+  const { createDraft, addToDraftWrapper } = useDrafts(uid);
 
   const toggleModal = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -49,13 +47,9 @@ export function ProductCard({ product, drafts }: ProductCardProps) {
     setShowModal(true);
   };
 
-  const handleSave = (draft: string) => {
-    const drafts = JSON.parse(localStorage.getItem("drafts") || "{}");
-    if (!drafts[draft]) {
-      drafts[draft] = { pieces: [] };
-    }
-    drafts[draft].pieces.push(product);
-    localStorage.setItem("drafts", JSON.stringify(drafts));
+  const handleSave = (uid: string | undefined, draftId: string, piece: Piece) => {
+    if (!uid?.trim()) return;
+    addToDraftWrapper(uid, draftId, piece);
     setSaved(true);
     setShowModal(false);
   };
@@ -66,11 +60,18 @@ export function ProductCard({ product, drafts }: ProductCardProps) {
     setDraftName("");
   };
 
-
+  const handleProductClick = () => {
+    // Store in sessionStorage first
+    sessionStorage.setItem("temp_piece", JSON.stringify(product));
+  };
 
   return (
     <div className="border rounded-lg overflow-hidden group relative">
-      <Link href={`/product/${product.id}`} className="block">
+      <Link
+        href={{ pathname: `/product/${product.id}` }}
+        className="block"
+        onClick={handleProductClick}  // Store product on click
+      >
         <div className="relative aspect-square bg-gray-100 overflow-hidden">
           <Image
             src={product.imageUrl || "/placeholder.svg"}
@@ -115,7 +116,7 @@ export function ProductCard({ product, drafts }: ProductCardProps) {
                 drafts.map((draft) => (
                   <button
                     key={draft.id}
-                    onClick={() => handleSave(draft.name)}
+                    onClick={() => handleSave(uid, draft.id, product)}
                     className="block w-full text-left p-2 border rounded hover:bg-gray-100"
                   >
                     {draft.name}
@@ -134,9 +135,7 @@ export function ProductCard({ product, drafts }: ProductCardProps) {
                 onChange={(e) => setDraftName(e.target.value)}
                 className="w-full border px-2 py-1 rounded mb-2"
               />
-              <button className="btn-outline-rounded"
-                onClick={handleNewDraft}
-              >
+              <button className="btn-outline-rounded" onClick={handleNewDraft}>
                 create & save
               </button>
             </div>

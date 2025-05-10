@@ -59,7 +59,7 @@ export default function RootLayout({
       <body className={`${inter.className} bg-white text-black`}>
         <Providers>
           <Header />
-          <main className="min-h-screen">{children}</main>
+          <main className="min-h-screen pt-16">{children}</main>
         </Providers>
       </body>
     </html>

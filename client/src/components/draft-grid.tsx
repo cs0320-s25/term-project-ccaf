@@ -41,28 +41,20 @@ export function DraftGrid() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
           {drafts.map((draft) => {
-            const thumbnails = draft.thumbnails?.length > 0
-              ? draft.thumbnails
-              : ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"];
+            const placeholders = ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg", "/placeholder.svg"];
+
+            const thumbnails = draft.thumbnails && draft.thumbnails.length > 0
+              ? [...draft.thumbnails, ...placeholders].slice(0, 4)
+              : placeholders;
 
             return (
               <Link key={draft.id} href={`/draft/${draft.id}`} className="block group">
-                <div className="grid grid-cols-2 gap-1 rounded-lg overflow-hidden border">
-                  <div className="row-span-2 col-span-1">
-                    <div className="relative aspect-square">
-                      <Image src={thumbnails[0]} alt="" fill className="object-cover" />
+                <div className="grid grid-cols-2 gap-1 rounded-lg overflow-hidden border aspect-square">
+                  {thumbnails.map((src, i) => (
+                    <div key={i} className="relative aspect-square">
+                      <Image src={src} aria-label={`Thumbnail ${i}`} alt="" fill className="object-cover" />
                     </div>
-                  </div>
-                  <div className="col-span-1">
-                    <div className="relative aspect-square">
-                      <Image src={thumbnails[1]} alt="" fill className="object-cover" />
-                    </div>
-                  </div>
-                  <div className="col-span-1">
-                    <div className="relative aspect-square">
-                      <Image src={thumbnails[2]} alt="" fill className="object-cover" />
-                    </div>
-                  </div>
+                  ))}
                 </div>
                 <div className="mt-3">
                   <h3 className="font-medium tracking-tight">{draft.name}</h3>
