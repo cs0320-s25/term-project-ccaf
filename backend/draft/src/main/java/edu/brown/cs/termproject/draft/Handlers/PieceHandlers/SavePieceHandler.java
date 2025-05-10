@@ -1,14 +1,10 @@
-package edu.brown.cs.termproject.draft.Handlers;
+package edu.brown.cs.termproject.draft.Handlers.PieceHandlers;
 
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
-import com.google.firebase.cloud.FirestoreClient;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import edu.brown.cs.termproject.draft.Piece;
 import edu.brown.cs.termproject.draft.Utilities.Storage.FirebaseUtilities;
-import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -92,4 +88,7 @@ public class SavePieceHandler implements Route {
      return gson.toJson(responseMap);
    }
  }
+
+
+
 }

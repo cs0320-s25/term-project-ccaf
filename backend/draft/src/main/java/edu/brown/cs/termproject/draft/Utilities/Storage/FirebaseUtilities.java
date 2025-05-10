@@ -184,11 +184,59 @@ public class FirebaseUtilities implements StorageInterface {
         .collection("drafts")
         .document(draftId);
 
-    Map<String, Object> update = new HashMap<>();
-    update.put("pieces", FieldValue.arrayUnion(piece.getId()));  // store just the ID...?
+    Map<String, Object> update1 = new HashMap<>();
+    update1.put("pieces", FieldValue.arrayUnion(piece.getId()));  // store just the ID...?
 
-    draftDoc.update(update).get();
+    draftDoc.update(update1).get();
+
+    DocumentReference piecesDoc = db.collection("pieces").document(piece.getId());
+    Map<String, Object> update2 = new HashMap<>();
+    update2.put("usedInDrafts", FieldValue.arrayUnion(draftId));
+    piecesDoc.update(update2).get();
   }
+
+  public static void removePieceFromDraft(String userId, String draftId, String pieceId) throws Exception {
+    Firestore db = getDb();
+
+    DocumentReference draftDoc = db
+        .collection("users")
+        .document(userId)
+        .collection("drafts")
+        .document(draftId);
+
+    DocumentSnapshot draftSnapshot = draftDoc.get().get();
+
+    if (draftSnapshot.exists()) {
+      List<String> pieces = (List<String>) draftSnapshot.get("pieces");
+      List<String> thumbnails = (List<String>) draftSnapshot.get("thumbnails");
+
+      if (pieces != null && thumbnails != null) {
+        int indexToRemove = pieces.indexOf(pieceId);
+        if (indexToRemove != -1 && indexToRemove < thumbnails.size()) {
+          thumbnails.remove(indexToRemove);
+        }
+      }
+
+      Map<String, Object> draftUpdate = new HashMap<>();
+      draftUpdate.put("pieces", FieldValue.arrayRemove(pieceId));
+      draftUpdate.put("thumbnails", thumbnails);
+      draftDoc.update(draftUpdate).get();
+    }
+
+    DocumentReference pieceDoc = db.collection("pieces").document(pieceId);
+    Map<String, Object> pieceUpdate = new HashMap<>();
+    pieceUpdate.put("usedInDrafts", FieldValue.arrayRemove(draftId));
+    pieceDoc.update(pieceUpdate).get();
+
+    DocumentSnapshot pieceSnapshot = pieceDoc.get().get();
+    if (pieceSnapshot.exists()) {
+      List<String> usedInDrafts = (List<String>) pieceSnapshot.get("usedInDrafts");
+      if (usedInDrafts == null || usedInDrafts.isEmpty()) {
+        pieceDoc.delete().get();
+      }
+    }
+  }
+
 
   public static Piece getPieceById(String pieceId) throws Exception {
     Firestore db = getDb();
@@ -230,6 +278,7 @@ public class FirebaseUtilities implements StorageInterface {
     pieceData.put("condition", piece.getCondition());
     pieceData.put("imageUrl", piece.getImageUrl());
     pieceData.put("tags", new ArrayList<>(piece.getTags()));
+    pieceData.put("usedInDrafts", new ArrayList<>());
 
     db.collection("pieces").document(piece.getId()).set(pieceData).get();
   }
