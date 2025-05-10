@@ -20,8 +20,9 @@ public class eBayFetcher {
     String encodedQuery = URLEncoder.encode(query, "UTF-8");
 
     // build the full eBay API URL with the encoded query
-    String urlString = String.format("%s?OPERATION-NAME=findItemsByKeywords&SERVICE-VERSION=%s&SECURITY-APPNAME=%s&GLOBAL-ID=%s&keywords=%s",
-        EBAY_API_URL, SERVICE_VERSION, APP_ID, GLOBAL_ID, encodedQuery);
+    String categoryId = "11450"; // clothing, shoes, and accessories
+    String urlString = String.format("%s?OPERATION-NAME=findItemsByKeywords&SERVICE-VERSION=%s&SECURITY-APPNAME=%s&GLOBAL-ID=%s&keywords=%s&categoryId=%s",
+        EBAY_API_URL, SERVICE_VERSION, APP_ID, GLOBAL_ID, encodedQuery, categoryId);
 
     // create a URL object
     URL url = new URL(urlString);

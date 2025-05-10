@@ -41,8 +41,6 @@ public class SearchHandler implements Route {
 
 
 
-
-
 //  private final List<Piece> allPieces;
 //
 //  public SearchHandler(List<Piece> allPieces) {

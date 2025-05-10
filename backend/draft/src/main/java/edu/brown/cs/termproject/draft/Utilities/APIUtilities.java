@@ -35,7 +35,7 @@ public class APIUtilities {
 
     try {
       // Construct the eBay API URL with the search query
-      String apiUrl = EBAY_API_URL + "?q=" + query + "&limit=20"; // Adjust limit as needed
+      String apiUrl = EBAY_API_URL + "?q=" + query + "&limit=20&category_ids=11450";
 
       // Open a connection to the eBay API
       HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
