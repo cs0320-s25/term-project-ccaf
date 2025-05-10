@@ -246,5 +246,149 @@ public class FirebaseUtilities implements StorageInterface {
         .document(docId);
   }
 
+  @Override
+  public List<Piece> getSavedPieces(String uid) {
+    List<Piece> savedPieces = new ArrayList<>();
+    Firestore db = FirestoreClient.getFirestore();
+
+    try {
+      DocumentReference userDocRef = db.collection("users").document(uid);
+      DocumentSnapshot userSnapshot = userDocRef.get().get();
+
+      if (!userSnapshot.exists()) {
+        System.out.println("No Firestore document found for user ID: " + uid);
+        return savedPieces; // return empty list
+      }
+
+      CollectionReference savedRef = userDocRef.collection("saved");
+      ApiFuture<QuerySnapshot> future = savedRef.get();
+      List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+      for (QueryDocumentSnapshot doc : documents) {
+        Piece piece = doc.toObject(Piece.class);
+        savedPieces.add(piece);
+      }
+
+      System.out.println("Fetched " + savedPieces.size() + " saved pieces for UID: " + uid);
+
+    } catch (Exception e) {
+      System.err.println("Error fetching saved pieces for UID: " + uid);
+      e.printStackTrace();
+    }
+
+    return savedPieces;
+  }
+
+  @Override
+  public List<Piece> getClickedPieces(String uid) {
+    Firestore db = FirestoreClient.getFirestore();
+    List<Piece> clickedPieces = new ArrayList<>();
+    try {
+      if (!userExists(uid)) {
+        System.out.println("No Firestore document found for user ID: " + uid);
+        return clickedPieces;
+      }
+
+      CollectionReference clickedRef = db.collection("users").document(uid).collection("clicked");
+      ApiFuture<QuerySnapshot> future = clickedRef.get();
+      List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+      for (QueryDocumentSnapshot doc : documents) {
+        Piece piece = doc.toObject(Piece.class);
+        clickedPieces.add(piece);
+      }
+
+      System.out.println("Fetched " + clickedPieces.size() + " clicked pieces for UID: " + uid);
+
+    } catch (Exception e) {
+      System.err.println("Error fetching clicked pieces for UID: " + uid);
+      e.printStackTrace();
+    }
+    return clickedPieces;
+  }
+
+  @Override
+  public List<Piece> getOnboardingResponses(String uid) {
+    Firestore db = FirestoreClient.getFirestore();
+    List<Piece> onboardingPieces = new ArrayList<>();
+    try {
+      if (!userExists(uid)) {
+        System.out.println("No Firestore document found for user ID: " + uid);
+        return onboardingPieces;
+      }
+
+      CollectionReference onboardingRef = db.collection("users").document(uid).collection("onboarding");
+      ApiFuture<QuerySnapshot> future = onboardingRef.get();
+      List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+      for (QueryDocumentSnapshot doc : documents) {
+        Piece piece = doc.toObject(Piece.class);
+        onboardingPieces.add(piece);
+      }
+
+      System.out.println("Fetched " + onboardingPieces.size() + " onboarding pieces for UID: " + uid);
+
+    } catch (Exception e) {
+      System.err.println("Error fetching onboarding responses for UID: " + uid);
+      e.printStackTrace();
+    }
+    return onboardingPieces;
+  }
+
+  @Override
+  public List<Piece> getAllPieces() {
+    List<Piece> allPieces = new ArrayList<>();
+    Firestore db = FirestoreClient.getFirestore();
+
+    try {
+      CollectionReference allRef = db.collection("pieces");
+      ApiFuture<QuerySnapshot> future = allRef.get();
+      List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+      for (QueryDocumentSnapshot doc : documents) {
+        Piece piece = doc.toObject(Piece.class);
+        allPieces.add(piece);
+      }
+
+      System.out.println("Fetched " + allPieces.size() + " total pieces.");
+
+    } catch (Exception e) {
+      System.err.println("Error fetching all pieces.");
+      e.printStackTrace();
+    }
+    return allPieces;
+  }
+
+  public boolean userExists(String uid) {
+    Firestore db = FirestoreClient.getFirestore();
+
+    try {
+      // Assuming each user has a document with their UID as the doc ID
+      DocumentSnapshot snapshot = db.collection("users").document(uid).get().get();
+      return snapshot.exists();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false; // Fail safe — user doesn't exist if there's an error
+    }
+  }
+
+  public void createUser(String uid) {
+    Firestore db = FirestoreClient.getFirestore();
+    DocumentReference userRef = db.collection("users").document(uid);
+
+    try {
+      if (!userExists(uid)) {
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("createdAt", FieldValue.serverTimestamp());
+        userRef.set(userData).get();
+        System.out.println("Created user document for UID: " + uid);
+      } else {
+        System.out.println("User document already exists for UID: " + uid);
+      }
+    } catch (Exception e) {
+      System.err.println("Failed to create user document for UID: " + uid);
+      e.printStackTrace();
+    }
+  }
 
 }

@@ -1,7 +1,10 @@
 package edu.brown.cs.termproject.draft;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Piece {
@@ -32,6 +35,52 @@ private Set<String> tags;
         this.tags = tags;
     }
 
+    public static Piece fromMap(Map<String, Object> data) {
+    try {
+        String id = (String) data.get("id");
+        String title = (String) data.get("title");
+        double price = ((Number) data.get("price")).doubleValue();
+        String sourceWebsite = (String) data.get("sourceWebsite");
+        String url = (String) data.get("url");
+        String imageUrl = (String) data.get("imageUrl");
+        String size = (String) data.get("size");
+        String color = (String) data.get("color");
+        String condition = (String) data.get("condition");
+
+        // optional field: tags
+        Set<String> tags = new HashSet<>();
+        Object rawTags = data.get("tags");
+        if (rawTags instanceof List<?>) {
+        for (Object tag : (List<?>) rawTags) {
+            if (tag instanceof String) {
+            tags.add((String) tag);
+            }
+        }
+        }
+
+        return new Piece(id, title, price, sourceWebsite, url, imageUrl, size, color, condition, tags);
+
+    } catch (Exception e) {
+        System.err.println("Error parsing Piece from map: " + e.getMessage());
+        return null;
+    }
+    }
+
+    // Converts a Piece object into a Firestore-compatible map
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("title", title);
+        map.put("price", price);
+        map.put("sourceWebsite", sourceWebsite);
+        map.put("url", url);
+        map.put("imageUrl", imageUrl);
+        map.put("size", size);
+        map.put("color", color);
+        map.put("condition", condition);
+        map.put("tags", new ArrayList<>(tags)); // Firestore expects a list
+        return map;
+    }
 
 
     public Set<String> getTags() {
@@ -46,4 +95,5 @@ private Set<String> tags;
     public String getSize() { return size; }
     public String getColor() { return color; }
     public String getCondition() { return condition; }
+    
 }

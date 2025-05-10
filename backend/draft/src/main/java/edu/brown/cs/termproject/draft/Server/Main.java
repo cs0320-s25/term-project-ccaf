@@ -1,4 +1,5 @@
 package edu.brown.cs.termproject.draft.Server;
+import edu.brown.cs.termproject.draft.Handlers.RecommendationHandler;
 import edu.brown.cs.termproject.draft.Handlers.SavePieceHandler;
 import edu.brown.cs.termproject.draft.Handlers.SearchHandler;
 import edu.brown.cs.termproject.draft.Handlers.DraftHandlers.CreateDraftHandler;
@@ -73,6 +74,7 @@ public class Main {
       Spark.get("/delete", new RemoveDraftHandler(firebaseUtils));
       Spark.get("/view-drafts", new ViewDraftHandler(firebaseUtils));
       Spark.get("save-to-piece", new SavePieceHandler());
+      Spark.get("/recommend", new RecommendationHandler(firebaseUtils));
 
       Spark.init();
       Spark.awaitInitialization();
