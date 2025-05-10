@@ -16,7 +16,7 @@ async function queryAPI(
 }
 
 export async function addDraft(uid: string, name: string) {
-  return await queryAPI("create", {
+  return await queryAPI("create-draft", {
     userId: uid,
     draftName: name,
   });
@@ -30,7 +30,7 @@ export async function viewDrafts(uid: string) {
 }
 
 export async function addToDraft(uid: string, draftId: string, pieceId: string, title: string, price: number, sourceWebsite: string, url: string, size: string, color: string, condition: string, imageUrl: string, tags: string[]) {
-  return await queryAPI("save-to-piece", {
+  return await queryAPI("save-piece", {
     userId: uid,
     draftId: draftId,
     pieceId: pieceId,
