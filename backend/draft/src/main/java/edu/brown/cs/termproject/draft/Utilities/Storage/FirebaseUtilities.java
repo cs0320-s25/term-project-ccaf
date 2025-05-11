@@ -255,13 +255,49 @@ public class FirebaseUtilities implements StorageInterface {
         ((Number) data.get("price")).doubleValue(),
         (String) data.get("sourceWebsite"),
         (String) data.get("url"),
+        (String) data.get("imageUrl"),
         (String) data.get("size"),
         (String) data.get("color"),
         (String) data.get("condition"),
-        (String) data.get("imageUrl"),
         new HashSet<>((List<String>) data.get("tags"))
     );
   }
+
+  public static Map<String, Object> getDraftById(String userId, String draftId) throws Exception {
+    Firestore db = getDb();
+    DocumentReference draftDoc = db
+        .collection("users")
+        .document(userId)
+        .collection("drafts")
+        .document(draftId);
+
+    DocumentSnapshot draftSnapshot = draftDoc.get().get();
+    if (draftSnapshot.exists()) {
+      System.out.println("Successfully retrieved draft " + draftId);
+      System.out.println(draftSnapshot.getData().toString());
+      return draftSnapshot.getData();
+    } else {
+      return new HashMap<>(); // or throw an exception if preferred
+    }
+  }
+
+  public static List<String> getPiecesFromDraft(String userId, String draftId) throws Exception {
+    Firestore db = getDb();
+    DocumentReference draftDoc = db
+        .collection("users")
+        .document(userId)
+        .collection("drafts")
+        .document(draftId);
+
+    DocumentSnapshot draftSnapshot = draftDoc.get().get();
+    List<String> pieces = new ArrayList<>();
+    if (draftSnapshot.exists()) {
+      pieces = (List<String>) draftSnapshot.get("pieces");
+    }
+
+    return pieces;
+  }
+
 
   // for testing
   public static void savePiece(Piece piece) throws Exception {

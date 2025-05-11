@@ -65,6 +65,8 @@ export function ProductCard({ product, drafts }: ProductCardProps) {
     sessionStorage.setItem("temp_piece", JSON.stringify(product));
   };
 
+  console.log("Image URL:", product.imageUrl);
+
   return (
     <div className="border rounded-lg overflow-hidden group relative">
       <Link
@@ -74,7 +76,7 @@ export function ProductCard({ product, drafts }: ProductCardProps) {
       >
         <div className="relative aspect-square bg-gray-100 overflow-hidden">
           <Image
-            src={product.imageUrl || "/placeholder.svg"}
+            src={product.imageUrl && product.imageUrl.trim() !== "" ? product.imageUrl : "/placeholder.svg"}
             alt={product.title}
             fill
             className="object-cover transition-transform group-hover:scale-105"

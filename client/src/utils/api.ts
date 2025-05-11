@@ -45,3 +45,10 @@ export async function addToDraft(uid: string, draftId: string, pieceId: string, 
     tags: tags.toString(),
   });
 }
+
+export async function viewPiecesInDraft(uid: string, draftId: string) {
+  return await queryAPI("view-piece", {
+      userId: uid,
+      draftId: draftId
+  });
+}
