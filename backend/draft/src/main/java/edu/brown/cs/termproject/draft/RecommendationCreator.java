@@ -39,19 +39,50 @@ public class RecommendationCreator {
             // if the piece's recommendation score hasn't already been computed
             if (piece == null || alreadySavedIds.contains(piece.getId()))
                 continue;
-            
+
             // calculate its score and store it
             double score = computeScore(piece, palette);
             scores.put(piece, score);
         }
 
-        // sort this by score (descending) and limit the number of recs to showcase
-        return scores.entrySet().stream()
+        // sort this by score (descending)
+        List<Piece> sortedByScore = scores.entrySet().stream()
                 .sorted(Map.Entry.<Piece, Double>comparingByValue().reversed()) // ensures descending order
-                .limit(limit) // the final list of pieces will only include this many items
                 .map(Map.Entry::getKey) // discard the scores and only keep the pieces from the map
                 .collect(Collectors.toList()); // add all of the pieces together into a list
+
+        // initialize the list of final recommendations
+        List<Piece> finalRecommendations = new ArrayList<>();
+        Set<String> includedIds = new HashSet<>();
+
+        // add top scoring pieces first (up to the limit)
+        for (Piece p : sortedByScore) {
+            if (finalRecommendations.size() >= limit)
+                break;
+            finalRecommendations.add(p);
+            includedIds.add(p.getId());
+        }
+
+        // if we still have fewer than `limit` items, fill in with random unseen pieces
+        if (finalRecommendations.size() < limit) {
+            List<Piece> shuffled = new ArrayList<>(allPieces);
+            Collections.shuffle(shuffled); // shuffle to add filler items randomly
+
+            for (Piece p : shuffled) {
+                if (finalRecommendations.size() >= limit)
+                    break;
+
+                // only add items that haven't already been seen or saved
+                if (p != null && !alreadySavedIds.contains(p.getId()) && !includedIds.contains(p.getId())) {
+                    finalRecommendations.add(p);
+                    includedIds.add(p.getId());
+                }
+            }
+        }
+
+        return finalRecommendations;
     }
+
 
     /**
      * Computes match score between a piece and the user palette.

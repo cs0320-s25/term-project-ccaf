@@ -30,6 +30,24 @@ export default function Home() {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
+    const checkUser = async () => {
+      if (!isLoaded || !user) return;
+      try {
+        await fetch(
+          `http://localhost:3232/check-user?uid=${encodeURIComponent(user.id)}`,
+          {
+            method: "POST",
+          }
+        );
+      } catch (err) {
+        console.error("Error checking/creating user:", err);
+      }
+    };
+
+    checkUser();
+  }, [user, isLoaded]);
+
+  useEffect(() => {
     if (isLoaded && user) {
       const onboardingCompleted = localStorage.getItem(`onboardingCompleted-${user.id}`);
       if (!onboardingCompleted) {

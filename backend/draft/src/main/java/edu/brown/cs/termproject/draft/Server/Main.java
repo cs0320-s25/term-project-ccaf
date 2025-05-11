@@ -1,5 +1,6 @@
 package edu.brown.cs.termproject.draft.Server;
 import edu.brown.cs.termproject.draft.Handlers.PieceHandlers.RemovePieceHandler;
+import edu.brown.cs.termproject.draft.Handlers.CheckUserHandler;
 import edu.brown.cs.termproject.draft.Handlers.RecommendationHandler;
 import edu.brown.cs.termproject.draft.Handlers.PieceHandlers.SavePieceHandler;
 import edu.brown.cs.termproject.draft.Handlers.SearchHandler;
@@ -23,22 +24,22 @@ public class Main {
         new Piece(
             "1", "Blue Denim Jacket", 39.99, "example.com",
             "https://example.com/denim", "M", "Blue", "Used",
-            "/img/denim.jpg", new HashSet<>(Set.of("denim", "jacket", "blue"))
+            "/img/denim.jpg", List.of("denim", "jacket", "blue")
         ),
         new Piece(
             "2", "Red Flannel Shirt", 29.99, "example.com",
             "https://example.com/flannel", "L", "Red", "New",
-            "/img/flannel.jpg", new HashSet<>(Set.of("flannel", "shirt", "red"))
+            "/img/flannel.jpg", List.of("flannel", "shirt", "red")
         ),
         new Piece(
             "3", "Black Jeans", 24.99, "example.com",
             "https://example.com/jeans", "32", "Black", "Used",
-            "/img/jeans.jpg", new HashSet<>(Set.of("black", "jeans", "pants"))
+            "/img/jeans.jpg", List.of("black", "jeans", "pants")
         ),
         new Piece(
             "3", "Blue Jeans", 25.99, "example.com",
             "https://example.com/jeans", "32", "Black", "Used",
-            "/img/jeans.jpg", new HashSet<>(Set.of("blue", "jeans", "pants"))
+            "/img/jeans.jpg", List.of("blue", "jeans", "pants")
         )
     );
 
@@ -70,6 +71,7 @@ public class Main {
     try {
       firebaseUtils = new FirebaseUtilities();
 
+      Spark.post("/check-user", new CheckUserHandler());
       Spark.get("/search", new SearchHandler());
       Spark.get("/create-draft", new CreateDraftHandler(firebaseUtils));
       Spark.get("/delete-draft", new RemoveDraftHandler(firebaseUtils));

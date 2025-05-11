@@ -259,7 +259,7 @@ public class FirebaseUtilities implements StorageInterface {
         (String) data.get("color"),
         (String) data.get("condition"),
         (String) data.get("imageUrl"),
-        new HashSet<>((List<String>) data.get("tags"))
+        new ArrayList<>((List<String>) data.get("tags"))
     );
   }
 

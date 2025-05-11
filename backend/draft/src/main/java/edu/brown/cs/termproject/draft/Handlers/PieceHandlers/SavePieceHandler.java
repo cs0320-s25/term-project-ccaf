@@ -36,9 +36,9 @@ public class SavePieceHandler implements Route {
      String condition = request.queryParams("condition");
 
      String tagsParam = request.queryParams("tags");
-     Set<String> tags = tagsParam != null && !tagsParam.isEmpty()
-         ? new HashSet<>(List.of(tagsParam.split(",")))
-         : new HashSet<>();
+     List<String> tags = tagsParam != null && !tagsParam.isEmpty()
+         ? List.of(tagsParam.split(","))
+         : new ArrayList<>();
 
 
      Piece piece = FirebaseUtilities.getPieceById(pieceId);
