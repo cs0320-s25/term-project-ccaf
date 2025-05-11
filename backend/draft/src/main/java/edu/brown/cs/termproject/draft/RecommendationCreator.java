@@ -68,14 +68,14 @@ public class RecommendationCreator {
             List<Piece> shuffled = new ArrayList<>(allPieces);
             Collections.shuffle(shuffled); // shuffle to add filler items randomly
 
-            for (Piece p : shuffled) {
+            for (Piece piece : shuffled) {
                 if (finalRecommendations.size() >= limit)
                     break;
 
                 // only add items that haven't already been seen or saved
-                if (p != null && !alreadySavedIds.contains(p.getId()) && !includedIds.contains(p.getId())) {
-                    finalRecommendations.add(p);
-                    includedIds.add(p.getId());
+                if (piece != null && !alreadySavedIds.contains(piece.getId()) && !includedIds.contains(piece.getId())) {
+                    finalRecommendations.add(piece);
+                    includedIds.add(piece.getId());
                 }
             }
         }

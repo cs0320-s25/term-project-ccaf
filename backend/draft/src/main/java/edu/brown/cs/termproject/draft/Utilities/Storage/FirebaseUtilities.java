@@ -440,4 +440,54 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
+  public static void savePieceForUser(String uid, Piece piece) throws Exception {
+    if (uid == null || piece == null) {
+      throw new IllegalArgumentException("savePieceForUser: uid or piece cannot be null");
+    }
+
+    Firestore db = getDb();
+
+    // Save under user’s “saved” subcollection
+    DocumentReference savedRef = db.collection("users").document(uid)
+        .collection("saved").document(piece.getId());
+
+    Map<String, Object> data = new HashMap<>();
+    data.put("id", piece.getId());
+    data.put("title", piece.getTitle());
+    data.put("price", piece.getPrice());
+    data.put("sourceWebsite", piece.getSourceWebsite());
+    data.put("url", piece.getUrl());
+    data.put("size", piece.getSize());
+    data.put("color", piece.getColor());
+    data.put("condition", piece.getCondition());
+    data.put("imageUrl", piece.getImageUrl());
+    data.put("tags", new ArrayList<>(piece.getTags()));
+
+    savedRef.set(data).get();
+
+    // Optionally, ensure it's also in the global `pieces` collection if not already
+    // there
+    DocumentReference globalPieceRef = db.collection("pieces").document(piece.getId());
+    if (!globalPieceRef.get().get().exists()) {
+      savePiece(piece); // reuses existing helper method
+    }
+
+    System.out.println("Saved piece " + piece.getId() + " for user " + uid);
+  }
+
+  public static void unsavePieceForUser(String uid, String pieceId) throws Exception {
+    if (uid == null || pieceId == null) {
+      throw new IllegalArgumentException("unsavePieceForUser: uid or pieceId cannot be null");
+    }
+
+    Firestore db = getDb();
+
+    DocumentReference savedRef = db.collection("users").document(uid)
+        .collection("saved").document(pieceId);
+
+    savedRef.delete().get();
+
+    System.out.println("Un-saved piece " + pieceId + " for user " + uid);
+  }
+
 }
