@@ -21,6 +21,7 @@ export default function SearchPage() {
   const uid = user?.id;
   const { drafts } = useDrafts(uid);
 
+
   useEffect(() => {
     if (!query) return;
 
@@ -28,23 +29,42 @@ export default function SearchPage() {
     setError(null);
 
     fetch(`http://localhost:3232/search?q=${encodeURIComponent(query)}`)
-      .then((res) => res.json())
+      .then(async (res) => {
+        // Check if response is JSON
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          // If not JSON, get the text content for debugging
+          const text = await res.text();
+          console.error("Server returned non-JSON response:", text);
+          throw new Error("Server returned non-JSON response");
+        }
+
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        return res.json();
+      })
       .then((data) => {
         console.log("SERVER RESPONSE:", data);
-        if (Array.isArray(data.matches)) {
+        if (data.error) {
+          setError(data.error);
+          setResults([]);
+        } else if (Array.isArray(data.matches)) {
           setResults(data.matches);
         } else {
+          setError("Unexpected server response format");
           setResults([]);
-          setError("Unexpected server response.");
         }
       })
       .catch((err) => {
         console.error("Fetch error:", err);
-        setError("Failed to load results.");
+        setError(`Failed to load results: ${err.message}`);
         setResults([]);
       })
       .finally(() => setLoading(false));
   }, [query]);
+
 
   return (
     <div className="container py-8 max-w-5xl mx-auto">
@@ -70,11 +90,7 @@ export default function SearchPage() {
         {results.map((product, index) => {
           console.log(`Rendering product #${index}:`, product);
           return (
-            <ProductCard
-              key={product.id}
-              product={product}
-              drafts={drafts}
-            />
+            <ProductCard key={product.id} product={product} drafts={drafts} />
           );
         })}
       </div>
