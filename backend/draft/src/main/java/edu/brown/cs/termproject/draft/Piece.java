@@ -36,6 +36,10 @@ public class Piece {
         this.tags = tags;
     }
 
+    public <E> Piece(String pieceId, String title, double price, String sourceWebsite, String url, String imageUrl, String size, String color, String condition,
+        String imageUrl1, ArrayList<E> tags) {
+    }
+
     public static Piece fromMap(Map<String, Object> data) {
         try {
             String id = (String) data.get("id");

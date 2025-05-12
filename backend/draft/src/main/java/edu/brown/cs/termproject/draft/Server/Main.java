@@ -1,5 +1,6 @@
 package edu.brown.cs.termproject.draft.Server;
 import edu.brown.cs.termproject.draft.Handlers.PieceHandlers.RemovePieceHandler;
+import edu.brown.cs.termproject.draft.Handlers.PieceHandlers.ViewPieceGivenDraftHandler;
 import edu.brown.cs.termproject.draft.Handlers.CheckUserHandler;
 import edu.brown.cs.termproject.draft.Handlers.RecommendationHandler;
 import edu.brown.cs.termproject.draft.Handlers.PieceHandlers.SavePieceHandler;
@@ -10,14 +11,34 @@ import edu.brown.cs.termproject.draft.Handlers.DraftHandlers.ViewDraftHandler;
 import edu.brown.cs.termproject.draft.Piece;
 import edu.brown.cs.termproject.draft.Utilities.Storage.FirebaseUtilities;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
+
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import spark.Spark;
 
 
 public class Main {
+  private static final JsonObject poshmarkMock;
+  private static final JsonObject depopMock;
+
+  static {
+    try {
+      // Load mock data from files
+      poshmarkMock = new JsonParser().parse(
+          new FileReader("backend/draft/mock data/PoshMock")).getAsJsonObject();
+      depopMock = new JsonParser().parse(
+          new FileReader("backend/draft/mock data/DepopMock")).getAsJsonObject();
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to load mock data files", e);
+    }
+  }
   public static void main(String[] args) {
     // Example global store of pieces (replace with your real data source)
     List<Piece> allPieces = List.of(
@@ -70,6 +91,7 @@ public class Main {
     StorageInterface firebaseUtils;
     try {
       firebaseUtils = new FirebaseUtilities();
+      Spark.get("/search", new SearchHandler(poshmarkMock, depopMock));
 
       Spark.post("/check-user", new CheckUserHandler());
       Spark.get("/search", new SearchHandler());
@@ -78,6 +100,7 @@ public class Main {
       Spark.get("/view-drafts", new ViewDraftHandler(firebaseUtils));
       Spark.get("/save-piece", new SavePieceHandler());
       Spark.get("/remove-piece", new RemovePieceHandler());
+      Spark.get("/view-piece", new ViewPieceGivenDraftHandler());
       Spark.get("/recommend", new RecommendationHandler(firebaseUtils));
 
       Spark.init();
