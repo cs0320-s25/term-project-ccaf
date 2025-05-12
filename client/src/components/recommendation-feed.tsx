@@ -11,7 +11,7 @@ export function RecommendationFeed() {
 
     useEffect(() => {
       if (uid) {
-        fetch(`/recommend?uid=${uid}`)
+        fetch(`http://localhost:3232/recommend?uid=${uid}`)
           .then((response) => response.json())
           .then((data) => {
             if (data.recommendations) {

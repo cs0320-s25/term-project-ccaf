@@ -19,9 +19,9 @@ public class RecommendationTest {
     @Test
     public void testBasicAccuracy() throws DraftException, PaletteException {
         Piece denimPiece = new Piece("1", "Denim Jacket", 50.0, "eBay", "url1",
-                "img1", "M", "Blue", "Good", Set.of("denim"));
+                "img1", "M", "Blue", "Good", List.of("denim"));
         Piece floralPiece = new Piece("2", "Floral Dress", 40.0, "eBay", "url2",
-                "img2", "S", "Pink", "Good", Set.of("floral"));
+                "img2", "S", "Pink", "Good", List.of("floral"));
 
         allPieces.add(denimPiece);
         allPieces.add(floralPiece);
@@ -47,7 +47,7 @@ public class RecommendationTest {
 
         // create a piece without matching terms to the palette
         Piece satinPiece = new Piece("3", "Satin Blouse", 35.0, "eBay", "url3",
-                "img3", "M", "Red", "Good", Set.of("satin"));
+                "img3", "M", "Red", "Good", List.of("satin"));
 
         allPieces.add(satinPiece);
 
@@ -67,15 +67,15 @@ public class RecommendationTest {
 
         // piece A matches "vintage", "leather", and "brown" (highest ranking)
         Piece pieceA = new Piece("4", "Brown Vintage Leather Jacket", 70.0, "eBay", "url4",
-                "img4", "L", "Brown", "Good", Set.of("vintage", "leather", "brown"));
+                "img4", "L", "Brown", "Good", List.of("vintage", "leather", "brown"));
 
         // piece B matches "vintage" and "leather"
         Piece pieceB = new Piece("5", "Vintage Leather Bag", 60.0, "eBay", "url5",
-                "img5", "M", "Black", "Good", Set.of("vintage", "leather"));
+                "img5", "M", "Black", "Good", List.of("vintage", "leather"));
 
         // piece C only matches "leather"
         Piece pieceC = new Piece("6", "Leather Belt", 20.0, "eBay", "url6",
-                "img6", "S", "Brown", "Good", Set.of("leather"));
+                "img6", "S", "Brown", "Good", List.of("leather"));
 
         allPieces.addAll(List.of(pieceA, pieceB, pieceC));
 
@@ -93,21 +93,21 @@ public class RecommendationTest {
 
         // set up the draft with pieces including the keywords "y2k", "mesh", and "butterfly"
         Piece draft1 = new Piece("7", "Y2K Mesh Top", 25.0, "eBay", "url7",
-                "img7", "S", "Purple", "Great", Set.of("y2k", "mesh"));
+                "img7", "S", "Purple", "Great", List.of("y2k", "mesh"));
         Piece draft2 = new Piece("8", "Butterfly Crop Top", 30.0, "eBay", "url8",
-                "img8", "S", "Blue", "Great", Set.of("butterfly", "y2k"));
+                "img8", "S", "Blue", "Great", List.of("butterfly", "y2k"));
 
         // piece A is mesh + y2k, relevant to the draft
         Piece pieceA = new Piece("9", "Mesh Y2K Skirt", 28.0, "eBay", "url9",
-                "img9", "S", "Black", "Great", Set.of("mesh", "y2k"));
+                "img9", "S", "Black", "Great", List.of("mesh", "y2k"));
         
         // piece B is denim + vintage, unrelated to the draft
         Piece pieceB = new Piece("10", "Vintage Jeans", 40.0, "eBay", "url10",
-                "img10", "M", "Blue", "Good", Set.of("vintage", "denim"));
+                "img10", "M", "Blue", "Good", List.of("vintage", "denim"));
 
         // piece C is directly related to the draft
         Piece pieceC = new Piece("11", "Butterfly Hair Clip", 10.0, "eBay", "url11",
-                "img11", "One Size", "Pink", "New", Set.of("butterfly"));
+                "img11", "One Size", "Pink", "New", List.of("butterfly"));
 
         List<Piece> draft = List.of(draft1, draft2);
         allPieces.addAll(List.of(pieceA, pieceB, pieceC));

@@ -57,7 +57,7 @@ public class APIUtilities {
         // Iterate through the eBay items and create Piece objects
         for (JsonElement itemElement : itemsArray) {
           JsonObject item = itemElement.getAsJsonObject();
-          Set<String> tags = new HashSet<>();
+          List<String> tags = new ArrayList<>();
           if (item.has("categories")) {
             JsonArray categories = item.getAsJsonArray("categories");
             for (JsonElement categoryElem : categories) {

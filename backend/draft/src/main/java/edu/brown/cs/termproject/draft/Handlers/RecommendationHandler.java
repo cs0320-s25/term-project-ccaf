@@ -67,7 +67,7 @@ public class RecommendationHandler implements Route {
             System.out.println("Already saved IDs: " + alreadySavedIds);
 
             // Get top recommendations
-            List<Piece> recs = RecommendationCreator.recommendPieces(allPieces, palette, alreadySavedIds, 10);
+            List<Piece> recs = RecommendationCreator.recommendPieces(allPieces, palette, alreadySavedIds, 12);
             System.out.println("Top recommendations: " + recs);
 
             // Send the response

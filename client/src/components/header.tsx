@@ -11,7 +11,7 @@ export default function Header() {
           draft
         </Link>
         <nav className="flex items-center gap-6">
-          <Link href="/explore" className="text-sm">
+          <Link href="/" className="text-sm">
             explore
           </Link>
           <Link href="/my-drafts" className="text-sm">
