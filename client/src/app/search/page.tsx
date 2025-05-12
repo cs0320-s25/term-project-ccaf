@@ -88,9 +88,10 @@ export default function SearchPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {results.map((product, index) => {
-          console.log(`Rendering product #${index}:`, product);
+          // Create a unique key by combining id, platform, and index
+          const uniqueKey = `${product.id}-${product.sourceWebsite}-${index}`;
           return (
-            <ProductCard key={product.id} product={product} drafts={drafts} />
+            <ProductCard key={uniqueKey} product={product} drafts={drafts} />
           );
         })}
       </div>
