@@ -14,6 +14,9 @@ import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,20 +28,39 @@ import spark.Spark;
 
 
 public class Main {
-  private static final JsonObject poshmarkMock;
-  private static final JsonObject depopMock;
+  private static final JsonObject poshmarkMock; // Declare the type
+  private static final JsonObject depopMock;    // Declare the type
 
   static {
     try {
-      // Load mock data from files
-      poshmarkMock = new JsonParser().parse(
-          new FileReader("backend/draft/mock data/PoshMock")).getAsJsonObject();
-      depopMock = new JsonParser().parse(
-          new FileReader("backend/draft/mock data/DepopMock")).getAsJsonObject();
-    } catch (IOException e) {
+      InputStream poshStream = Main.class.getResourceAsStream("/mockData/PoshMock.json");
+      InputStream depopStream = Main.class.getResourceAsStream("/mockData/DepopMock.json");
+
+      if (poshStream == null || depopStream == null) {
+        throw new RuntimeException("Mock data files not found in resources.");
+      }
+
+      poshmarkMock = JsonParser.parseReader(new InputStreamReader(poshStream)).getAsJsonObject();
+      depopMock = JsonParser.parseReader(new InputStreamReader(depopStream)).getAsJsonObject();
+
+    } catch (Exception e) {
       throw new RuntimeException("Failed to load mock data files", e);
     }
   }
+
+
+  //  static {
+//    try {
+//      // Load mock data from files
+//      depopMock = JsonParser.parseReader(
+//          new FileReader("./PoshMock.json")).getAsJsonObject();
+//      poshmarkMock = JsonParser.parseReader(
+//          new FileReader("./DepopMock.json")).getAsJsonObject();
+//
+//    } catch (IOException e) {
+//      throw new RuntimeException("Failed to load mock data files", e);
+//    }
+//  }
   public static void main(String[] args) {
     // Example global store of pieces (replace with your real data source)
     List<Piece> allPieces = List.of(
@@ -94,7 +116,6 @@ public class Main {
       Spark.get("/search", new SearchHandler(poshmarkMock, depopMock));
 
       Spark.post("/check-user", new CheckUserHandler());
-      Spark.get("/search", new SearchHandler());
       Spark.get("/create-draft", new CreateDraftHandler(firebaseUtils));
       Spark.get("/delete-draft", new RemoveDraftHandler(firebaseUtils));
       Spark.get("/view-drafts", new ViewDraftHandler(firebaseUtils));

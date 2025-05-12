@@ -41,14 +41,17 @@ public class SearchHandler implements Route {
 
     String normalizedQuery = query.trim().toLowerCase();
     String[] searchTokens = normalizedQuery.split("\\s+");
-    
+
+    // Create eBay-friendly query (replace spaces with underscores)
+    String ebayQuery = normalizedQuery.replace(" ", "_");
+
     // Map to store pieces with their relevance scores
     Map<Piece, Integer> scoredResults = new HashMap<>();
 
-    // Get and score eBay results
-    List<Piece> ebayResults = APIUtilities.fetchFromEbay(normalizedQuery);
+    // Get and score eBay results with modified query
+    List<Piece> ebayResults = APIUtilities.fetchFromEbay(ebayQuery);
     for (Piece piece : ebayResults) {
-      scoredResults.put(piece, calculateRelevanceScore(piece, searchTokens));
+      scoredResults.put(piece, calculateRelevanceScore(piece, searchTokens, normalizedQuery));
     }
 
     // Add and score mock results if available
@@ -57,9 +60,9 @@ public class SearchHandler implements Route {
       JsonArray poshListings = poshmarkMock.getAsJsonArray("listings");
       for (JsonElement item : poshListings) {
         JsonObject listing = item.getAsJsonObject();
-        if (matchesSearch(listing, searchTokens)) {
+        if (matchesSearch(listing, searchTokens, normalizedQuery)) {
           Piece piece = convertJsonToPiece(listing);
-          scoredResults.put(piece, calculateRelevanceScore(piece, searchTokens));
+          scoredResults.put(piece, calculateRelevanceScore(piece, searchTokens, normalizedQuery));
         }
       }
 
@@ -67,9 +70,9 @@ public class SearchHandler implements Route {
       JsonArray depopListings = depopMock.getAsJsonArray("listings");
       for (JsonElement item : depopListings) {
         JsonObject listing = item.getAsJsonObject();
-        if (matchesSearch(listing, searchTokens)) {
+        if (matchesSearch(listing, searchTokens, normalizedQuery)) {
           Piece piece = convertJsonToPiece(listing);
-          scoredResults.put(piece, calculateRelevanceScore(piece, searchTokens));
+          scoredResults.put(piece, calculateRelevanceScore(piece, searchTokens, normalizedQuery));
         }
       }
     }
@@ -84,12 +87,45 @@ public class SearchHandler implements Route {
     return new Gson().toJson(Map.of("matches", sortedResults));
   }
 
-  private boolean matchesSearch(JsonObject listing, String[] searchTokens) {
+  private boolean matchesSearch(JsonObject listing, String[] searchTokens, String normalizedQuery) {
     String title = listing.get("title").getAsString().toLowerCase();
-    return Arrays.stream(searchTokens).anyMatch(title::contains);
+
+    // Convert JsonArray to a List<String>
+    JsonArray tagsArray = listing.getAsJsonArray("tags");
+    List<String> tags = new ArrayList<>();
+    for (JsonElement tag : tagsArray) {
+      tags.add(tag.getAsString().toLowerCase());
+    }
+
+    // Create searchable text from all fields
+    String searchable = title + " " + String.join(" ", tags);
+
+    // Debug logs
+    System.out.println("Searching in: " + searchable);
+    System.out.println("Query: " + normalizedQuery);
+    System.out.println("Tokens: " + Arrays.toString(searchTokens));
+
+    // Check for exact phrase match first
+    if (searchable.contains(normalizedQuery)) {
+      System.out.println("Found exact match");
+      return true;
+    }
+
+    // Count how many tokens match
+    int matchedTokens = 0;
+    for (String token : searchTokens) {
+      if (searchable.contains(token)) {
+        matchedTokens++;
+      }
+    }
+
+    // Return true if all tokens are found
+    boolean matches = matchedTokens == searchTokens.length;
+    System.out.println("Matched " + matchedTokens + " out of " + searchTokens.length + " tokens");
+    return matches;
   }
 
-  private int calculateRelevanceScore(Piece piece, String[] searchTokens) {
+  private int calculateRelevanceScore(Piece piece, String[] searchTokens, String normalizedQuery) {
     int score = 0;
     String title = piece.getTitle().toLowerCase();
     String color = piece.getColor().toLowerCase();
@@ -97,13 +133,20 @@ public class SearchHandler implements Route {
     String condition = piece.getCondition().toLowerCase();
     List<String> tags = piece.getTags();
 
+    String searchable = title + " " + String.join(" ", tags);
+
+    // Exact phrase match gets the highest score
+    if (searchable.contains(normalizedQuery)) {
+      score += 20; // Higher score for exact phrase match
+    }
+
     for (String token : searchTokens) {
       // Title matches are most important
       if (title.contains(token)) score += 5;
-      
+
       // Tag matches are next most important
       if (tags.stream().anyMatch(tag -> tag.toLowerCase().contains(token))) score += 3;
-      
+
       // Other field matches provide additional relevance
       if (color.contains(token)) score += 2;
       if (size.contains(token)) score += 2;
