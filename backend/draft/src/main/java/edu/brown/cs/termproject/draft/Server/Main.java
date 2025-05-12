@@ -117,7 +117,7 @@ public class Main {
 
       Spark.post("/check-user", new CheckUserHandler());
       Spark.get("/create-draft", new CreateDraftHandler(firebaseUtils));
-      Spark.get("/delete-draft", new RemoveDraftHandler(firebaseUtils));
+      Spark.get("/remove-draft", new RemoveDraftHandler(firebaseUtils));
       Spark.get("/view-drafts", new ViewDraftHandler(firebaseUtils));
       Spark.get("/save-piece", new SavePieceHandler());
       Spark.get("/remove-piece", new RemovePieceHandler());
