@@ -37,7 +37,7 @@ public class Piece {
     }
 
     public <E> Piece(String pieceId, String title, double price, String sourceWebsite, String url, String imageUrl, String size, String color, String condition,
-        String imageUrl1, ArrayList<E> tags) {
+        String imageUrl1, java.util.ArrayList<E> tags) {
     }
 
     public static Piece fromMap(Map<String, Object> data) {

@@ -95,7 +95,7 @@ public class SearchHandler implements Route {
     String color = piece.getColor().toLowerCase();
     String size = piece.getSize().toLowerCase();
     String condition = piece.getCondition().toLowerCase();
-    Set<String> tags = piece.getTags();
+    List<String> tags = piece.getTags();
 
     for (String token : searchTokens) {
       // Title matches are most important
@@ -126,7 +126,7 @@ public class SearchHandler implements Route {
         listing.get("color").getAsString(),
         listing.get("condition").getAsString(),
         listing.get("imageUrl").getAsString(),
-        new HashSet<>(Arrays.asList(new Gson().fromJson(listing.get("tags"), String[].class)))
+        new ArrayList<>(Arrays.asList(new Gson().fromJson(listing.get("tags"), String[].class)))
     );
   }
 }
