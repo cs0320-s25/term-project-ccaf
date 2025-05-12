@@ -18,7 +18,7 @@ async function queryAPI(
 export async function addDraft(uid: string, name: string) {
   return await queryAPI("create-draft", {
     userId: uid,
-    draftName: name,
+    draftName: name
   });
 }
 
@@ -42,7 +42,7 @@ export async function addToDraft(uid: string, draftId: string, pieceId: string, 
     size: size,
     color: color,
     condition: condition,
-    tags: tags.toString(),
+    tags: tags.toString()
   });
 }
 
@@ -50,5 +50,12 @@ export async function viewPiecesInDraft(uid: string, draftId: string) {
   return await queryAPI("view-piece", {
       userId: uid,
       draftId: draftId
+  });
+}
+
+export async function removeDraft(uid: string, draftId: string) {
+  return await queryAPI("remove-draft", {
+    userId: uid,
+    draftId: draftId
   });
 }
