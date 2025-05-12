@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { addDraft, viewDrafts, addToDraft } from "../../utils/api";
+import { addDraft, viewDrafts, addToDraft, removeDraft } from "../../utils/api";
 import { Piece } from "@/components/product-card";
 
 type Draft = {
@@ -90,6 +90,22 @@ export function useDrafts(uid: string | undefined) {
         setError(err.message);
       });
   };
+
+  // const deleteDraft = (uid: string | undefined, draftId: string) => {
+  //   if (!uid || !draftId.trim()) return;
+
+  //   removeDraft(uid, draftId)
+  //     .then((res) => {
+  //       if (res.response_type === "success") {
+  //         setDrafts((prev) => prev.filter((d) => d.id !== draftId));
+  //       } else {
+  //         setError(res.error);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       setError(err.message);
+  //     });
+  // };
     
 
   return { drafts, loading, error, createDraft, fetchDrafts, addToDraftWrapper };

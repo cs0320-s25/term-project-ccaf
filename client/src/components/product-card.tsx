@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, X } from "lucide-react";
@@ -30,17 +30,18 @@ export type Draft = {
 };
 
 interface ProductCardProps {
-  product: Piece;
-  drafts: Draft[];
+  piece: Piece;
 }
 
-export function ProductCard({ product, drafts }: ProductCardProps) {
+export function ProductCard({ piece }: ProductCardProps) {
   const { user } = useUser();
   const uid = user?.id;
   const [saved, setSaved] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [draftName, setDraftName] = useState("");
-  const { createDraft, addToDraftWrapper } = useDrafts(uid);
+  const [pendingSaveDraftName, setPendingSaveDraftName] = useState<string | null>(null);
+
+  const { createDraft, addToDraftWrapper, drafts } = useDrafts(uid);
 
   // Validate and sanitize the image URL
   const isValidUrl = (url: string) => {
@@ -53,12 +54,12 @@ export function ProductCard({ product, drafts }: ProductCardProps) {
   };
 
   const imageUrl =
-    product.imageUrl && isValidUrl(product.imageUrl)
-      ? product.imageUrl
+    piece.imageUrl && isValidUrl(piece.imageUrl)
+      ? piece.imageUrl
       : "/placeholder.svg"; // Use a local placeholder image
 
   const handleProductClick = () => {
-    sessionStorage.setItem("temp_piece", JSON.stringify(product));
+    sessionStorage.setItem("temp_piece", JSON.stringify(piece));
   };
 
   const toggleModal = (e: React.MouseEvent) => {
@@ -67,34 +68,45 @@ export function ProductCard({ product, drafts }: ProductCardProps) {
     setShowModal(true);
   };
 
-  const handleSave = (
-    uid: string | undefined,
-    draftId: string,
-    piece: Piece
-  ) => {
-    if (!uid?.trim()) return;
+  const handleSave = (draftId: string, piece: Piece | null) => {
+    if (!uid?.trim() || !piece) return;
     addToDraftWrapper(uid, draftId, piece);
     setSaved(true);
     setShowModal(false);
   };
 
   const handleNewDraft = () => {
-    if (!draftName.trim()) return;
-    createDraft(draftName.trim());
+    const trimmedName = draftName.trim();
+    if (!trimmedName) return;
+  
+    createDraft(trimmedName); // This triggers the state update async
+    setPendingSaveDraftName(trimmedName); // Track the draft we're waiting for
     setDraftName("");
   };
+
+  useEffect(() => {
+    if (!pendingSaveDraftName) return;
+  
+    const newDraft = drafts.find((d) => d.name === pendingSaveDraftName);
+    if (newDraft) {
+      handleSave(newDraft.id, piece); // piece must be in scope or passed in
+      setPendingSaveDraftName(null); // clear tracking
+    }
+  }, [drafts, pendingSaveDraftName]);
+
+  // console.log("Image URL:", product.imageUrl);
 
   return (
     <div className="border rounded-lg overflow-hidden group relative">
       <Link
-        href={{ pathname: `/product/${product.id}` }}
+        href={{ pathname: `/product/${piece.id}` }}
         className="block"
         onClick={handleProductClick}
       >
         <div className="relative aspect-square bg-gray-100 overflow-hidden">
           <Image
-            src={imageUrl}
-            alt={product.title}
+            src={piece.imageUrl && piece.imageUrl.trim() !== "" ? piece.imageUrl : "/placeholder.svg"}
+            alt={piece.title}
             fill
             className="object-cover transition-transform group-hover:scale-105"
           />
@@ -113,11 +125,9 @@ export function ProductCard({ product, drafts }: ProductCardProps) {
         </div>
 
         <div className="p-4">
-          <p className="text-sm text-muted-foreground">
-            {product.sourceWebsite}
-          </p>
-          <h3 className="font-semibold">{product.title}</h3>
-          <p className="text-sm font-medium">${product.price.toFixed(2)}</p>
+          <p className="text-sm text-muted-foreground">{piece.sourceWebsite}</p>
+          <h3 className="font-semibold">{piece.title}</h3>
+          <p className="text-sm font-medium">${piece.price.toFixed(2)}</p>
         </div>
       </Link>
 
@@ -137,7 +147,7 @@ export function ProductCard({ product, drafts }: ProductCardProps) {
                 drafts.map((draft) => (
                   <button
                     key={draft.id}
-                    onClick={() => handleSave(uid, draft.id, product)}
+                    onClick={() => handleSave(draft.id, piece)}
                     className="block w-full text-left p-2 border rounded hover:bg-gray-100"
                   >
                     {draft.name}

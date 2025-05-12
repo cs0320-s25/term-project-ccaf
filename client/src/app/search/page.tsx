@@ -91,7 +91,10 @@ export default function SearchPage() {
           // Create a unique key by combining id, platform, and index
           const uniqueKey = `${product.id}-${product.sourceWebsite}-${index}`;
           return (
-            <ProductCard key={uniqueKey} product={product} drafts={drafts} />
+            <ProductCard
+              key={product.id}
+              piece={product}
+            />
           );
         })}
       </div>
