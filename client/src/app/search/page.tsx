@@ -28,41 +28,64 @@ export default function SearchPage() {
     setLoading(true);
     setError(null);
 
-    fetch(`http://localhost:3232/search?q=${encodeURIComponent(query)}`)
+    const controller = new AbortController();
+
+    // Debug: Log the query being sent
+    console.log("Sending query:", query);
+
+    fetch(`http://localhost:3232/search?q=${encodeURIComponent(query)}`, {
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json",
+      },
+    })
       .then(async (res) => {
-        // Check if response is JSON
+        // Debug: Log the raw response
+        console.log("Response status:", res.status);
+        console.log("Response headers:", Object.fromEntries(res.headers));
+
         const contentType = res.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          // If not JSON, get the text content for debugging
           const text = await res.text();
-          console.error("Server returned non-JSON response:", text);
-          throw new Error("Server returned non-JSON response");
+          console.error("Non-JSON response received:");
+          console.error("Status:", res.status);
+          console.error("Content-Type:", contentType);
+          console.error("Body:", text);
+          throw new Error(
+            `Invalid response format (${res.status}): ${text.slice(0, 100)}`
+          );
         }
 
         if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
+          const errorData = await res.json();
+          throw new Error(
+            errorData.error || `HTTP error! status: ${res.status}`
+          );
         }
 
         return res.json();
       })
       .then((data) => {
-        console.log("SERVER RESPONSE:", data);
+        console.log("Parsed response data:", data);
         if (data.error) {
           setError(data.error);
           setResults([]);
         } else if (Array.isArray(data.matches)) {
           setResults(data.matches);
         } else {
+          console.error("Unexpected data structure:", data);
           setError("Unexpected server response format");
           setResults([]);
         }
       })
       .catch((err) => {
-        console.error("Fetch error:", err);
-        setError(`Failed to load results: ${err.message}`);
+        console.error("Search error details:", err);
+        setError(`Search failed: ${err.message}`);
         setResults([]);
       })
       .finally(() => setLoading(false));
+
+    return () => controller.abort();
   }, [query]);
 
 
