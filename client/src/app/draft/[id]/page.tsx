@@ -129,7 +129,7 @@ export default function DraftPage() {
       {draft?.items?.length ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {draft.items.map((product) => (
-            <ProductCard key={product.id} piece={product} onDraftPage={true} onRemove={handlePieceRemove}/>
+            <ProductCard aria-label={"Piece: " + product.title} key={product.id} piece={product} onDraftPage={true} onRemove={handlePieceRemove}/>
           ))}
         </div>
       ) : (

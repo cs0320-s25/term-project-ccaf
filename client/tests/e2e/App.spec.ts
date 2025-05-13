@@ -71,9 +71,33 @@ test('if i refresh my draft stays', async ({ page }) => {
     await page.getByRole('textbox', { name: 'Password' }).fill('mockexample');
     await page.getByRole('button', { name: 'Continue' }).click();
     await page.getByRole('link', { name: 'my drafts' }).click();
-    await expect(page.getByRole('link', { name: 'new draft #1 0 pieces' })).toBeVisible();
     await expect(page.getByRole('main')).toContainText('new draft #1');
     await page.goto('http://localhost:3000/my-drafts');
     await expect(page.getByRole('link', { name: 'new draft #1 0 pieces' })).toBeVisible();
     await expect(page.getByRole('main')).toContainText('new draft #1');
   });
+
+
+test('i can delete the draft i just added + checked persistency on', async ({ page }) => {
+  await page.goto('http://localhost:3000/');
+  await page.getByRole('button', { name: 'sign in' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('mock@brown.edu');
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Password' }).fill('mockexample');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByRole('button', { name: 'Next', exact: true }).click();
+  await page.getByRole('button', { name: 'Other' }).click();
+  await page.getByRole('button', { name: 'Never' }).click();
+  await page.getByRole('button', { name: 'take me there!' }).click();
+  await page.getByRole('link', { name: 'my drafts' }).click();
+  await expect(page.getByRole('link', { name: 'Draft: new draft #' })).toBeVisible();
+  await expect(page.getByLabel('Draft: new draft #').getByRole('heading')).toContainText('new draft #1');
+  await page.getByRole('link', { name: 'Draft: new draft #' }).click();
+  await expect(page.getByRole('button', { name: 'Delete draft' })).toBeVisible();
+  await page.getByRole('button', { name: 'Delete draft' }).click();
+  await expect(page.getByRole('heading', { name: 'confirm deletion' })).toBeVisible();
+  await page.getByRole('button', { name: 'yes, delete' }).click();
+  await expect(page.getByText('no drafts yet — start saving')).toBeVisible();
+  await expect(page.getByRole('main')).toContainText('no drafts yet — start saving items!');
+});
