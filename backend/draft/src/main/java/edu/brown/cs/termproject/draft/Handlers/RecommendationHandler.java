@@ -82,7 +82,7 @@ public class RecommendationHandler implements Route {
             e.printStackTrace();
             System.err.println("Error occurred during recommendation generation: " + e.getMessage());
             response.status(500);
-            return GSON.toJson(Map.of("error", "Internal server error"));
+            return GSON.toJson(Map.of("error", "[RecommendationHandler] Server error"));
         }
     }
 

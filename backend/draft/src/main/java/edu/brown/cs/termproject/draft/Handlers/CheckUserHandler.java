@@ -31,7 +31,7 @@ public class CheckUserHandler implements Route {
       return gson.toJson(responseMap);
     } catch (Exception e) {
       responseMap.put("status", "error");
-      responseMap.put("message", "Server error: " + e.getMessage());
+      responseMap.put("message", "[CheckUserHandler] Server error: " + e.getMessage());
       return gson.toJson(responseMap);
     }
   }
