@@ -39,7 +39,7 @@ public class Main {
 
       if (poshStream == null || depopStream == null) {
         throw new RuntimeException("Mock data files not found in resources." +  "Checking file path for Poshmark mock data: " +
-          Main.class.getResource("/mockData/posh.json"));
+          Main.class.getResource("/mock_data/poshmark_mock.json"));
       }
 
       poshmarkMock = JsonParser.parseReader(new InputStreamReader(poshStream)).getAsJsonObject();
@@ -68,23 +68,23 @@ public class Main {
     List<Piece> allPieces = List.of(
         new Piece(
             "1", "Blue Denim Jacket", 39.99, "example.com",
-            "https://example.com/denim", "M", "Blue", "Used",
-            "/img/denim.jpg", List.of("denim", "jacket", "blue")
+            "https://example.com/denim", "https://", "Small", "Blue",
+            "Used", List.of("denim", "jacket", "blue"), false
         ),
         new Piece(
             "2", "Red Flannel Shirt", 29.99, "example.com",
-            "https://example.com/flannel", "L", "Red", "New",
-            "/img/flannel.jpg", List.of("flannel", "shirt", "red")
+            "https://example.com/flannel", "https://", "Large", "Red",
+            "New", List.of("flannel", "shirt"), false
         ),
         new Piece(
             "3", "Black Jeans", 24.99, "example.com",
-            "https://example.com/jeans", "32", "Black", "Used",
-            "/img/jeans.jpg", List.of("black", "jeans", "pants")
+            "https://example.com/jeans", "https://", "Medium", "Black",
+            "Used", List.of("black", "jeans", "pants"), false
         ),
         new Piece(
             "3", "Blue Jeans", 25.99, "example.com",
-            "https://example.com/jeans", "32", "Black", "Used",
-            "/img/jeans.jpg", List.of("blue", "jeans", "pants")
+            "https://example.com/jeans", "https://", "Extra Large", "Dark Blue",
+            "Like New", List.of("blue", "jeans", "pants"), false
         )
     );
 
@@ -115,7 +115,7 @@ public class Main {
     StorageInterface firebaseUtils;
     try {
       firebaseUtils = new FirebaseUtilities();
-      Spark.get("/search", new SearchHandler(poshmarkMock, depopMock));
+      Spark.get("/search", new SearchHandler(poshmarkMock, depopMock, firebaseUtils));
 
       Spark.post("/check-user", new CheckUserHandler());
       Spark.get("/create-draft", new CreateDraftHandler(firebaseUtils));

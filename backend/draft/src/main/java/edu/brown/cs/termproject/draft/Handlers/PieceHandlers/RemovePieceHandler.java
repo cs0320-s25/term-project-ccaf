@@ -27,6 +27,7 @@ public class RemovePieceHandler implements Route {
       String draftId = request.queryParams("draftId");
 
       FirebaseUtilities.removePieceFromDraft(userId, draftId, pieceId);
+      FirebaseUtilities.removePieceForUser(userId, pieceId);
 
       responseMap.put("status", "success");
       responseMap.put("message", "piece with id " + pieceId + " was removed!");

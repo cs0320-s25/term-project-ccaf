@@ -30,10 +30,9 @@ export default function SearchPage() {
 
     fetch(`http://localhost:3232/search?q=${encodeURIComponent(query)}`)
       .then(async (res) => {
-        // Check if response is JSON
+        // check if response is JSON
         const contentType = res.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          // If not JSON, get the text content for debugging
           const text = await res.text();
           console.error("Server returned non-JSON response:", text);
           throw new Error("Server returned non-JSON response");

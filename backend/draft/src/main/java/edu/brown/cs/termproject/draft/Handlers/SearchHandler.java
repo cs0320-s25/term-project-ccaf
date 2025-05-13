@@ -6,6 +6,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import edu.brown.cs.termproject.draft.Piece;
 import edu.brown.cs.termproject.draft.Utilities.APIUtilities;
+import edu.brown.cs.termproject.draft.Utilities.Storage.*;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,16 +18,19 @@ import spark.Route;
 public class SearchHandler implements Route {
   private final JsonObject poshmarkMock;
   private final JsonObject depopMock;
+  private final StorageInterface firebaseUtils;
 
-  public SearchHandler(JsonObject poshmarkMock, JsonObject depopMock) {
+  public SearchHandler(JsonObject poshmarkMock, JsonObject depopMock, StorageInterface util) {
     this.poshmarkMock = poshmarkMock;
     this.depopMock = depopMock;
+    this.firebaseUtils = util;
   }
 
   // Default constructor for backward compatibility
   public SearchHandler() {
     this.poshmarkMock = null;
     this.depopMock = null;
+    this.firebaseUtils = null;
   }
 
 
@@ -176,11 +181,13 @@ public class SearchHandler implements Route {
         listing.get("price").getAsDouble(),
         listing.get("platform").getAsString(),
         listing.get("url").getAsString(),
+        listing.get("imageUrl").getAsString(),
         listing.get("size").getAsString(),
         listing.get("color").getAsString(),
         listing.get("condition").getAsString(),
-        listing.get("imageUrl").getAsString(),
-        new ArrayList<>(Arrays.asList(new Gson().fromJson(listing.get("tags"), String[].class)))
+        new ArrayList<>(Arrays.asList(new Gson().fromJson(listing.get("tags"), String[].class))),
+        // this.firebaseUtils.checkIfPieceUsedByUser(uid, pieceId)
+        false
     );
   }
 }
