@@ -48,7 +48,7 @@ export function DraftGrid() {
               : placeholders;
 
             return (
-              <Link key={draft.id} href={`/draft/${draft.id}`} className="block group">
+              <Link aria-label={"Draft: " + draft.name} key={draft.id} href={`/draft/${draft.id}`} className="block group">
                 <div className="grid grid-cols-2 gap-1 rounded-lg overflow-hidden border aspect-square">
                   {thumbnails.map((src, i) => (
                     <div key={i} className="relative aspect-square">
