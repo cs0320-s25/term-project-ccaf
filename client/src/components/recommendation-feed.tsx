@@ -32,7 +32,7 @@ export function RecommendationFeed() {
           recommendations.map((piece) => (
             <ProductCard
               key={piece.id}
-              product={{
+              piece={{
                 id: piece.id,
                 title: piece.title,
                 price: piece.price,
@@ -44,7 +44,6 @@ export function RecommendationFeed() {
                 condition: piece.condition, 
                 tags: piece.tags,
               }}
-              drafts={drafts}
             />
           ))
         ) : (

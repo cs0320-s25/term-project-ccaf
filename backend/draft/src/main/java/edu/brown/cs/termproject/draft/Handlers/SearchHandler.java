@@ -39,90 +39,101 @@ public class SearchHandler implements Route {
       return new Gson().toJson(Map.of("error", "No query inputted"));
     }
 
-    String normalizedQuery = query.trim().toLowerCase();
-    String[] searchTokens = normalizedQuery.split("\\s+");
+    try {
+      String normalizedQuery = query.trim().toLowerCase();
+      String[] searchTokens = normalizedQuery.split("\\s+");
+      String ebayQuery = normalizedQuery.replace(" ", "_");
 
-    // Create eBay-friendly query (replace spaces with underscores)
-    String ebayQuery = normalizedQuery.replace(" ", "_");
+      Map<Piece, Integer> scoredResults = new HashMap<>();
 
-    // Map to store pieces with their relevance scores
-    Map<Piece, Integer> scoredResults = new HashMap<>();
-
-    // Get and score eBay results with modified query
-    List<Piece> ebayResults = APIUtilities.fetchFromEbay(ebayQuery);
-    for (Piece piece : ebayResults) {
-      scoredResults.put(piece, calculateRelevanceScore(piece, searchTokens, normalizedQuery));
-    }
-
-    // Add and score mock results if available
-    if (poshmarkMock != null && depopMock != null) {
-      // Add Poshmark mock results
-      JsonArray poshListings = poshmarkMock.getAsJsonArray("listings");
-      for (JsonElement item : poshListings) {
-        JsonObject listing = item.getAsJsonObject();
-        if (matchesSearch(listing, searchTokens, normalizedQuery)) {
-          Piece piece = convertJsonToPiece(listing);
+      // Try to get eBay results, but continue if it fails
+      try {
+        List<Piece> ebayResults = APIUtilities.fetchFromEbay(ebayQuery);
+        for (Piece piece : ebayResults) {
           scoredResults.put(piece, calculateRelevanceScore(piece, searchTokens, normalizedQuery));
+        }
+      } catch (Exception e) {
+        System.err.println("eBay API error: " + e.getMessage());
+        // Continue with mock data even if eBay fails
+      }
+
+      // Process mock data
+      if (poshmarkMock != null && depopMock != null) {
+        JsonArray poshListings = poshmarkMock.getAsJsonArray("listings");
+        for (JsonElement item : poshListings) {
+          JsonObject listing = item.getAsJsonObject();
+          if (matchesSearch(listing, searchTokens, normalizedQuery)) {
+            Piece piece = convertJsonToPiece(listing);
+            scoredResults.put(piece, calculateRelevanceScore(piece, searchTokens, normalizedQuery));
+          }
+        }
+
+        JsonArray depopListings = depopMock.getAsJsonArray("listings");
+        for (JsonElement item : depopListings) {
+          JsonObject listing = item.getAsJsonObject();
+          if (matchesSearch(listing, searchTokens, normalizedQuery)) {
+            Piece piece = convertJsonToPiece(listing);
+            scoredResults.put(piece, calculateRelevanceScore(piece, searchTokens, normalizedQuery));
+          }
         }
       }
 
-      // Add Depop mock results
-      JsonArray depopListings = depopMock.getAsJsonArray("listings");
-      for (JsonElement item : depopListings) {
-        JsonObject listing = item.getAsJsonObject();
-        if (matchesSearch(listing, searchTokens, normalizedQuery)) {
-          Piece piece = convertJsonToPiece(listing);
-          scoredResults.put(piece, calculateRelevanceScore(piece, searchTokens, normalizedQuery));
-        }
-      }
+      List<Piece> sortedResults = scoredResults.entrySet().stream()
+          .sorted(Map.Entry.<Piece, Integer>comparingByValue().reversed())
+          .map(Map.Entry::getKey)
+          .collect(Collectors.toList());
+
+      response.type("application/json");
+      return new Gson().toJson(Map.of("matches", sortedResults));
+
+    } catch (Exception e) {
+      // Proper error handling
+      e.printStackTrace();
+      response.status(500);
+      response.type("application/json");
+      return new Gson().toJson(Map.of("error", "Search failed: " + e.getMessage()));
     }
-
-    // Sort results by score in descending order
-    List<Piece> sortedResults = scoredResults.entrySet().stream()
-        .sorted(Map.Entry.<Piece, Integer>comparingByValue().reversed())
-        .map(Map.Entry::getKey)
-        .collect(Collectors.toList());
-
-    response.type("application/json");
-    return new Gson().toJson(Map.of("matches", sortedResults));
   }
 
   private boolean matchesSearch(JsonObject listing, String[] searchTokens, String normalizedQuery) {
-    String title = listing.get("title").getAsString().toLowerCase();
+    // Get the main searchable fields with null checks
+    String title = "";
+    if (listing.has("title") && !listing.get("title").isJsonNull()) {
+      title = listing.get("title").getAsString().toLowerCase();
+    }
 
-    // Convert JsonArray to a List<String>
-    JsonArray tagsArray = listing.getAsJsonArray("tags");
+    String color;
+    if (listing.has("color") && !listing.get("color").isJsonNull()) {
+      color = listing.get("color").getAsString().toLowerCase();
+    } else {
+      color = "";
+    }
+
     List<String> tags = new ArrayList<>();
-    for (JsonElement tag : tagsArray) {
-      tags.add(tag.getAsString().toLowerCase());
-    }
-
-    // Create searchable text from all fields
-    String searchable = title + " " + String.join(" ", tags);
-
-    // Debug logs
-    System.out.println("Searching in: " + searchable);
-    System.out.println("Query: " + normalizedQuery);
-    System.out.println("Tokens: " + Arrays.toString(searchTokens));
-
-    // Check for exact phrase match first
-    if (searchable.contains(normalizedQuery)) {
-      System.out.println("Found exact match");
-      return true;
-    }
-
-    // Count how many tokens match
-    int matchedTokens = 0;
-    for (String token : searchTokens) {
-      if (searchable.contains(token)) {
-        matchedTokens++;
+    if (listing.has("tags") && !listing.get("tags").isJsonNull() && listing.get("tags").isJsonArray()) {
+      JsonArray tagsArray = listing.getAsJsonArray("tags");
+      for (JsonElement tag : tagsArray) {
+        if (!tag.isJsonNull()) {
+          tags.add(tag.getAsString().toLowerCase());
+        }
       }
     }
 
-    // Return true if all tokens are found
-    boolean matches = matchedTokens == searchTokens.length;
-    System.out.println("Matched " + matchedTokens + " out of " + searchTokens.length + " tokens");
-    return matches;
+    // Check for matches in title (primary)
+    boolean hasMatchInTitle = Arrays.stream(searchTokens)
+        .anyMatch(title::contains);
+
+    if (hasMatchInTitle) {
+      return true;
+    }
+
+    // Check for matches in color and tags (secondary)
+    boolean hasColorMatch = !color.isEmpty() && Arrays.asList(searchTokens).contains(color);
+
+    boolean hasTagMatch = !tags.isEmpty() && Arrays.stream(searchTokens)
+        .anyMatch(token -> tags.stream().anyMatch(tag -> tag.equals(token)));
+
+    return hasColorMatch && hasTagMatch;
   }
 
   private int calculateRelevanceScore(Piece piece, String[] searchTokens, String normalizedQuery) {

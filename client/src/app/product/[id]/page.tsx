@@ -17,6 +17,8 @@ export default function ProductPage() {
   const [draftName, setDraftName] = useState(""); 
   const [saved, setSaved] = useState(false); 
   const params = useParams(); 
+  const [pendingSaveDraftName, setPendingSaveDraftName] = useState<string | null>(null);
+
 
 
   const toggleModal = (e: React.MouseEvent) => {
@@ -25,18 +27,31 @@ export default function ProductPage() {
     setShowModal(true);
   };
 
-  const handleSave = (uid: string | undefined, draftId: string, piece: Piece) => {
-    if (!uid?.trim()) return;
+  const handleSave = (draftId: string, piece: Piece | null) => {
+    if (!uid?.trim() || !piece) return;
     addToDraftWrapper(uid, draftId, piece); 
     setSaved(true);
     setShowModal(false); 
   };
 
   const handleNewDraft = () => {
-    if (!draftName.trim()) return;
-    createDraft(draftName.trim()); 
+    const trimmedName = draftName.trim();
+    if (!trimmedName) return;
+  
+    createDraft(trimmedName); // This triggers the state update async
+    setPendingSaveDraftName(trimmedName); // Track the draft we're waiting for
     setDraftName("");
   };
+
+  useEffect(() => {
+    if (!pendingSaveDraftName) return;
+  
+    const newDraft = drafts.find((d) => d.name === pendingSaveDraftName);
+    if (newDraft) {
+      handleSave(newDraft.id, piece); // piece must be in scope or passed in
+      setPendingSaveDraftName(null); // clear tracking
+    }
+  }, [drafts, pendingSaveDraftName]);
 
   // Load piece from sessionStorage or fetch from API
   useEffect(() => {
@@ -58,7 +73,6 @@ export default function ProductPage() {
   }
 
 
-  
   return (
     <div className="container px-4 py-8 max-w-5xl mx-auto">
       <div className="grid md:grid-cols-2 gap-8 mb-16">
@@ -128,7 +142,7 @@ export default function ProductPage() {
                 drafts.map((draft) => (
                   <button
                     key={draft.id}
-                    onClick={() => handleSave(uid, draft.id, piece)}
+                    onClick={() => handleSave(draft.id, piece)}
                     className="block w-full text-left p-2 border rounded hover:bg-gray-100"
                   >
                     {draft.name}

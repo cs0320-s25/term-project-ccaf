@@ -33,11 +33,13 @@ public class Main {
 
   static {
     try {
-      InputStream poshStream = Main.class.getResourceAsStream("/mockData/PoshMock.json");
-      InputStream depopStream = Main.class.getResourceAsStream("/mockData/DepopMock.json");
+      InputStream poshStream = Main.class.getResourceAsStream("/mock_data/poshmark_mock.json");
+      InputStream depopStream = Main.class.getResourceAsStream("/mock_data/depop_mock.json");
+
 
       if (poshStream == null || depopStream == null) {
-        throw new RuntimeException("Mock data files not found in resources.");
+        throw new RuntimeException("Mock data files not found in resources." +  "Checking file path for Poshmark mock data: " +
+          Main.class.getResource("/mockData/posh.json"));
       }
 
       poshmarkMock = JsonParser.parseReader(new InputStreamReader(poshStream)).getAsJsonObject();
@@ -117,7 +119,7 @@ public class Main {
 
       Spark.post("/check-user", new CheckUserHandler());
       Spark.get("/create-draft", new CreateDraftHandler(firebaseUtils));
-      Spark.get("/delete-draft", new RemoveDraftHandler(firebaseUtils));
+      Spark.get("/remove-draft", new RemoveDraftHandler(firebaseUtils));
       Spark.get("/view-drafts", new ViewDraftHandler(firebaseUtils));
       Spark.get("/save-piece", new SavePieceHandler());
       Spark.get("/remove-piece", new RemovePieceHandler());
