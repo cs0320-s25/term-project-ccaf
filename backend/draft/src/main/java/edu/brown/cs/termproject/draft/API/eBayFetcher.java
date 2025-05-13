@@ -1,22 +1,27 @@
 package edu.brown.cs.termproject.draft.API;
 
 import com.google.gson.JsonObject;
+
+import edu.brown.cs.termproject.draft.Piece;
+import edu.brown.cs.termproject.draft.Exceptions.APIFetchException;
+
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.*;
 import java.io.IOException;
 
 public class eBayFetcher {
 
   private static final String EBAY_API_URL = "https://svcs.ebay.com/services/search/FindingService/v1";
   private static final String APP_ID = System.getenv("SANDBOX_APP_ID");
-  private static final String GLOBAL_ID = "EBAY-US"; // Example for US region
+  private static final String GLOBAL_ID = "EBAY-US"; 
   private static final String SERVICE_VERSION = "1.0.0";
 
   public JsonObject searchEbay(String query) throws Exception {
-    // Encode the search query for the URL
+    // encode the search query for the URL
     String encodedQuery = URLEncoder.encode(query, "UTF-8");
 
     // build the full eBay API URL with the encoded query
@@ -69,8 +74,56 @@ public class eBayFetcher {
 
       // or give an error
     } catch (IOException e) {
-      System.err.println("Error occurred while fetching eBay data: " + e.getMessage());
-      throw new Exception("Error fetching data from eBay: " + e.getMessage());
+      throw new APIFetchException("Error fetching data from eBay. " + e.getMessage());
     }
   }
+
+  public static List<Piece> parseEbayResults(JsonObject json) {
+    List<Piece> pieces = new ArrayList<>();
+
+    try {
+      var items = json.getAsJsonObject("findItemsByKeywordsResponse")
+          .getAsJsonArray().get(0).getAsJsonObject()
+          .getAsJsonArray("searchResult").get(0).getAsJsonObject()
+          .getAsJsonArray("item");
+
+      for (var itemElem : items) {
+        var item = itemElem.getAsJsonObject();
+
+        String id = item.getAsJsonArray("itemId").get(0).getAsString();
+        String title = item.getAsJsonArray("title").get(0).getAsString();
+        String url = item.getAsJsonArray("viewItemURL").get(0).getAsString();
+        String imageUrl = item.has("galleryURL") ? item.getAsJsonArray("galleryURL").get(0).getAsString() : "";
+
+        // Handle price parsing
+        double price = 0.0;
+        try {
+          var sellingStatus = item.getAsJsonArray("sellingStatus").get(0).getAsJsonObject();
+          var currentPrice = sellingStatus.getAsJsonArray("currentPrice").get(0).getAsJsonObject();
+          price = currentPrice.get("value").getAsDouble();
+        } catch (Exception ignored) {
+        }
+
+        // placeholder/defaults for fields eBay doesn't provide directly
+        String size = "";
+        String color = "";
+        String condition = item.has("condition")
+            ? item.getAsJsonArray("condition").get(0).getAsJsonObject().getAsJsonArray("conditionDisplayName").get(0)
+                .getAsString()
+            : "Unknown";
+
+        List<String> tags = List.of("ebay", "resale");
+        List<String> usedInDrafts = new ArrayList<>();
+
+        Piece piece = new Piece(id, title, price, "eBay", url, imageUrl, size, color, condition, tags, usedInDrafts);
+        pieces.add(piece);
+      }
+
+    } catch (Exception e) {
+      System.err.println("Error parsing eBay JSON: " + e.getMessage());
+    }
+
+    return pieces;
+  }
+
 }

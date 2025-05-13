@@ -15,11 +15,13 @@ public interface StorageInterface {
 
   void deleteDocument(String uid, String collection_id, String doc_id) throws InterruptedException, ExecutionException;
 
-    List<Piece> getSavedPieces(String uid) throws Exception;
+  List<Piece> getSavedPieces(String uid) throws Exception;
+
   List<Piece> getClickedPieces(String uid) throws Exception;
+
   List<Piece> getOnboardingResponses(String uid) throws Exception;
 
-  List<Piece> getAllPieces() throws Exception;
+  List<Piece> getGlobalPieces() throws Exception;
 
   boolean userExists(String uid);
 

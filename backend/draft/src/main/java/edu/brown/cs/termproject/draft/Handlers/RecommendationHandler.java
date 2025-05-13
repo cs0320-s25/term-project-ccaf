@@ -1,12 +1,17 @@
 package edu.brown.cs.termproject.draft.Handlers;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import edu.brown.cs.termproject.draft.PaletteCreator;
 import edu.brown.cs.termproject.draft.Piece;
 import edu.brown.cs.termproject.draft.RecommendationCreator;
+import edu.brown.cs.termproject.draft.API.eBayFetcher;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
 import spark.*;
 
@@ -29,10 +34,10 @@ public class RecommendationHandler implements Route {
 
         System.out.println("Received uid: " + uid); // Log the uid
 
-        if(!storage.userExists(uid)){
+        if (!storage.userExists(uid)) {
             try {
-            storage.createUser(uid);
-            } catch (Exception e){
+                storage.createUser(uid);
+            } catch (Exception e) {
                 System.out.println("Error creating the user in Firebase: " + e.getMessage());
             }
         }
@@ -42,8 +47,8 @@ public class RecommendationHandler implements Route {
             List<Piece> savedPieces = storage.getSavedPieces(uid);
             List<Piece> clickedPieces = storage.getClickedPieces(uid);
             List<Piece> onboardingPieces = storage.getOnboardingResponses(uid);
-            List<Piece> allPieces = storage.getAllPieces();
-
+            eBayFetcher fetcher = new eBayFetcher();
+ 
             System.out.println("Saved pieces: " + savedPieces);
             System.out.println("Clicked pieces: " + clickedPieces);
             System.out.println("Onboarding pieces: " + onboardingPieces);
@@ -59,6 +64,20 @@ public class RecommendationHandler implements Route {
             Map<String, Double> palette = PaletteCreator.createPalette(savedPieces, onboardingKeywords, clickedPieces);
             System.out.println("Generated palette: " + palette);
 
+            // Compile a search query from top-weighted palette tags
+            String searchQuery = palette.entrySet().stream()
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+                .limit(5) // get top 5 tags
+                .map(Map.Entry::getKey)
+                .collect(Collectors.joining(" "));
+            String encodedQuery = URLEncoder.encode(searchQuery, StandardCharsets.UTF_8);
+            System.out.println("eBay search query: " + encodedQuery);
+
+            // Fetch results from eBay API
+            JsonObject ebayResponse = fetcher.searchEbay(searchQuery);
+            List<Piece> ebayPieces = eBayFetcher.parseEbayResults(ebayResponse);
+            System.out.println("eBay Pieces retrieved: " + ebayPieces.size());
+
             // Avoid recommending things the user already saved
             Set<String> alreadySavedIds = new HashSet<>();
             for (Piece p : savedPieces) {
@@ -67,7 +86,7 @@ public class RecommendationHandler implements Route {
             System.out.println("Already saved IDs: " + alreadySavedIds);
 
             // Get top recommendations
-            List<Piece> recs = RecommendationCreator.recommendPieces(allPieces, palette, alreadySavedIds, 12);
+            List<Piece> recs = RecommendationCreator.recommendPieces(ebayPieces, palette, alreadySavedIds, 12);
             // System.out.println("Top recommendations: " + recs);
 
             // Send the response

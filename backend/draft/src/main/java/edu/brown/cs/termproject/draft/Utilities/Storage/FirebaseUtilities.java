@@ -256,7 +256,7 @@ public class FirebaseUtilities implements StorageInterface {
         (String) data.get("size"),
         (String) data.get("color"),
         (String) data.get("condition"),
-        new ArrayList<>((List<String>) data.get("tags")), 
+        new ArrayList<>((List<String>) data.get("tags")),
         (ArrayList<String>) data.get("usedInDrafts"));
   }
 
@@ -417,7 +417,7 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public List<Piece> getAllPieces() {
+  public List<Piece> getGlobalPieces() {
     List<Piece> allPieces = new ArrayList<>();
     Firestore db = FirestoreClient.getFirestore();
 
@@ -538,7 +538,8 @@ public class FirebaseUtilities implements StorageInterface {
         }
       }
     } catch (InterruptedException | ExecutionException e) {
-      System.err.println("Encountered a problem checking if a search result has already been saved by a user: " + e.getMessage());
+      System.err.println(
+          "Encountered a problem checking if a search result has already been saved by a user: " + e.getMessage());
     }
     return false;
   }
