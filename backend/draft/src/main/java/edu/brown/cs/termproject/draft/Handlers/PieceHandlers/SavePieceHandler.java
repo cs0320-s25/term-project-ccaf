@@ -14,8 +14,24 @@ import spark.Route;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Handles the saving of a piece to a specified draft and maybe the global store.
+ */
 public class SavePieceHandler implements Route {
  @Override
+ /**
+  * Called by clicking the star on a product card from the search, recommendation, or
+  * even another draft that already saved the piece. If all parameters are present and no
+  * other errors occur, then we check if all the piece's data is in the global store of
+  * pieces, and if not, we add them. If it's already there / after we add it, we save that
+  * piece to the draft specified in the request, and also mark that said draft uses that
+  * piece in the "usedInDrafts" field on a Piece object. We also adjust the thumbnails on
+  * the draft that we're saving this new piece to, because the new piece should show
+  * in the draft previews in the gallery.
+  * @param request object with a map with all the Piece info in case it's being saved to the global
+  *                store, the userId, and the draftId
+  * @return a serialized map of Strings indicating success + confirmation or failure + error
+  */
  public Object handle(Request request, Response response) throws Exception {
    Gson gson = new Gson();
    Map<String, Object> responseMap = new HashMap<>();
@@ -88,7 +104,4 @@ public class SavePieceHandler implements Route {
      return gson.toJson(responseMap);
    }
  }
-
-
-
 }
