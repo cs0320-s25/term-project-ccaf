@@ -4,7 +4,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProductCard, Piece } from "@/components/product-card";
 import { viewPiecesInDraft, removeDraft } from "@/utils/api";
-import { useDrafts } from "@/app/my-drafts/useDrafts";
 import { Trash2 } from "lucide-react";
 
 import { useUser } from "@clerk/clerk-react";
@@ -20,7 +19,6 @@ export default function DraftPage() {
   const uid = user?.id;
   const { id } = useParams();
   const [draft, setDraft] = useState<Draft | null>(null);
-  const { drafts } = useDrafts(uid);
 
   const [showModal, setShowModal] = useState(false);
   const [deleted, setDeleted] = useState(false);
@@ -38,17 +36,17 @@ export default function DraftPage() {
           if (res.message.includes("no pieces")) { 
             setDraft({
               id: id as string,
-              name: res.draftData.name || `Draft ${id}`,
+              name: res.draftData.name || `draft ${id}`,
               items: [],
             });
           } else {
-            res.pieces.forEach((piece: Piece) => {
-              console.log("Image URL for piece", piece.id, ":", piece.imageUrl);
-            });
+            // res.pieces.forEach((piece: Piece) => {
+            //   console.log("Image URL for piece", piece.id, ":", piece.imageUrl);
+            // });
             
             setDraft({
               id: id as string,
-              name: res.draftData.name || `Draft ${id}`,
+              name: res.draftData.name || `draft ${id}`,
               items: res.pieces,
             });
           }
@@ -114,7 +112,7 @@ export default function DraftPage() {
         </div>
       ) : (
         <p className="text-muted-foreground mt-8">
-          no items in this draft yet.
+          no pieces in this draft yet. time to start saving!
         </p>
       )}
 
@@ -122,20 +120,20 @@ export default function DraftPage() {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg">
-            <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
-            <p className="mb-4">Are you sure you want to delete this draft?</p>
+            <h2 className="text-lg font-semibold mb-4">confirm deletion</h2>
+            <p className="mb-4">are you sure you want to delete this draft?</p>
             <div className="flex justify-end gap-4">
               <button
                 className="px-4 py-2 bg-gray-200 rounded"
                 onClick={() => setShowModal(false)}
               >
-                Cancel
+                cancel
               </button>
               <button
                 className="px-4 py-2 bg-red-500 text-white rounded"
                 onClick={handleDelete}
               >
-                Yes, delete
+                yes, delete
               </button>
             </div>
           </div>
