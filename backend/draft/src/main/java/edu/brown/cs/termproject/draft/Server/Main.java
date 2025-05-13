@@ -1,4 +1,9 @@
 package edu.brown.cs.termproject.draft.Server;
+
+
+import static edu.brown.cs.termproject.draft.Handlers.SearchHandler.createMockDataD;
+import static edu.brown.cs.termproject.draft.Handlers.SearchHandler.createMockDataP;
+
 import edu.brown.cs.termproject.draft.Handlers.PieceHandlers.RemovePieceHandler;
 import edu.brown.cs.termproject.draft.Handlers.PieceHandlers.ViewPieceGivenDraftHandler;
 import edu.brown.cs.termproject.draft.Handlers.CheckUserHandler;
@@ -12,59 +17,21 @@ import edu.brown.cs.termproject.draft.Piece;
 import edu.brown.cs.termproject.draft.Utilities.Storage.FirebaseUtilities;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import spark.Spark;
 
-
 public class Main {
-  private static final JsonObject poshmarkMock; // Declare the type
-  private static final JsonObject depopMock;    // Declare the type
-
-  static {
-    try {
-      InputStream poshStream = Main.class.getResourceAsStream("/mock_data/poshmark_mock.json");
-      InputStream depopStream = Main.class.getResourceAsStream("/mock_data/depop_mock.json");
+  // Create empty mock objects instead of loading from files
+  private static final JsonObject poshmarkMock = createMockDataP("poshmark");
+  private static final JsonObject depopMock = createMockDataD("depop");
 
 
-      if (poshStream == null || depopStream == null) {
-        throw new RuntimeException("Mock data files not found in resources." +  "Checking file path for Poshmark mock data: " +
-          Main.class.getResource("/mockData/posh.json"));
-      }
-
-      poshmarkMock = JsonParser.parseReader(new InputStreamReader(poshStream)).getAsJsonObject();
-      depopMock = JsonParser.parseReader(new InputStreamReader(depopStream)).getAsJsonObject();
-
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load mock data files", e);
-    }
-  }
-
-
-  //  static {
-//    try {
-//      // Load mock data from files
-//      depopMock = JsonParser.parseReader(
-//          new FileReader("./PoshMock.json")).getAsJsonObject();
-//      poshmarkMock = JsonParser.parseReader(
-//          new FileReader("./DepopMock.json")).getAsJsonObject();
-//
-//    } catch (IOException e) {
-//      throw new RuntimeException("Failed to load mock data files", e);
-//    }
-//  }
   public static void main(String[] args) {
-    // Example global store of pieces (replace with your real data source)
+    // Rest of your code remains the same
     List<Piece> allPieces = List.of(
         new Piece(
             "1", "Blue Denim Jacket", 39.99, "example.com",
@@ -89,9 +56,9 @@ public class Main {
     );
 
     int port = 3232;
-    Spark.port(port);; // set the server port
+    Spark.port(port);
 
-    // set up CORS
+    // CORS setup
     Spark.options("/*", (request, response) -> {
       String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
       if (accessControlRequestHeaders != null) {
@@ -116,7 +83,6 @@ public class Main {
     try {
       firebaseUtils = new FirebaseUtilities();
       Spark.get("/search", new SearchHandler(poshmarkMock, depopMock));
-
       Spark.post("/check-user", new CheckUserHandler());
       Spark.get("/create-draft", new CreateDraftHandler(firebaseUtils));
       Spark.get("/remove-draft", new RemoveDraftHandler(firebaseUtils));
@@ -137,7 +103,5 @@ public class Main {
           "Error: Could not initialize Firebase. Likely due to firebase_config.json not being found. Exiting.");
       System.exit(1);
     }
-
-
   }
 }
