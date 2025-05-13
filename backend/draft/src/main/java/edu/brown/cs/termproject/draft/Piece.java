@@ -152,4 +152,6 @@ public class Piece {
     public void setUsedInDrafts(List<String> bool){
         this.usedInDrafts = bool;
     }
+
+    
 }

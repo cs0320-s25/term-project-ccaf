@@ -34,6 +34,7 @@ public class RecommendationHandler implements Route {
 
         System.out.println("Received uid: " + uid); // Log the uid
 
+        // if it's a new user, create their database collection
         if (!storage.userExists(uid)) {
             try {
                 storage.createUser(uid);
@@ -43,53 +44,53 @@ public class RecommendationHandler implements Route {
         }
 
         try {
-            // Get user data
+            // get user data
             List<Piece> savedPieces = storage.getSavedPieces(uid);
             List<Piece> clickedPieces = storage.getClickedPieces(uid);
             List<Piece> onboardingPieces = storage.getOnboardingResponses(uid);
             eBayFetcher fetcher = new eBayFetcher();
- 
+
             System.out.println("Saved pieces: " + savedPieces);
             System.out.println("Clicked pieces: " + clickedPieces);
             System.out.println("Onboarding pieces: " + onboardingPieces);
 
-            // Extract onboarding keywords
+            // extract onboarding keywords
             List<String> onboardingKeywords = new ArrayList<>();
             for (Piece p : onboardingPieces) {
                 onboardingKeywords.addAll(p.getTags());
             }
             System.out.println("Onboarding keywords: " + onboardingKeywords);
 
-            // Build the palette
+            // build the user palette
             Map<String, Double> palette = PaletteCreator.createPalette(savedPieces, onboardingKeywords, clickedPieces);
             System.out.println("Generated palette: " + palette);
 
-            // Compile a search query from top-weighted palette tags
+            // compile a search query from top-weighted palette tags
             String searchQuery = palette.entrySet().stream()
-                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
-                .limit(5) // get top 5 tags
-                .map(Map.Entry::getKey)
-                .collect(Collectors.joining(" "));
+                    .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+                    .limit(5) // get top 5 tags
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.joining(" "));
             String encodedQuery = URLEncoder.encode(searchQuery, StandardCharsets.UTF_8);
             System.out.println("eBay search query: " + encodedQuery);
 
-            // Fetch results from eBay API
+            // fetch results from eBay API (wip)
             JsonObject ebayResponse = fetcher.searchEbay(searchQuery);
             List<Piece> ebayPieces = eBayFetcher.parseEbayResults(ebayResponse);
             System.out.println("eBay Pieces retrieved: " + ebayPieces.size());
 
-            // Avoid recommending things the user already saved
+            // avoid recommending things the user already saved
             Set<String> alreadySavedIds = new HashSet<>();
             for (Piece p : savedPieces) {
                 alreadySavedIds.add(p.getId());
             }
             System.out.println("Already saved IDs: " + alreadySavedIds);
 
-            // Get top recommendations
+            // get top recommendations
             List<Piece> recs = RecommendationCreator.recommendPieces(ebayPieces, palette, alreadySavedIds, 12);
             // System.out.println("Top recommendations: " + recs);
 
-            // Send the response
+            // send out the response
             String jsonResponse = GSON.toJson(Map.of("recommendations", recs));
             // System.out.println("JSON Response: " + jsonResponse);
 
@@ -97,7 +98,7 @@ public class RecommendationHandler implements Route {
             return jsonResponse;
 
         } catch (Exception e) {
-            // Log the error and send a 500 error response
+            // log the error and send a 500 error response
             e.printStackTrace();
             System.err.println("Error occurred during recommendation generation: " + e.getMessage());
             response.status(500);

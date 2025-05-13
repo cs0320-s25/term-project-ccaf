@@ -8,8 +8,6 @@ public class PaletteCreator {
     // used to filter out words with little semantic value
     private static final Set<String> STOPWORDS = Set.of("the", "a", "and", "in", "of", "with", "to");
 
-    //TODO: filter out non-clothing items? use eBay categories
-
     /**
      * Builds weighted keyword map from saved pieces, clicked pieces, and onboarding
      * keywords.

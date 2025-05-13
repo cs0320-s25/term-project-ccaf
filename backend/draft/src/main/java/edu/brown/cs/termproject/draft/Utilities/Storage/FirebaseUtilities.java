@@ -416,29 +416,28 @@ public class FirebaseUtilities implements StorageInterface {
 
   @Override
   public List<Piece> getClickedPieces(String uid) {
-    Firestore db = FirestoreClient.getFirestore();
     List<Piece> clickedPieces = new ArrayList<>();
-    try {
-      if (!userExists(uid)) {
-        System.out.println("No Firestore document found for user ID: " + uid);
-        return clickedPieces;
-      }
+    Firestore db = FirestoreClient.getFirestore();
+    CollectionReference clicksRef = db.collection("users").document(uid).collection("clicks");
 
-      CollectionReference clickedRef = db.collection("users").document(uid).collection("clicked");
-      ApiFuture<QuerySnapshot> future = clickedRef.get();
+    try {
+      ApiFuture<QuerySnapshot> future = clicksRef.get();
       List<QueryDocumentSnapshot> documents = future.get().getDocuments();
 
       for (QueryDocumentSnapshot doc : documents) {
-        Piece piece = doc.toObject(Piece.class);
-        clickedPieces.add(piece);
+        String pieceId = doc.getString("pieceId");
+        if (pieceId != null) {
+          Piece piece = getPieceById(pieceId); // You need to implement this helper
+          if (piece != null) {
+            clickedPieces.add(piece);
+          }
+        }
       }
-
-      System.out.println("Fetched " + clickedPieces.size() + " clicked pieces for UID: " + uid);
-
     } catch (Exception e) {
       System.err.println("Error fetching clicked pieces for UID: " + uid);
       e.printStackTrace();
     }
+
     return clickedPieces;
   }
 

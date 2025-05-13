@@ -9,7 +9,7 @@ import edu.brown.cs.termproject.draft.Exceptions.PaletteException;
 public class RecommendationCreator {
 
     // TODO: need to track the clicking of pieces on the frontend
-    // TODO: add weight if a piece matches recently searched key terms
+    // TODO: maybe add weight if a piece matches recently searched key terms
     // TODO: need to write test class for recommendation interaction w/ all functionality: palette, clicks, saved pieces, etc
 
     /**
