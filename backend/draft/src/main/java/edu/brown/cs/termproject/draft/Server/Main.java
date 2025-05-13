@@ -38,7 +38,7 @@ public class Main {
 
 
       if (poshStream == null || depopStream == null) {
-        throw new RuntimeException("Mock data files not found in resources." +  "Checking file path for Poshmark mock data: " +
+        throw new RuntimeException("Mock data files not found in resources." +  " Checking file path for Poshmark mock data: " +
           Main.class.getResource("/mock_data/poshmark_mock.json"));
       }
 
