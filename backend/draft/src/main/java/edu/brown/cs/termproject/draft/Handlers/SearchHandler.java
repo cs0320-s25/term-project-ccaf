@@ -95,7 +95,7 @@ public class SearchHandler implements Route {
     listing3.addProperty("size", "US 9");
     listing3.addProperty("color", "White/Red");
     listing3.addProperty("condition", "Like new");
-    listing3.addProperty("imageUrl", "https://" + source + ".com/images/3.jpg");
+    listing3.addProperty("imageUrl", "https://media-photos.depop.com/b1/27314354/2619379562_2c88245092534ab8aa9fceecf2d8a757/P0.jpg");
     listing3.addProperty("seller", "SneakerHead" + source);
 
     JsonArray tags3 = new JsonArray();
@@ -141,7 +141,7 @@ public class SearchHandler implements Route {
     // Second listing - Popular brand dress
     JsonObject listing2 = new JsonObject();
     listing2.addProperty("id", source + "_2");
-    listing2.addProperty("title", "Zara Floral Summer Dress");
+    listing2.addProperty("title", "Zara Summer Floral Dress");
     listing2.addProperty("description", "Beautiful Zara floral dress, perfect for summer. Never worn with tags.");
     listing2.addProperty("price", 35.99);
     listing2.addProperty("source", source);
@@ -172,7 +172,7 @@ public class SearchHandler implements Route {
     listing3.addProperty("size", "US 9");
     listing3.addProperty("color", "White/Red");
     listing3.addProperty("condition", "Like new");
-    listing3.addProperty("imageUrl", "https://" + source + ".com/images/3.jpg");
+    listing3.addProperty("imageUrl", "https://media-photos.depop.com/b1/38665915/2648849832_307b9848f49840428c9f604119fb5153/P0.jpg");
     listing3.addProperty("seller", "SneakerHead" + source);
 
     JsonArray tags3 = new JsonArray();
@@ -382,7 +382,7 @@ public class SearchHandler implements Route {
 
       // Create new Piece with all fields
       return new Piece( id,  title,  price,  source,  url,
-           imageUrl,  size,  color,  condition,  tags);
+           imageUrl,  size,  color,  condition,  tags, false);
     } catch (Exception e) {
       System.err.println("Error converting listing to Piece: " + e.getMessage());
       return null;
