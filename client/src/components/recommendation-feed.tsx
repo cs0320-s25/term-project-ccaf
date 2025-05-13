@@ -44,6 +44,7 @@ export function RecommendationFeed() {
                 condition: piece.condition, 
                 tags: piece.tags,
               }}
+              onDraftPage={false}
             />
           ))
         ) : (

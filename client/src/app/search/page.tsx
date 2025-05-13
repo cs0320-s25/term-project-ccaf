@@ -105,7 +105,7 @@ export default function SearchPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {filteredResults.map((product) => (
-          <ProductCard key={product.id} piece={product} />
+          <ProductCard key={product.id} piece={product} onDraftPage={false}/>
         ))}
       </div>
     </div>

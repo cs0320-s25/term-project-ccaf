@@ -3,7 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProductCard, Piece } from "@/components/product-card";
-import { viewPiecesInDraft, removeDraft } from "@/utils/api";
+import { viewPiecesInDraft, removeDraft, removeFromDraft } from "@/utils/api";
 import { Trash2 } from "lucide-react";
 
 import { useUser } from "@clerk/clerk-react";
@@ -76,6 +76,28 @@ export default function DraftPage() {
       });
   };
 
+  const handlePieceRemove = (pieceId: string) => {
+    if (!draft || !uid) return;
+    removeFromDraft(uid, draft.id, pieceId)
+      .then((res) => {
+        if (res.status === "success") {
+          setDraft((prevDraft) =>
+            prevDraft
+              ? {
+                  ...prevDraft,
+                  items: prevDraft.items.filter((item) => item.id !== pieceId),
+                }
+              : null
+          );
+        } else {
+          console.error("Failed to remove piece:", res.error);
+        }
+      })
+      .catch((err) => {
+        console.error("Error removing piece:", err);
+      });
+  };
+
   useEffect(() => {
     if (deleted) {
       router.push("/my-drafts");
@@ -107,7 +129,7 @@ export default function DraftPage() {
       {draft?.items?.length ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {draft.items.map((product) => (
-            <ProductCard key={product.id} piece={product} />
+            <ProductCard key={product.id} piece={product} onDraftPage={true} onRemove={handlePieceRemove}/>
           ))}
         </div>
       ) : (
