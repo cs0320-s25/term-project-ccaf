@@ -1,5 +1,6 @@
 package edu.brown.cs.termproject.draft.Handlers.DraftHandlers;
 
+import com.google.gson.Gson;
 import edu.brown.cs.termproject.draft.Utilities.JSONUtils;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
 import java.util.ArrayList;
@@ -10,6 +11,9 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * Handler to manage draft creation.
+ */
 public class CreateDraftHandler implements Route {
 
   private final StorageInterface storage;
@@ -18,8 +22,17 @@ public class CreateDraftHandler implements Route {
     this.storage = storage;
   }
 
+  /**
+   * Called when a user selects the add draft button or if they create a new draft while
+   * searching and seeing a piece. This is where a draft receives its unique id, and its
+   * data fields in Firebase are initialized and added.
+   *
+   * @param request object with a map with all userId and the name of the new draft
+   * @return a serialized map of Strings indicating success + confirmation or failure + error
+   */
   @Override
   public Object handle(Request request, Response response) {
+    Gson gson = new Gson();
     Map<String, Object> responseMap = new HashMap<>();
 
     try {
@@ -29,7 +42,7 @@ public class CreateDraftHandler implements Route {
       if (userId == null || draftName == null) {
         responseMap.put("response_type", "failure");
         responseMap.put("error", "Missing userId or name");
-        return JSONUtils.toMoshiJson(responseMap);
+        return gson.toJson(responseMap);
       }
 
       String draftId = UUID.randomUUID().toString();
@@ -37,7 +50,7 @@ public class CreateDraftHandler implements Route {
       Map<String, Object> draftData = new HashMap<>();
       draftData.put("id", draftId);
       draftData.put("name", draftName);
-      draftData.put("pieces", new ArrayList<>()); // start empty
+      draftData.put("pieces", new ArrayList<>());
       draftData.put("thumbnails", new ArrayList<>());
 
       storage.addDocument(userId, "drafts", draftId, draftData);
@@ -50,6 +63,6 @@ public class CreateDraftHandler implements Route {
       responseMap.put("error", e.getMessage());
     }
 
-    return JSONUtils.toMoshiJson(responseMap);
+    return gson.toJson(responseMap);
   }
 }

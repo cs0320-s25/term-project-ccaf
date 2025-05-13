@@ -1,6 +1,7 @@
 package edu.brown.cs.termproject.draft.Handlers.DraftHandlers;
 
 
+import com.google.gson.Gson;
 import edu.brown.cs.termproject.draft.Utilities.JSONUtils;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
 import java.util.HashMap;
@@ -9,6 +10,8 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+//TODO: check if this properly removes all the pieces being deleted (mainly just check that it updates
+// usedInDrafts + removes pieces from the global if necessary)
 /** Handler class to remove a Draft from the Firestore database. */
 public class RemoveDraftHandler implements Route {
 
@@ -19,33 +22,28 @@ public class RemoveDraftHandler implements Route {
   }
 
   /**
-   * Invoked when a request is made to this route's corresponding path, "remove-draft."
-   * Removes a draft from the user's drafts collection and optionally from the global drafts store.
+   * Invoked when a request is made to this route's corresponding path, "remove-draft" or by the
+   * trash can on an individual draft page. Removes a draft from the user's drafts collection!
    *
-   * @param request The request object providing information about the HTTP request
-   * @param response The response object providing functionality for modifying the response
-   * @return The content to be set in the response
+   * @param request object with a map with all userId and the draftId
+   * @return a serialized map of Strings indicating success + confirmation or failure + error
    */
   @Override
   public Object handle(Request request, Response response) {
+    Gson gson = new Gson();
     Map<String, Object> responseMap = new HashMap<>();
+
     try {
-      // Extract userId and draftId from the request parameters
       String userId = request.queryParams("userId");
       String draftId = request.queryParams("draftId");
 
       if (userId == null || draftId == null) {
         responseMap.put("response_type", "failure");
         responseMap.put("error", "Missing required parameters.");
-        return JSONUtils.toMoshiJson(responseMap);
+        return gson.toJson(responseMap);
       }
 
-      // Remove draft from the user's drafts collection
-      String userDraftsPath = "drafts";
-      storageHandler.deleteDocument(userId, userDraftsPath, draftId);
-
-      // Optionally, if you want to remove the draft from a global collection, you can also do:
-      // storageHandler.removeDocument("global", "drafts", draftId); // if you have a global drafts collection
+      storageHandler.deleteDocument(userId, "drafts", draftId);
 
       responseMap.put("response_type", "success");
       responseMap.put("message", "Draft removed successfully.");
@@ -55,6 +53,6 @@ public class RemoveDraftHandler implements Route {
       responseMap.put("error", e.getMessage());
     }
 
-    return JSONUtils.toMoshiJson(responseMap);
+    return gson.toJson(responseMap);
   }
 }

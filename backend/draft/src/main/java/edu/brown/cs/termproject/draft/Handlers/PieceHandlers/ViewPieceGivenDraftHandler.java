@@ -11,13 +11,16 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * Handles accessing of full piece information saved to a given draft.
+ */
 public class ViewPieceGivenDraftHandler implements Route {
 
-  /**
-   * @param request
-   * @param response
-   * @return
-   * @throws Exception
+  /** Retrieves the piece ids that are saved under a user's drafts in Firebase, and
+   * cross-references them with the global store of pieces to access the information that
+   * users would like to see (cost, condition, etc).
+   * @param request a map with the userId and draftId
+   * @return a map of Strings indicating success with the list of pieces and the draftData or failure + error
    */
   @Override
   public Object handle(Request request, Response response) throws Exception {
@@ -34,10 +37,8 @@ public class ViewPieceGivenDraftHandler implements Route {
 
     try {
       List<String> pieceIds = FirebaseUtilities.getPiecesFromDraft(userId, draftId);
-      System.out.println(pieceIds);
       List<Piece> pieces = new ArrayList<>();
       if (!pieceIds.isEmpty()) {
-        System.out.println(pieceIds);
         for (String pieceId : pieceIds) {
           if (!pieceId.isEmpty() || pieceId != null) {
             Piece retrievedPiece = FirebaseUtilities.getPieceById(pieceId);
