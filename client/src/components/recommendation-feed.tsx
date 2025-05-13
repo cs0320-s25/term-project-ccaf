@@ -31,6 +31,7 @@ export function RecommendationFeed() {
         {recommendations.length > 0 ? (
           recommendations.map((piece) => (
             <ProductCard
+              aria-label={"Piece: " + piece.title}
               key={piece.id}
               piece={{
                 id: piece.id,
