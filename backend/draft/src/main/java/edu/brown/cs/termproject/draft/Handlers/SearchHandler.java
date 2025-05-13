@@ -382,7 +382,7 @@ public class SearchHandler implements Route {
 
       // Create new Piece with all fields
       return new Piece( id,  title,  price,  source,  url,
-           imageUrl,  size,  color,  condition,  tags, false);
+           imageUrl,  size,  color,  condition,  tags, new ArrayList<String>());
     } catch (Exception e) {
       System.err.println("Error converting listing to Piece: " + e.getMessage());
       return null;
