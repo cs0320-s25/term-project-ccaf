@@ -15,7 +15,7 @@ export function DraftGrid() {
     <div>
 
       {loading ? (
-        <p className="mt-8 text-center text-muted-foreground">Loading drafts...</p>
+        <p className="mt-8 text-center text-muted-foreground">loading drafts...</p>
       ) : drafts.length === 0 ? (
         <div>
         <div>
@@ -34,7 +34,7 @@ export function DraftGrid() {
             className="border rounded-lg aspect-square flex flex-col items-center justify-center hover:bg-gray-100 transition"
           >
             <span className="text-5xl font-bold text-gray-600">+</span>
-            <span className="text-sm mt-2 text-muted-foreground">New Draft</span>
+            <span className="text-sm mt-2 text-muted-foreground">new draft</span>
           </button>
         </div>
         </div>
@@ -74,7 +74,7 @@ export function DraftGrid() {
             className="border rounded-lg aspect-square flex flex-col items-center justify-center hover:bg-gray-100 transition"
           >
             <span className="text-5xl font-bold text-gray-600">+</span>
-            <span className="text-sm mt-2 text-muted-foreground">New Draft</span>
+            <span className="text-sm mt-2 text-muted-foreground">new draft</span>
           </button>
         </div>
       )}

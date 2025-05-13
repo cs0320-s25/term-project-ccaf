@@ -67,11 +67,11 @@ export default function Home() {
     <div className="container px-4 py-16 max-w-5xl mx-auto">
       {/* Heading */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-semibold tracking-tight">welcome to Draft</h1>
+        <h1 className="text-4xl font-semibold tracking-tight">welcome to draft</h1>
         <p className="text-[1.25rem] tracking-[-0.03em] text-muted-foreground mt-2">
-          Draft lets you collect secondhand fashion finds from across the web
+          draft lets you collect secondhand fashion finds from across the web
           <br />
-          into curated style Drafts—your personal moodboards :-)
+          into curated style drafts—your personal moodboards :-)
         </p>
       </div>
 
