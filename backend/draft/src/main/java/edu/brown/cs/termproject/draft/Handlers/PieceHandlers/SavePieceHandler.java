@@ -83,7 +83,7 @@ public class SavePieceHandler implements Route {
 
    } catch (Exception e) {
      responseMap.put("status", "error");
-     responseMap.put("message", "Server error: " + e.getMessage());
+     responseMap.put("message", "[SavePieceHandler] Server error: " + e.getMessage());
      return gson.toJson(responseMap);
    }
  }

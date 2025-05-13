@@ -63,7 +63,7 @@ public class ViewPieceGivenDraftHandler implements Route {
       responseMap.put("draftData", draftData);
     } catch (Exception e) {
       responseMap.put("status", "failure");
-      responseMap.put("error", "Server error: " + e.getMessage());
+      responseMap.put("error", "[ViewDraftGivenPieceHandler] Server error: " + e.getMessage());
     }
 
     return gson.toJson(responseMap);
