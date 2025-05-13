@@ -35,15 +35,23 @@ export default function DraftPage() {
     viewPiecesInDraft(uid, id as string)
       .then((res) => {
         if (res.status === "success") {
-          res.pieces.forEach((piece: Piece) => {
-            console.log("Image URL for piece", piece.id, ":", piece.imageUrl);
-          });
-          
-          setDraft({
-            id: id as string,
-            name: res.draftData.name || `Draft ${id}`,
-            items: res.pieces,
-          });
+          if (res.message.includes("no pieces")) { 
+            setDraft({
+              id: id as string,
+              name: res.draftData.name || `Draft ${id}`,
+              items: [],
+            });
+          } else {
+            res.pieces.forEach((piece: Piece) => {
+              console.log("Image URL for piece", piece.id, ":", piece.imageUrl);
+            });
+            
+            setDraft({
+              id: id as string,
+              name: res.draftData.name || `Draft ${id}`,
+              items: res.pieces,
+            });
+          }
         } else {
           setDraft(null);
           console.error(res.error);
