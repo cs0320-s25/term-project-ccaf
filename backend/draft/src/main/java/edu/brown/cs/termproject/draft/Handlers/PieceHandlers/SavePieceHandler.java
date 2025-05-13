@@ -6,9 +6,7 @@ import com.google.gson.Gson;
 import edu.brown.cs.termproject.draft.Piece;
 import edu.brown.cs.termproject.draft.Utilities.Storage.FirebaseUtilities;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -56,8 +54,9 @@ public class SavePieceHandler implements Route {
        }
 
        // save the piece...
-       piece = new Piece(pieceId, title, priceDouble, sourceWebsite, url, imageUrl, size, color, condition, tags);
+       piece = new Piece(pieceId, title, priceDouble, sourceWebsite, url, imageUrl, size, color, condition, tags, true);
        FirebaseUtilities.savePiece(piece);
+       FirebaseUtilities.savePieceForUser(userId, piece);
      }
 
      FirebaseUtilities.savePieceToDraft(userId, draftId, piece);

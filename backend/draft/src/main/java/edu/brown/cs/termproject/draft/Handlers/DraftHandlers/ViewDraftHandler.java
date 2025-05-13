@@ -32,7 +32,7 @@ public class ViewDraftHandler implements Route {
     try {
       // Get all drafts from the user's draft collection
       List<Map<String, Object>> drafts = this.storageHandler.getCollection(userId, "drafts");
-      System.out.println("drafts: " + drafts.size());
+      // System.out.println("drafts: " + drafts.size());
       responseMap.put("response_type", "success");
       responseMap.put("drafts", drafts);
     } catch (Exception e) {

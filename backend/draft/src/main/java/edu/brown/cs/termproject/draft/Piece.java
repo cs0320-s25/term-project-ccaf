@@ -17,13 +17,14 @@ public class Piece {
     private String color;
     private String condition;
     private List<String> tags;
+    private boolean usedInDrafts = false;
 
-    // No-argument constructor required by Firestore
+    // no-argument constructor required by Firestore
     public Piece() {
     }
 
     public Piece(String id, String title, double price, String sourceWebsite, String url,
-                 String imageUrl, String size, String color, String condition, List<String> tags) {
+                 String imageUrl, String size, String color, String condition, List<String> tags, boolean usedInDrafts) {
         this.id = id;
         this.title = title;
         this.price = price;
@@ -34,10 +35,7 @@ public class Piece {
         this.color = color;
         this.condition = condition;
         this.tags = tags;
-    }
-
-    public <E> Piece(String pieceId, String title, double price, String sourceWebsite, String url, String imageUrl, String size, String color, String condition,
-        String imageUrl1, java.util.ArrayList<E> tags) {
+        this.usedInDrafts = usedInDrafts;
     }
 
     public static Piece fromMap(Map<String, Object> data) {
@@ -51,6 +49,7 @@ public class Piece {
             String size = (String) data.get("size");
             String color = (String) data.get("color");
             String condition = (String) data.get("condition");
+            boolean usedInDrafts = (Boolean) data.get("usedInDrafts");
 
             // optional field: tags
             List<String> tags = new ArrayList<>();
@@ -63,7 +62,7 @@ public class Piece {
                 }
             }
 
-            return new Piece(id, title, price, sourceWebsite, url, imageUrl, size, color, condition, tags);
+            return new Piece(id, title, price, sourceWebsite, url, imageUrl, size, color, condition, tags, usedInDrafts);
 
         } catch (Exception e) {
             System.err.println("Error parsing Piece from map: " + e.getMessage());
@@ -84,8 +83,10 @@ public class Piece {
         map.put("color", color);
         map.put("condition", condition);
         map.put("tags", tags != null ? new ArrayList<>(tags) : new ArrayList<>());
+        map.put("usedInDrafts", usedInDrafts);
         return map;
     }
+    
 
     // Getters and setters
 
@@ -131,5 +132,13 @@ public class Piece {
 
     public String getCondition() {
         return condition;
+    }
+
+    public boolean getUsedInDrafts() {
+        return usedInDrafts;
+    }
+
+    public void setUsedInDrafts(boolean bool){
+        this.usedInDrafts = bool;
     }
 }

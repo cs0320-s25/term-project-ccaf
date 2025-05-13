@@ -99,7 +99,7 @@ public class APIUtilities {
             Piece piece = new Piece(
                 pieceId,
                 title, price, "eBay", url, imageUrl,
-                size, color, condition, tags
+                size, color, condition, tags, false
             );
             System.out.println(pieceId);
             piecesFromEbay.add(piece);

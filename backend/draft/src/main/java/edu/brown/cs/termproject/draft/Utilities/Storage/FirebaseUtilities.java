@@ -33,18 +33,16 @@ public class FirebaseUtilities implements StorageInterface {
     // add your admin SDK from Firebase. see:
     // https://docs.google.com/document/d/10HuDtBWjkUoCaVj_A53IFm5torB_ws06fW3KYFZqKjc/edit?usp=sharing
     String workingDirectory = System.getProperty("user.dir");
-    Path firebaseConfigPath =
-        Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
+    Path firebaseConfigPath = Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
 
     // ^-- if your /resources/firebase_config.json exists but is not found,
     // try printing workingDirectory and messing around with this path.
     System.out.println(firebaseConfigPath);
     FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
 
-    FirebaseOptions options =
-        new FirebaseOptions.Builder()
-            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-            .build();
+    FirebaseOptions options = new FirebaseOptions.Builder()
+        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+        .build();
 
     FirebaseApp.initializeApp(options);
   }
@@ -76,7 +74,8 @@ public class FirebaseUtilities implements StorageInterface {
 
   @Override
   /**
-   * Adds a new document "doc_id" to collection "collection_id" for user "uid" with data payload
+   * Adds a new document "doc_id" to collection "collection_id" for user "uid"
+   * with data payload
    * "data". Note, works best when the server is run through IntelliJ.
    */
   public void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data)
@@ -112,7 +111,8 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
-  public void deleteDocument(String uid, String collection_id, String doc_id) throws InterruptedException, ExecutionException {
+  public void deleteDocument(String uid, String collection_id, String doc_id)
+      throws InterruptedException, ExecutionException {
     if (uid == null || collection_id == null || doc_id == null) {
       throw new IllegalArgumentException("deleteDocument: uid, collection_id, or doc_id cannot be null");
     }
@@ -123,20 +123,17 @@ public class FirebaseUtilities implements StorageInterface {
     // Reference to the document to be deleted
     DocumentReference docRef = db.collection("users").document(uid).collection(collection_id).document(doc_id);
 
-
     Iterable<CollectionReference> subcollections = docRef.listCollections();
     for (CollectionReference subcollection : subcollections) {
       deleteCollection(subcollection);
     }
 
-
     // Delete the document
     ApiFuture<WriteResult> deleteFuture = docRef.delete();
-    deleteFuture.get();  // Wait for the deletion to complete
+    deleteFuture.get(); // Wait for the deletion to complete
 
     System.out.println("Successfully deleted document with ID: " + doc_id);
   }
-
 
   private void deleteDocumentHelper(DocumentReference doc) {
     // for each subcollection, run deleteCollection()
@@ -171,7 +168,6 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
-
   public static Firestore getDb() {
     return FirestoreClient.getFirestore();
   }
@@ -185,7 +181,7 @@ public class FirebaseUtilities implements StorageInterface {
         .document(draftId);
 
     Map<String, Object> update1 = new HashMap<>();
-    update1.put("pieces", FieldValue.arrayUnion(piece.getId()));  // store just the ID...?
+    update1.put("pieces", FieldValue.arrayUnion(piece.getId())); // store just the ID...?
 
     draftDoc.update(update1).get();
 
@@ -237,17 +233,18 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
-
   public static Piece getPieceById(String pieceId) throws Exception {
     Firestore db = getDb();
     DocumentSnapshot doc = db.collection("pieces").document(pieceId).get().get();
 
-    if (!doc.exists()) return null;
+    if (!doc.exists())
+      return null;
 
     // Build your Piece from the Firestore document
     Map<String, Object> data = doc.getData();
 
-    if (data == null) return null;
+    if (data == null)
+      return null;
 
     return new Piece(
         pieceId,
@@ -259,9 +256,8 @@ public class FirebaseUtilities implements StorageInterface {
         (String) data.get("size"),
         (String) data.get("color"),
         (String) data.get("condition"),
-        (String) data.get("imageUrl"),
-        new ArrayList<>((List<String>) data.get("tags"))
-    );
+        new ArrayList<>((List<String>) data.get("tags")), 
+        (Boolean) data.get("usedInDrafts"));
   }
 
   public static Map<String, Object> getDraftById(String userId, String draftId) throws Exception {
@@ -298,7 +294,6 @@ public class FirebaseUtilities implements StorageInterface {
 
     return pieces;
   }
-
 
   // for testing
   public static void savePiece(Piece piece) throws Exception {
@@ -502,8 +497,7 @@ public class FirebaseUtilities implements StorageInterface {
 
     savedRef.set(data).get();
 
-    // Optionally, ensure it's also in the global `pieces` collection if not already
-    // there
+    // ensure it's also in the global `pieces` collection if not already
     DocumentReference globalPieceRef = db.collection("pieces").document(piece.getId());
     if (!globalPieceRef.get().get().exists()) {
       savePiece(piece); // reuses existing helper method
@@ -512,7 +506,7 @@ public class FirebaseUtilities implements StorageInterface {
     System.out.println("Saved piece " + piece.getId() + " for user " + uid);
   }
 
-  public static void unsavePieceForUser(String uid, String pieceId) throws Exception {
+  public static void removePieceForUser(String uid, String pieceId) throws Exception {
     if (uid == null || pieceId == null) {
       throw new IllegalArgumentException("unsavePieceForUser: uid or pieceId cannot be null");
     }
@@ -525,6 +519,28 @@ public class FirebaseUtilities implements StorageInterface {
     savedRef.delete().get();
 
     System.out.println("Un-saved piece " + pieceId + " for user " + uid);
+  }
+
+  public boolean checkIfPieceUsedByUser(String uid, String pieceId) {
+    Firestore db = FirestoreClient.getFirestore();
+
+    CollectionReference draftsRef = db.collection("users").document(uid).collection("drafts");
+    // Loop through each draft and check if piece is in it
+    try {
+      for (DocumentSnapshot draft : draftsRef.get().get().getDocuments()) {
+        List<Map<String, Object>> pieces = (List<Map<String, Object>>) draft.get("pieces");
+        if (pieces != null) {
+          for (Map<String, Object> piece : pieces) {
+            if (pieceId.equals(piece.get("id"))) {
+              return true;
+            }
+          }
+        }
+      }
+    } catch (InterruptedException | ExecutionException e) {
+      System.err.println("Encountered a problem checking if a search result has already been saved by a user: " + e.getMessage());
+    }
+    return false;
   }
 
 }
