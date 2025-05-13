@@ -68,11 +68,11 @@ public class RecommendationHandler implements Route {
 
             // Get top recommendations
             List<Piece> recs = RecommendationCreator.recommendPieces(allPieces, palette, alreadySavedIds, 12);
-            System.out.println("Top recommendations: " + recs);
+            // System.out.println("Top recommendations: " + recs);
 
             // Send the response
             String jsonResponse = GSON.toJson(Map.of("recommendations", recs));
-            System.out.println("JSON Response: " + jsonResponse);
+            // System.out.println("JSON Response: " + jsonResponse);
 
             response.status(200);
             return jsonResponse;

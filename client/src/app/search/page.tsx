@@ -33,6 +33,7 @@ export default function SearchPage() {
     let isSubscribed = true;
     const controller = new AbortController();
 
+
     const fetchResults = async () => {
       try {
         setLoading(true);
@@ -56,6 +57,15 @@ export default function SearchPage() {
           throw new Error(
             errorData.error || `HTTP error! status: ${response.status}`
           );
+//     fetch(`http://localhost:3232/search?q=${encodeURIComponent(query)}`)
+//       .then(async (res) => {
+//         // check if response is JSON
+//         const contentType = res.headers.get("content-type");
+//         if (!contentType || !contentType.includes("application/json")) {
+//           const text = await res.text();
+//           console.error("Server returned non-JSON response:", text);
+//           throw new Error("Server returned non-JSON response");
+// >>>>>>> 12d9e40cfb0983eb4a53825e8ed5a3486c95aa48
         }
 
         const data = await response.json();
