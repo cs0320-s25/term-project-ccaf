@@ -26,4 +26,7 @@ public interface StorageInterface {
   boolean userExists(String uid);
 
   void createUser(String uid) throws Exception;
+
+  void logPieceClick(String userId, String pieceId, long timestamp) throws Exception;
+
 }

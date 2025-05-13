@@ -8,13 +8,9 @@ import edu.brown.cs.termproject.draft.Exceptions.PaletteException;
 
 public class RecommendationCreator {
 
-    // TODO: find and fix the runtime deserialization error. can't convert arraylist to boolean?
     // TODO: need to track the clicking of pieces on the frontend
-    // TODO: need to test recommending on front end using mock data
     // TODO: add weight if a piece matches recently searched key terms
-    // TODO: recommender has to call all APIs with search query based on a user's palette?
-    // TODO: need to write tests for recommendation interaction w/: palette, clicks, saved pieces, etc
-    // TODO: need to test all recommender functionality
+    // TODO: need to write test class for recommendation interaction w/ all functionality: palette, clicks, saved pieces, etc
 
     /**
      * Scores and ranks all pieces based on match with palette

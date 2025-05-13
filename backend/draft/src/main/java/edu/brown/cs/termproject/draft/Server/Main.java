@@ -4,21 +4,13 @@ package edu.brown.cs.termproject.draft.Server;
 import static edu.brown.cs.termproject.draft.Handlers.SearchHandler.createMockDataD;
 import static edu.brown.cs.termproject.draft.Handlers.SearchHandler.createMockDataP;
 
-import edu.brown.cs.termproject.draft.Handlers.PieceHandlers.RemovePieceHandler;
-import edu.brown.cs.termproject.draft.Handlers.PieceHandlers.ViewPieceGivenDraftHandler;
-import edu.brown.cs.termproject.draft.Handlers.CheckUserHandler;
-import edu.brown.cs.termproject.draft.Handlers.RecommendationHandler;
-import edu.brown.cs.termproject.draft.Handlers.PieceHandlers.SavePieceHandler;
-import edu.brown.cs.termproject.draft.Handlers.SearchHandler;
-import edu.brown.cs.termproject.draft.Handlers.DraftHandlers.CreateDraftHandler;
-import edu.brown.cs.termproject.draft.Handlers.DraftHandlers.RemoveDraftHandler;
-import edu.brown.cs.termproject.draft.Handlers.DraftHandlers.ViewDraftHandler;
-import edu.brown.cs.termproject.draft.Piece;
+import edu.brown.cs.termproject.draft.Handlers.PieceHandlers.*;
+import edu.brown.cs.termproject.draft.Handlers.*;
+import edu.brown.cs.termproject.draft.Handlers.DraftHandlers.*;
 import edu.brown.cs.termproject.draft.Utilities.Storage.FirebaseUtilities;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.google.gson.JsonObject;
 
@@ -31,7 +23,6 @@ public class Main {
 
 
   public static void main(String[] args) {
-    // Rest of your code remains the same
 //    List<Piece> allPieces = List.of(
 //        new Piece(
 //            "1", "Blue Denim Jacket", 39.99, "example.com",
@@ -84,6 +75,7 @@ public class Main {
       firebaseUtils = new FirebaseUtilities();
       Spark.get("/search", new SearchHandler(poshmarkMock, depopMock));
       Spark.post("/check-user", new CheckUserHandler());
+      Spark.post("/log-click", new ClickHandler(firebaseUtils));
       Spark.get("/create-draft", new CreateDraftHandler(firebaseUtils));
       Spark.get("/remove-draft", new RemoveDraftHandler(firebaseUtils));
       Spark.get("/view-drafts", new ViewDraftHandler(firebaseUtils));

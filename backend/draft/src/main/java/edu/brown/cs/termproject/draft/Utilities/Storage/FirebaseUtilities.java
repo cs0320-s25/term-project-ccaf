@@ -544,4 +544,18 @@ public class FirebaseUtilities implements StorageInterface {
     return false;
   }
 
+  @Override
+  public void logPieceClick(String userId, String pieceId, long timestamp) throws Exception {
+    Firestore db = FirestoreClient.getFirestore();
+
+    DocumentReference userRef = db.collection("users").document(userId);
+    CollectionReference clicksRef = userRef.collection("clicks");
+
+    Map<String, Object> clickData = new HashMap<>();
+    clickData.put("pieceId", pieceId);
+    clickData.put("timestamp", timestamp);
+
+    clicksRef.add(clickData);
+  }
+
 }
