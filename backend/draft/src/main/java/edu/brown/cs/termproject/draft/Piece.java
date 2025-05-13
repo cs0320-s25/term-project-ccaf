@@ -17,14 +17,14 @@ public class Piece {
     private String color;
     private String condition;
     private List<String> tags;
-    private boolean usedInDrafts = false;
+    private List<String> usedInDrafts;
 
     // no-argument constructor required by Firestore
     public Piece() {
     }
 
     public Piece(String id, String title, double price, String sourceWebsite, String url,
-                 String imageUrl, String size, String color, String condition, List<String> tags, boolean usedInDrafts) {
+                 String imageUrl, String size, String color, String condition, List<String> tags, List<String> usedInDrafts) {
         this.id = id;
         this.title = title;
         this.price = price;
@@ -49,7 +49,6 @@ public class Piece {
             String size = (String) data.get("size");
             String color = (String) data.get("color");
             String condition = (String) data.get("condition");
-            boolean usedInDrafts = (Boolean) data.get("usedInDrafts");
 
             // optional field: tags
             List<String> tags = new ArrayList<>();
@@ -61,6 +60,18 @@ public class Piece {
                     }
                 }
             }
+
+            // likely empty field: usedInDrafts
+            List<String> usedInDrafts = new ArrayList<>();
+            Object rawUsedInDrafts = data.get("usedInDrafts");
+            if (rawUsedInDrafts instanceof List<?>) {
+                for (Object draft : (List<?>) rawUsedInDrafts) {
+                    if (draft instanceof String) {
+                        usedInDrafts.add((String) draft);
+                    }
+                }
+            }
+
 
             return new Piece(id, title, price, sourceWebsite, url, imageUrl, size, color, condition, tags, usedInDrafts);
 
@@ -83,7 +94,7 @@ public class Piece {
         map.put("color", color);
         map.put("condition", condition);
         map.put("tags", tags != null ? new ArrayList<>(tags) : new ArrayList<>());
-        map.put("usedInDrafts", usedInDrafts);
+        map.put("usedInDrafts", usedInDrafts != null ? new ArrayList<>(usedInDrafts) : new ArrayList<>());
         return map;
     }
     
@@ -134,11 +145,11 @@ public class Piece {
         return condition;
     }
 
-    public boolean getUsedInDrafts() {
+    public List<String> getUsedInDrafts() {
         return usedInDrafts;
     }
 
-    public void setUsedInDrafts(boolean bool){
+    public void setUsedInDrafts(List<String> bool){
         this.usedInDrafts = bool;
     }
 }

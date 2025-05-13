@@ -39,6 +39,7 @@ public class SavePieceHandler implements Route {
          : new ArrayList<>();
 
 
+
      Piece piece = FirebaseUtilities.getPieceById(pieceId);
 
 
@@ -54,7 +55,7 @@ public class SavePieceHandler implements Route {
        }
 
        // save the piece...
-       piece = new Piece(pieceId, title, priceDouble, sourceWebsite, url, imageUrl, size, color, condition, tags, true);
+       piece = new Piece(pieceId, title, priceDouble, sourceWebsite, url, imageUrl, size, color, condition, tags, new ArrayList<>());
        FirebaseUtilities.savePiece(piece);
        FirebaseUtilities.savePieceForUser(userId, piece);
      }
@@ -62,7 +63,7 @@ public class SavePieceHandler implements Route {
      FirebaseUtilities.savePieceToDraft(userId, draftId, piece);
      DocumentReference draftRef = FirebaseUtilities.getUserDoc(userId, draftId);
 
-     DocumentSnapshot snapshot = draftRef.get().get(); // blocking call
+     DocumentSnapshot snapshot = draftRef.get().get();
      if (snapshot.exists()) {
        Map<String, Object> draft = snapshot.getData();
        List<String> thumbnails = (List<String>) draft.getOrDefault("thumbnails", new ArrayList<>());
@@ -73,7 +74,7 @@ public class SavePieceHandler implements Route {
          } else {
            thumbnails.set(thumbnails.size() - 1, imageUrl);
          }
-         draftRef.update("thumbnails", thumbnails).get(); // wait for update to complete
+         draftRef.update("thumbnails", thumbnails).get(); // wait for update
        }
      }
 

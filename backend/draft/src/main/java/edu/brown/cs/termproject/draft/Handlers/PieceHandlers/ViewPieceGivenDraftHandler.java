@@ -26,7 +26,7 @@ public class ViewPieceGivenDraftHandler implements Route {
 
     String draftId = request.queryParams("draftId");
     String userId = request.queryParams("userId");
-    if (draftId == null || userId == null) {
+    if (draftId == null || draftId.isEmpty() || userId == null || userId.isEmpty()) {
       responseMap.put("status", "failure");
       responseMap.put("error", "missing required params");
       return gson.toJson(responseMap);
@@ -36,20 +36,20 @@ public class ViewPieceGivenDraftHandler implements Route {
       List<String> pieceIds = FirebaseUtilities.getPiecesFromDraft(userId, draftId);
       System.out.println(pieceIds);
       List<Piece> pieces = new ArrayList<>();
-      for (String pieceId : pieceIds) {
-        Piece retrievedPiece = FirebaseUtilities.getPieceById(pieceId);
-        if (retrievedPiece != null) {
-          pieces.add(retrievedPiece);
-        } else {
-          System.out.println("Could not find piece with id " + pieceId);
+      if (!pieceIds.isEmpty()) {
+        System.out.println(pieceIds);
+        for (String pieceId : pieceIds) {
+          if (!pieceId.isEmpty() || pieceId != null) {
+            Piece retrievedPiece = FirebaseUtilities.getPieceById(pieceId);
+            if (retrievedPiece != null) {
+              pieces.add(retrievedPiece);
+            } else {
+              System.out.println("Could not find piece with id " + pieceId);
+            }
+          }
         }
       }
 
-      if (pieces.isEmpty()) {
-        responseMap.put("status", "failure");
-        responseMap.put("error", "no pieces found");
-        return gson.toJson(responseMap);
-      }
 
       Map<String, Object> draftData = FirebaseUtilities.getDraftById(userId, draftId);
       if (draftData == null) {
@@ -58,12 +58,24 @@ public class ViewPieceGivenDraftHandler implements Route {
         return gson.toJson(responseMap);
       }
 
+      if (pieces.isEmpty()) {
+        responseMap.put("status", "success");
+        responseMap.put("message", "no pieces found!");
+        responseMap.put("pieces", new ArrayList<>());
+        responseMap.put("draftData", draftData);
+        return gson.toJson(responseMap);
+      }
+
+
       responseMap.put("status", "success");
+      responseMap.put("message", "pieces found!");
       responseMap.put("pieces", pieces);
       responseMap.put("draftData", draftData);
     } catch (Exception e) {
+      System.out.println(e.getMessage());
+      e.printStackTrace();
       responseMap.put("status", "failure");
-      responseMap.put("error", "[ViewDraftGivenPieceHandler] Server error: " + e.getMessage());
+      responseMap.put("error", "Server error: " + e.getMessage());
     }
 
     return gson.toJson(responseMap);

@@ -257,7 +257,7 @@ public class FirebaseUtilities implements StorageInterface {
         (String) data.get("color"),
         (String) data.get("condition"),
         new ArrayList<>((List<String>) data.get("tags")), 
-        (Boolean) data.get("usedInDrafts"));
+        (ArrayList<String>) data.get("usedInDrafts"));
   }
 
   public static Map<String, Object> getDraftById(String userId, String draftId) throws Exception {
