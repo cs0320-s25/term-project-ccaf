@@ -21,49 +21,92 @@ export default function SearchPage() {
   const uid = user?.id;
   const { drafts } = useDrafts(uid);
 
+  // ...existing code...
 
   useEffect(() => {
-    if (!query) return;
+    // Ignore empty queries
+    if (!query) {
+      setResults([]);
+      return;
+    }
 
-    setLoading(true);
-    setError(null);
+    let isSubscribed = true;
+    const controller = new AbortController();
 
-    fetch(`http://localhost:3232/search?q=${encodeURIComponent(query)}`)
-      .then(async (res) => {
-        // check if response is JSON
-        const contentType = res.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          const text = await res.text();
-          console.error("Server returned non-JSON response:", text);
-          throw new Error("Server returned non-JSON response");
+
+    const fetchResults = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch(
+          `http://localhost:3232/search?q=${encodeURIComponent(query)}`,
+          {
+            signal: controller.signal,
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
+
+        // Check if component is still mounted
+        if (!isSubscribed) return;
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || `HTTP error! status: ${response.status}`
+          );
+//     fetch(`http://localhost:3232/search?q=${encodeURIComponent(query)}`)
+//       .then(async (res) => {
+//         // check if response is JSON
+//         const contentType = res.headers.get("content-type");
+//         if (!contentType || !contentType.includes("application/json")) {
+//           const text = await res.text();
+//           console.error("Server returned non-JSON response:", text);
+//           throw new Error("Server returned non-JSON response");
+// >>>>>>> 12d9e40cfb0983eb4a53825e8ed5a3486c95aa48
         }
 
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
+        const data = await response.json();
 
-        return res.json();
-      })
-      .then((data) => {
-        console.log("SERVER RESPONSE:", data);
+        // Check if component is still mounted
+        if (!isSubscribed) return;
+
         if (data.error) {
           setError(data.error);
           setResults([]);
         } else if (Array.isArray(data.matches)) {
           setResults(data.matches);
         } else {
+          console.error("Unexpected data structure:", data);
           setError("Unexpected server response format");
           setResults([]);
         }
-      })
-      .catch((err) => {
-        console.error("Fetch error:", err);
-        setError(`Failed to load results: ${err.message}`);
-        setResults([]);
-      })
-      .finally(() => setLoading(false));
+      } catch (err) {
+        // Only set error if the component is still mounted and it's not an abort error
+        if (isSubscribed && err instanceof Error && err.name !== "AbortError") {
+          console.error("Search error details:", err);
+          setError(`Search failed: ${err.message}`);
+          setResults([]);
+        }
+      } finally {
+        if (isSubscribed) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchResults();
+
+    // Cleanup function
+    return () => {
+      isSubscribed = false;
+      controller.abort();
+    };
   }, [query]);
 
+  // ...existing code...
 
   return (
     <div className="container py-8 max-w-5xl mx-auto">
@@ -89,12 +132,7 @@ export default function SearchPage() {
         {results.map((product, index) => {
           // Create a unique key by combining id, platform, and index
           const uniqueKey = `${product.id}-${product.sourceWebsite}-${index}`;
-          return (
-            <ProductCard
-              key={product.id}
-              piece={product}
-            />
-          );
+          return <ProductCard key={product.id} piece={product} />;
         })}
       </div>
     </div>
