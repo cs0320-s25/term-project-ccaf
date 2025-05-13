@@ -77,7 +77,7 @@ public class SavePieceHandler implements Route {
      }
 
      FirebaseUtilities.savePieceToDraft(userId, draftId, piece);
-     DocumentReference draftRef = FirebaseUtilities.getUserDoc(userId, draftId);
+     DocumentReference draftRef = FirebaseUtilities.getUserDraftDoc(userId, draftId);
 
      DocumentSnapshot snapshot = draftRef.get().get();
      if (snapshot.exists()) {

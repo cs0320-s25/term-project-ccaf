@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -28,15 +27,9 @@ import java.util.concurrent.ExecutionException;
 public class FirebaseUtilities implements StorageInterface {
 
   public FirebaseUtilities() throws IOException {
-    // TODO: FIRESTORE PART 0:
-    // Create /resources/ folder with firebase_config.json and
-    // add your admin SDK from Firebase. see:
-    // https://docs.google.com/document/d/10HuDtBWjkUoCaVj_A53IFm5torB_ws06fW3KYFZqKjc/edit?usp=sharing
     String workingDirectory = System.getProperty("user.dir");
     Path firebaseConfigPath = Paths.get(workingDirectory, "src", "main", "resources", "firebase_config.json");
 
-    // ^-- if your /resources/firebase_config.json exists but is not found,
-    // try printing workingDirectory and messing around with this path.
     System.out.println(firebaseConfigPath);
     FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath.toString());
 
@@ -47,6 +40,13 @@ public class FirebaseUtilities implements StorageInterface {
     FirebaseApp.initializeApp(options);
   }
 
+  /**
+   * Gets the collection at the given id for the given user.
+   * @param uid id for the user whose collection we're retrieving
+   * @param collection_id the id for the collection we're retrieving
+   * @return a list of maps that hold the data stored for a document in the collection we're
+   * retrieving
+   */
   @Override
   public List<Map<String, Object>> getCollection(String uid, String collection_id)
       throws InterruptedException, ExecutionException, IllegalArgumentException {
@@ -55,15 +55,11 @@ public class FirebaseUtilities implements StorageInterface {
     }
 
     // gets all documents in the collection 'collection_id' for user 'uid'
-
     Firestore db = FirestoreClient.getFirestore();
-    // 1: Make the data payload to add to your collection
     CollectionReference dataRef = db.collection("users").document(uid).collection(collection_id);
 
-    // 2: Get pin documents
     QuerySnapshot dataQuery = dataRef.get().get();
 
-    // 3: Get data from document queries
     List<Map<String, Object>> data = new ArrayList<>();
     for (QueryDocumentSnapshot doc : dataQuery.getDocuments()) {
       data.add(doc.getData());
@@ -72,12 +68,17 @@ public class FirebaseUtilities implements StorageInterface {
     return data;
   }
 
-  @Override
+
   /**
-   * Adds a new document "doc_id" to collection "collection_id" for user "uid"
-   * with data payload
+   * Adds a new document "doc_id" to collection "collection_id" for user "uid" with data payload
    * "data". Note, works best when the server is run through IntelliJ.
+   * @param uid id for the user who's gaining a new document
+   * @param collection_id id for the collection the new document is to be filed under
+   * @param doc_id id for the new document
+   * @param data payload that's to be in the new document
+   * @throws IllegalArgumentException if any vital parameters are null
    */
+  @Override
   public void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data)
       throws IllegalArgumentException {
     if (uid == null || collection_id == null || doc_id == null || data == null) {
@@ -92,18 +93,12 @@ public class FirebaseUtilities implements StorageInterface {
     // initializes a firestore client to interact with the database
     Firestore db = FirestoreClient.getFirestore();
 
-    // retrieves a reference to the "words" collection created in AddWordHandler
-    // path: users/userID/words
     CollectionReference dataRef = db.collection("users").document(uid).collection(collection_id);
 
-    // creates a reference to the document to be made
-    // path: users/userID/words/wordID
     DocumentReference docRef = dataRef.document(doc_id);
 
     try {
       System.out.println("Attempting to write data: " + data.toString());
-      // adds `data` to the document. at this point, the doc is created.
-      // if the doc already exists, its content is overwritten with `data`
       docRef.set(data).get();
       System.out.println("Successfully added document with ID: " + doc_id);
     } catch (Exception e) {
@@ -111,6 +106,14 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
+  /**
+   * Removes a document "doc_id" from collection "collection_id" for user "uid". Note, works best
+   * when the server is run through IntelliJ.
+   * @param uid id for the user who's gaining a new document
+   * @param collection_id id for the collection the new document is to be filed under
+   * @param doc_id id for the document to be deleted
+   * @throws IllegalArgumentException if any vital parameters are null
+   */
   public void deleteDocument(String uid, String collection_id, String doc_id)
       throws InterruptedException, ExecutionException {
     if (uid == null || collection_id == null || doc_id == null) {
@@ -135,19 +138,13 @@ public class FirebaseUtilities implements StorageInterface {
     System.out.println("Successfully deleted document with ID: " + doc_id);
   }
 
-  private void deleteDocumentHelper(DocumentReference doc) {
-    // for each subcollection, run deleteCollection()
-    Iterable<CollectionReference> collections = doc.listCollections();
-    for (CollectionReference collection : collections) {
-      System.out.println("Successfully deleted collection: " + collection.getId());
-      deleteCollection(collection);
-    }
-    // then delete the document
-    doc.delete();
-  }
 
-  // recursively removes all the documents and collections inside a collection
-  // https://firebase.google.com/docs/firestore/manage-data/delete-data#collections
+
+  /**
+   * Recursively removes all the documents and collections inside a collection! More info:
+   * <a href="https://firebase.google.com/docs/firestore/manage-data/delete-data#collections">here.</a>
+   * @param collection reference to the collection that's to be wiped out
+   */
   private void deleteCollection(CollectionReference collection) {
     try {
 
@@ -161,17 +158,27 @@ public class FirebaseUtilities implements StorageInterface {
         System.out.println("Successfully deleted collection: " + doc.getId());
       }
 
-      // NOTE: the query to documents may be arbitrarily large. A more robust
-      // solution would involve batching the collection.get() call.
     } catch (Exception e) {
       System.err.println("Error deleting collection : " + e.getMessage());
     }
   }
 
+  /**
+   * Getter for the Firestore database object.
+   * @return the Firestore database object
+   */
   public static Firestore getDb() {
     return FirestoreClient.getFirestore();
   }
 
+  /**
+   * Given a userId, a draftId, and a Piece object, modifies the draft document corresponding to the
+   * draftId. Specifically, adds an entry to the pieces array on the draft document, and adds as an
+   * entry to the usedInDrafts list in a piece's document.
+   * @param userId id of the user who's saving the piece
+   * @param draftId id of the draft the piece is being saved to
+   * @param piece piece object being saved
+   */
   public static void savePieceToDraft(String userId, String draftId, Piece piece) throws Exception {
     Firestore db = getDb();
     DocumentReference draftDoc = db
@@ -191,6 +198,14 @@ public class FirebaseUtilities implements StorageInterface {
     piecesDoc.update(update2).get();
   }
 
+  /**
+   * Given a userId, a draftId, and a pieceId, modifies the draft document corresponding to the
+   * draftId. Specifically, removes an entry from the pieces array on the draft document, and removes
+   * as an entry from the usedInDrafts list in a piece's document.
+   * @param userId id of the user who's removing the piece
+   * @param draftId id of the draft the piece is being removed from
+   * @param pieceId id of the piece object being removed
+   */
   public static void removePieceFromDraft(String userId, String draftId, String pieceId) throws Exception {
     Firestore db = getDb();
 
@@ -202,6 +217,7 @@ public class FirebaseUtilities implements StorageInterface {
 
     DocumentSnapshot draftSnapshot = draftDoc.get().get();
 
+    // remember that the thumbnails should reflect the piece content, so adjust those too
     if (draftSnapshot.exists()) {
       List<String> pieces = (List<String>) draftSnapshot.get("pieces");
       List<String> thumbnails = (List<String>) draftSnapshot.get("thumbnails");
@@ -233,6 +249,14 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
+
+  /**
+   * Retrieves a Piece object from the Firestore "pieces" collection by its ID.
+   *
+   * @param pieceId the ID of the piece to retrieve
+   * @return a Piece object if found, otherwise, returns null
+   * @throws Exception if an error occurs during Firestore access
+   */
   public static Piece getPieceById(String pieceId) throws Exception {
     Firestore db = getDb();
     DocumentSnapshot doc = db.collection("pieces").document(pieceId).get().get();
@@ -260,6 +284,14 @@ public class FirebaseUtilities implements StorageInterface {
         (ArrayList<String>) data.get("usedInDrafts"));
   }
 
+  /**
+   * Retrieves the draft document for a specific user and draftId.
+   *
+   * @param userId the ID of the user who owns the draft
+   * @param draftId the ID of the draft to retrieve
+   * @return a map representing the draft's data fields if found, or an empty map if not found
+   * @throws Exception if an error occurs while retrieving the document from Firestore
+   */
   public static Map<String, Object> getDraftById(String userId, String draftId) throws Exception {
     Firestore db = getDb();
     DocumentReference draftDoc = db
@@ -278,6 +310,14 @@ public class FirebaseUtilities implements StorageInterface {
     }
   }
 
+  /**
+   * Retrieves the list of piece IDs associated with a specific draft.
+   *
+   * @param userId the ID of the user who owns the draft
+   * @param draftId the ID of the draft to retrieve pieces from
+   * @return a list of piece IDs from the "pieces" array field in the draft document; returns an empty list if none found
+   * @throws Exception if an error occurs during Firestore access
+   */
   public static List<String> getPiecesFromDraft(String userId, String draftId) throws Exception {
     Firestore db = getDb();
     DocumentReference draftDoc = db
@@ -295,7 +335,13 @@ public class FirebaseUtilities implements StorageInterface {
     return pieces;
   }
 
-  // for testing
+
+  /**
+   * Saves a new Piece object to the Firestore "pieces" collection.
+   *
+   * @param piece the Piece object to be saved
+   * @throws Exception if an error occurs during Firestore write operation
+   */
   public static void savePiece(Piece piece) throws Exception {
     Firestore db = getDb();
 
@@ -315,9 +361,17 @@ public class FirebaseUtilities implements StorageInterface {
     db.collection("pieces").document(piece.getId()).set(pieceData).get();
   }
 
-  public static DocumentReference getUserDoc(String uid, String docId) {
+  /**
+   * Returns a reference to a specific document inside the "drafts" subcollection of a user.
+   *
+   * @param uid the ID of the user
+   * @param docId the ID of the document within the user's "drafts" subcollection
+   * @return a DocumentReference to the specified draft document
+   * @throws IllegalArgumentException if either uid or docId is null
+   */
+  public static DocumentReference getUserDraftDoc(String uid, String docId) {
     if (uid == null || docId == null) {
-      throw new IllegalArgumentException("getUserDoc: uid, collectionId, and docId cannot be null");
+      throw new IllegalArgumentException("getUserDraftDoc: uid, collectionId, and docId cannot be null");
     }
 
     return getDb()
