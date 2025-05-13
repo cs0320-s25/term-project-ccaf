@@ -17,8 +17,15 @@
   }
   
 @layer components {
-    .btn-outline-rounded {
-      @apply inline-block px-5 py-2 text-base font-semibold rounded-full bg-gray-100 text-black hover:bg-gray-200 transition;
-    }
+  .btn-outline-rounded {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2 text-base font-semibold rounded-full bg-gray-100 text-black hover:bg-gray-200 transition;
   }
+}
+
+@layer components {
+  .dropdown-btn {
+    @apply inline-flex items-center justify-center gap-1 px-5 py-2 text-base font-semibold bg-gray-100 text-black hover:bg-gray-200 rounded-full transition;
+  }
+}
+
   
