@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, X } from "lucide-react";
+import { Star, Trash, X } from "lucide-react";
 import { useDrafts } from "@/app/my-drafts/useDrafts";
 import { useUser } from "@clerk/clerk-react";
 
@@ -30,9 +30,11 @@ export type Draft = {
 
 interface ProductCardProps {
   piece: Piece;
+  onDraftPage: boolean;
+  onRemove?: (pieceId: string) => void;
 }
 
-export function ProductCard({ piece }: ProductCardProps) {
+export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) {
   const { user } = useUser();
   const uid = user?.id;
   const [saved, setSaved] = useState(false);
@@ -93,7 +95,7 @@ export function ProductCard({ piece }: ProductCardProps) {
     }
   }, [drafts, pendingSaveDraftName]);
 
-  // console.log("Image URL:", product.imageUrl);
+
 
   return (
     <div className="border rounded-lg overflow-hidden group relative">
@@ -121,6 +123,19 @@ export function ProductCard({ piece }: ProductCardProps) {
               }`}
             />
           </button>
+
+          {onDraftPage && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onRemove?.(piece.id);
+              }}
+              className="absolute top-2 left-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+            >
+              <Trash className="h-5 w-5 text-red-500" />
+            </button>
+          )}
         </div>
 
         <div className="p-4">

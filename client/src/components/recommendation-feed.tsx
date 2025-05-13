@@ -44,10 +44,11 @@ export function RecommendationFeed() {
                 condition: piece.condition, 
                 tags: piece.tags,
               }}
+              onDraftPage={false}
             />
           ))
         ) : (
-          <p>No recommendations available.</p>
+          <p>no recommendations available.</p>
         )}
       </div>
     </section>

@@ -59,3 +59,11 @@ export async function removeDraft(uid: string, draftId: string) {
     draftId: draftId
   });
 }
+
+export async function removeFromDraft(uid: string, draftId: string, pieceId: string) {
+  return await queryAPI("remove-piece", {
+    userId: uid,
+    draftId: draftId,
+    pieceId: pieceId
+  }); 
+}
