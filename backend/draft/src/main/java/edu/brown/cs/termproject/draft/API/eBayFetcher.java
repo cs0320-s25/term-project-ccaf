@@ -12,15 +12,23 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 import java.io.IOException;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class eBayFetcher {
 
   private static final String EBAY_API_URL = "https://svcs.ebay.com/services/search/FindingService/v1";
-  private static final String APP_ID = System.getenv("SANDBOX_APP_ID");
+  private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+  private static final String APP_ID = dotenv.get("EBAY_APP_ID");
   private static final String GLOBAL_ID = "EBAY-US"; 
   private static final String SERVICE_VERSION = "1.0.0";
 
+
+
   public JsonObject searchEbay(String query) throws Exception {
+    System.out.println("eBay APP_ID: " + APP_ID);
+    if (APP_ID == null || APP_ID.isBlank()) {
+      throw new RuntimeException("Missing EBAY_APP_ID — please set your App ID as an environment variable.");
+    }
     // encode the search query for the URL
     String encodedQuery = URLEncoder.encode(query, "UTF-8");
 
@@ -35,7 +43,10 @@ public class eBayFetcher {
     // open a connection and get the response
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
-    connection.setRequestProperty("Content-Type", "application/json");
+    connection.setRequestProperty("X-EBAY-SOA-REQUEST-DATA-FORMAT", "JSON");
+    connection.setRequestProperty("X-EBAY-SOA-RESPONSE-DATA-FORMAT", "JSON");
+    connection.setRequestProperty("X-EBAY-SOA-SECURITY-APPNAME", APP_ID);
+
 
     try {
       // get the HTTP response code
@@ -43,6 +54,14 @@ public class eBayFetcher {
 
       // if the response code is not code 200, it means there is an error
       if (responseCode != HttpURLConnection.HTTP_OK) {
+        BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+        StringBuilder errorMsg = new StringBuilder();
+        String line;
+        while ((line = errorReader.readLine()) != null) {
+          errorMsg.append(line);
+        }
+        System.err.println("eBay API Error Response: " + errorMsg);
+
         throw new IOException("HTTP error code: " + responseCode);
       }
 
