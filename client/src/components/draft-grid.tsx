@@ -62,7 +62,7 @@ export function DraftGrid() {
               : placeholders;
 
             return (
-              <Link aria-label={"The name of this draft is " + draft.name + ", and it has " + draft.pieces.length + " piece(s)."} key={draft.id} href={`/draft/${draft.id}`} className="block group">
+              <Link aria-label={"draft name: " + draft.name + ", and it has " + draft.pieces.length + " piece(s)."} key={draft.id} href={`/draft/${draft.id}`} className="block group">
                 <div className="grid grid-cols-2 gap-1 rounded-lg overflow-hidden border aspect-square">
                   {thumbnails.map((src, i) => (
                     <div key={i} className="relative aspect-square">
@@ -71,8 +71,8 @@ export function DraftGrid() {
                   ))}
                 </div>
                 <div className="mt-3">
-                  <h3 className="font-medium tracking-tight">{draft.name}</h3>
-                  <p className="text-sm text-muted-foreground" aria-label="">{draft.count ?? 0} pieces</p>
+                  <h3 className="font-medium tracking-tight" aria-label="draft name">{draft.name}</h3>
+                  <p className="text-sm text-muted-foreground" aria-label="piece count">{draft.count ?? 0} pieces</p>
                 </div>
               </Link>
             );
