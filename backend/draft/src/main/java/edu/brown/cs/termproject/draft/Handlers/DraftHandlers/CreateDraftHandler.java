@@ -44,6 +44,14 @@ public class CreateDraftHandler implements Route {
         return gson.toJson(responseMap);
       }
 
+      if (!this.storage.isDraftNameAvailable(draftName)) {
+        responseMap.put("response_type", "failure");
+        responseMap.put("error", "Draft name is not available");
+        System.out.println("WE IN THIS HOE");
+        return gson.toJson(responseMap);
+      }
+
+
       String draftId = UUID.randomUUID().toString();
 
       Map<String, Object> draftData = new HashMap<>();
@@ -52,7 +60,8 @@ public class CreateDraftHandler implements Route {
       draftData.put("pieces", new ArrayList<>());
       draftData.put("thumbnails", new ArrayList<>());
 
-      storage.addDocument(userId, "drafts", draftId, draftData);
+
+      storage.addDraft(userId, "drafts", draftId, draftData);
 
       responseMap.put("response_type", "success");
       responseMap.put("draft", draftData);

@@ -8,12 +8,14 @@ import edu.brown.cs.termproject.draft.Piece;
 
 public interface StorageInterface {
 
-  void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data);
+  void addDraft(String uid, String collection_id, String doc_id, Map<String, Object> data);
 
   List<Map<String, Object>> getCollection(String uid, String collection_id)
       throws InterruptedException, ExecutionException;
 
-  void deleteDocument(String uid, String collection_id, String doc_id) throws InterruptedException, ExecutionException;
+  void deleteDraft(String uid, String collection_id, String doc_id) throws InterruptedException, ExecutionException;
+
+  boolean isDraftNameAvailable(String draftName);
 
   List<Piece> getSavedPieces(String uid) throws Exception;
 

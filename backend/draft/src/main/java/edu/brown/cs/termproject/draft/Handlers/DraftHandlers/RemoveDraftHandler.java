@@ -42,7 +42,7 @@ public class RemoveDraftHandler implements Route {
         return gson.toJson(responseMap);
       }
 
-      storageHandler.deleteDocument(userId, "drafts", draftId);
+      storageHandler.deleteDraft(userId, "drafts", draftId);
 
       responseMap.put("response_type", "success");
       responseMap.put("message", "Draft removed successfully.");

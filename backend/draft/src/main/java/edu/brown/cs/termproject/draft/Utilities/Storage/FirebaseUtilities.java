@@ -20,11 +20,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public class FirebaseUtilities implements StorageInterface {
+
+  Set<String> draftNames;
 
   public FirebaseUtilities() throws IOException {
     String workingDirectory = System.getProperty("user.dir");
@@ -38,6 +42,8 @@ public class FirebaseUtilities implements StorageInterface {
         .build();
 
     FirebaseApp.initializeApp(options);
+
+    draftNames = new HashSet<>();
   }
 
   /**
@@ -68,6 +74,18 @@ public class FirebaseUtilities implements StorageInterface {
     return data;
   }
 
+  /**
+   * Checks if the passed in draft name is available, because repeats mess with draft display UI.
+   * @param draftName proposed draft name
+   * @return true if the name is available, false otherwise
+   */
+  @Override
+  public boolean isDraftNameAvailable(String draftName) {
+    System.out.println("isDraftNameAvailable: " + draftName);
+    System.out.println("isDraftNameAvailable: " + draftNames.contains(draftName));
+    System.out.println("isDraftNameAvailable: " + draftNames);
+    return !this.draftNames.contains(draftName);
+  }
 
   /**
    * Adds a new document "doc_id" to collection "collection_id" for user "uid" with data payload
@@ -79,15 +97,15 @@ public class FirebaseUtilities implements StorageInterface {
    * @throws IllegalArgumentException if any vital parameters are null
    */
   @Override
-  public void addDocument(String uid, String collection_id, String doc_id, Map<String, Object> data)
+  public void addDraft(String uid, String collection_id, String doc_id, Map<String, Object> data)
       throws IllegalArgumentException {
     if (uid == null || collection_id == null || doc_id == null || data == null) {
       throw new IllegalArgumentException(
-          "addDocument: uid, collection_id, doc_id, or data cannot be null");
+          "addDraft: uid, collection_id, doc_id, or data cannot be null");
     }
     if (uid.isBlank() || collection_id.isBlank() || doc_id.isBlank() || data.isEmpty()) {
       throw new IllegalArgumentException(
-          "addDocument: uid, collection_id, doc_id, or data cannot be blank");
+          "addDraft: uid, collection_id, doc_id, or data cannot be blank");
     }
 
     // initializes a firestore client to interact with the database
@@ -101,6 +119,7 @@ public class FirebaseUtilities implements StorageInterface {
       System.out.println("Attempting to write data: " + data.toString());
       docRef.set(data).get();
       System.out.println("Successfully added document with ID: " + doc_id);
+      this.draftNames.add(data.get("name").toString());
     } catch (Exception e) {
       System.err.println("Error writing document: " + e.getMessage());
     }
@@ -114,10 +133,10 @@ public class FirebaseUtilities implements StorageInterface {
    * @param doc_id id for the document to be deleted
    * @throws IllegalArgumentException if any vital parameters are null
    */
-  public void deleteDocument(String uid, String collection_id, String doc_id)
+  public void deleteDraft(String uid, String collection_id, String doc_id)
       throws InterruptedException, ExecutionException {
     if (uid == null || collection_id == null || doc_id == null) {
-      throw new IllegalArgumentException("deleteDocument: uid, collection_id, or doc_id cannot be null");
+      throw new IllegalArgumentException("deleteDraft: uid, collection_id, or doc_id cannot be null");
     }
 
     // Initialize Firestore
@@ -125,6 +144,18 @@ public class FirebaseUtilities implements StorageInterface {
 
     // Reference to the document to be deleted
     DocumentReference docRef = db.collection("users").document(uid).collection(collection_id).document(doc_id);
+
+    ApiFuture<DocumentSnapshot> future = docRef.get();
+    DocumentSnapshot document = future.get();
+
+    String draftName;
+    if (document.exists()) {
+      draftName = document.getString("name"); // or the actual field name
+      System.out.println("Draft name before deletion: " + draftName);
+    } else {
+      System.out.println("No such draft found to delete.");
+      return;
+    }
 
     Iterable<CollectionReference> subcollections = docRef.listCollections();
     for (CollectionReference subcollection : subcollections) {
@@ -136,6 +167,7 @@ public class FirebaseUtilities implements StorageInterface {
     deleteFuture.get(); // Wait for the deletion to complete
 
     System.out.println("Successfully deleted document with ID: " + doc_id);
+    this.draftNames.remove(draftName);
   }
 
 
