@@ -28,4 +28,12 @@
   }
 }
 
-  
+@layer components {
+  .modal-header {
+    @apply text-lg font-semibold text-black mb-2 text-center;
+  }
+
+  .modal-body {
+    @apply text-sm text-gray-600 leading-relaxed text-left mb-4;
+  }
+}

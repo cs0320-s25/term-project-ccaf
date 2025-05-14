@@ -43,6 +43,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
   const [pendingSaveDraftName, setPendingSaveDraftName] = useState<string | null>(null);
   const { createDraft, addToDraftWrapper, drafts } = useDrafts(uid);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
 
   // validate and sanitize the image URL
@@ -148,7 +149,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                onRemove?.(piece.id);
+                setShowDeleteConfirm(true);
               }}
               className="absolute top-2 left-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
             >
@@ -170,12 +171,12 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
       </div>
     )}
 
-      {/* Modal */}
+      {/* save modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-80">
             <div className="flex justify-between items-center mb-4">
-              <h2>save to a draft</h2>
+              <h2 className="modal-header">save to a draft</h2>
               <button onClick={() => setShowModal(false)}>
                 <X className="h-5 w-5" />
               </button>
@@ -212,6 +213,34 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
           </div>
         </div>
       )}
+
+      {showDeleteConfirm && (
+      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-md w-80">
+          <h2 className="modal-header">are you sure?</h2>
+          <p className="modal-body">
+            once you delete a piece, you can't undo!
+          </p>
+          <div className="flex justify-center space-x-3">
+            <button
+              className="px-4 py-2 text-sm bg-gray-100 rounded hover:bg-gray-200"
+              onClick={() => setShowDeleteConfirm(false)}
+            >
+              no
+            </button>
+            <button
+              className="px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 flex justify-center"
+              onClick={() => {
+                onRemove?.(piece.id);
+                setShowDeleteConfirm(false);
+              }}
+            >
+              yes, delete
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 }
