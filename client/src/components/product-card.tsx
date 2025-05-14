@@ -103,6 +103,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
         href={{ pathname: `/product/${piece.id}` }}
         className="block"
         onClick={handleProductClick}
+        aria-label={"Piece titled: " + piece.title}
       >
         <div className="relative aspect-square bg-gray-100 overflow-hidden">
           <Image
@@ -116,6 +117,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
           <button
             onClick={toggleModal}
             className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+            aria-label={"button to save a piece to a draft"}
           >
             <Star
               className={`h-5 w-5 ${
@@ -132,6 +134,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
                 onRemove?.(piece.id);
               }}
               className="absolute top-2 left-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+              aria-label={"button to remove a piece from its draft"}
             >
               <Trash className="h-5 w-5 text-red-500" />
             </button>
@@ -150,7 +153,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-80">
             <div className="flex justify-between items-center mb-4">
-              <h2>Save to Draft</h2>
+              <h2>save to a draft</h2>
               <button onClick={() => setShowModal(false)}>
                 <X className="h-5 w-5" />
               </button>
@@ -163,24 +166,25 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
                     key={draft.id}
                     onClick={() => handleSave(draft.id, piece)}
                     className="block w-full text-left p-2 border rounded hover:bg-gray-100"
+                    aria-label={"button to save to draft " + draft.name}
                   >
                     {draft.name}
                   </button>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">no drafts yet :(</p>
+                <p className="text-sm text-muted-foreground" aria-label={"no draft label"}>no drafts yet :(</p>
               )}
             </div>
 
             <div className="mt-4">
               <input
                 type="text"
-                placeholder="New draft name"
+                placeholder="new draft name"
                 value={draftName}
                 onChange={(e) => setDraftName(e.target.value)}
                 className="w-full border px-2 py-1 rounded mb-2"
               />
-              <button className="btn-outline-rounded" onClick={handleNewDraft}>
+              <button className="btn-outline-rounded" onClick={handleNewDraft} aria-label="button to save piece to new draft">
                 create & save
               </button>
             </div>
