@@ -41,6 +41,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
   const [showModal, setShowModal] = useState(false);
   const [draftName, setDraftName] = useState("");
   const [pendingSaveDraftName, setPendingSaveDraftName] = useState<string | null>(null);
+  const [errMessage, setErrMessage] = useState("");
 
   const { createDraft, addToDraftWrapper, drafts } = useDrafts(uid);
 
@@ -93,10 +94,16 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
   const handleNewDraft = () => {
     const trimmedName = draftName.trim();
     if (!trimmedName) return;
-  
-    createDraft(trimmedName); // This triggers the state update async
-    setPendingSaveDraftName(trimmedName); // Track the draft we're waiting for
-    setDraftName("");
+    createDraft(draftName)
+      .then(() => {
+        setDraftName("");
+        setShowModal(false);
+        setPendingSaveDraftName(trimmedName); // Track the draft we're waiting for
+        setDraftName("");
+      })
+      .catch((err) => {
+        setErrMessage(err.message);
+      });
   };
 
   useEffect(() => {
@@ -191,6 +198,10 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
             </div>
 
             <div className="mt-4">
+              {/* Show error message if draft name is a duplicate */}
+              {errMessage && (
+                <p className="text-sm text-red-600 mb-2" role="alert">{errMessage}</p>
+              )}
               <input
                 type="text"
                 placeholder="new draft name"

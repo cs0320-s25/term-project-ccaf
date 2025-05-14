@@ -14,12 +14,18 @@ export function DraftGrid() {
 
   const [showModal, setShowModal] = useState(false);
   const [draftName, setDraftName] = useState("");
+  const [errMessage, setErrMessage] = useState("")
 
   const handleCreate = () => {
     if (draftName.trim()) {
-      createDraft(draftName.trim());
-      setDraftName("");
-      setShowModal(false);
+      createDraft(draftName)
+        .then(() => {
+          setDraftName("");
+          setShowModal(false);
+        })
+        .catch((err) => {
+          setErrMessage(err.message);
+        });
     }
   };
 
@@ -85,6 +91,11 @@ export function DraftGrid() {
                 <X className="h-5 w-5" />
               </button>
             </div>
+
+              {/* Show error message if draft name is a duplicate */}
+              {errMessage && (
+                <p className="text-sm text-red-600 mb-2" role="alert">{errMessage}</p>
+              )}
 
             <input
               type="text"

@@ -11,10 +11,10 @@ export default function Header() {
           draft
         </Link>
         <nav className="flex items-center gap-6">
-          <Link href="/" className="text-sm">
+          <Link href="/" className="text-sm" aria-label="home/search page">
             explore
           </Link>
-          <Link href="/my-drafts" className="text-sm">
+          <Link href="/my-drafts" className="text-sm" aria-label="draft page (gallery)">
             my drafts
           </Link>
 
