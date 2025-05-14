@@ -41,8 +41,9 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
   const [showModal, setShowModal] = useState(false);
   const [draftName, setDraftName] = useState("");
   const [pendingSaveDraftName, setPendingSaveDraftName] = useState<string | null>(null);
-
   const { createDraft, addToDraftWrapper, drafts } = useDrafts(uid);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
 
   // validate and sanitize the image URL
   const isValidUrl = (url: string) => {
@@ -88,14 +89,18 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
     addToDraftWrapper(uid, draftId, piece);
     setSaved(true);
     setShowModal(false);
+    setShowConfirmation(true);
+    setTimeout(() => {
+    setShowConfirmation(false);
+  }, 2500);
   };
 
   const handleNewDraft = () => {
     const trimmedName = draftName.trim();
     if (!trimmedName) return;
   
-    createDraft(trimmedName); // This triggers the state update async
-    setPendingSaveDraftName(trimmedName); // Track the draft we're waiting for
+    createDraft(trimmedName); // triggers the state update async
+    setPendingSaveDraftName(trimmedName); // track the draft we're waiting for
     setDraftName("");
   };
 
@@ -159,12 +164,18 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
         </div>
       </Link>
 
+      {showConfirmation && (
+      <div className="absolute bottom-2 left-2 bg-white text-sm text-green-600 border border-green-300 px-3 py-1 rounded shadow transition">
+        saved to draft!
+      </div>
+    )}
+
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-80">
             <div className="flex justify-between items-center mb-4">
-              <h2>Save to Draft</h2>
+              <h2>save to a draft</h2>
               <button onClick={() => setShowModal(false)}>
                 <X className="h-5 w-5" />
               </button>
@@ -189,12 +200,12 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
             <div className="mt-4">
               <input
                 type="text"
-                placeholder="New draft name"
+                placeholder="new draft name"
                 value={draftName}
                 onChange={(e) => setDraftName(e.target.value)}
                 className="w-full border px-2 py-1 rounded mb-2"
               />
-              <button className="btn-outline-rounded" onClick={handleNewDraft}>
+              <button className="btn-outline-rounded mt-2" onClick={handleNewDraft}>
                 create & save
               </button>
             </div>
