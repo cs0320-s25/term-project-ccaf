@@ -3,12 +3,15 @@ package edu.brown.cs.termproject.draft.Handlers;
 import com.google.gson.Gson;
 import edu.brown.cs.termproject.draft.Piece;
 import edu.brown.cs.termproject.draft.RecommendationCreator;
+import edu.brown.cs.termproject.draft.PaletteCreator;
 import edu.brown.cs.termproject.draft.Utilities.APIUtilities;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,7 +47,8 @@ public class RecommendationHandler implements Route {
             // Fetch pieces for each search term
             for (String searchTerm : searchTerms) {
                 try {
-                    List<Piece> ebayPieces = APIUtilities.fetchFromEbay(searchTerm);
+                    String encodedTerm = URLEncoder.encode(searchTerm, StandardCharsets.UTF_8);
+                    List<Piece> ebayPieces = APIUtilities.fetchFromEbay(encodedTerm);
                     if (ebayPieces != null && !ebayPieces.isEmpty()) {
                         allAvailablePieces.addAll(ebayPieces);
                         System.out.println(
@@ -56,7 +60,7 @@ public class RecommendationHandler implements Route {
                 }
             }
 
-            // Add global pieces
+            // add global pieces for contingency if ebay call doesn't work
             allAvailablePieces.addAll(storage.getGlobalPieces());
 
             // Remove duplicates
@@ -81,8 +85,19 @@ public class RecommendationHandler implements Route {
 
             System.out.println("Available pieces after filtering: " + availablePieces.size());
 
-            // TODO: Get user's palette from storage when implemented
-            Map<String, Double> palette = new HashMap<>();
+           List<Piece> clickedPieces = storage.getClickedPieces(uid);
+           List<Piece> onboardingPieces = storage.getOnboardingResponses(uid);
+
+           List<String> onboardingKeywords = new ArrayList<>();
+           for (Piece p : onboardingPieces) {
+           onboardingKeywords.addAll(p.getTags());
+           }
+           System.out.println("Onboarding keywords: " + onboardingKeywords);
+
+            // build user's palette
+            Map<String, Double> palette = PaletteCreator.createPalette(savedPieces,
+            onboardingKeywords, clickedPieces);
+            System.out.println("Generated palette: " + palette);
 
             List<Piece> recommendations = RecommendationCreator.recommendPieces(
                 availablePieces,
