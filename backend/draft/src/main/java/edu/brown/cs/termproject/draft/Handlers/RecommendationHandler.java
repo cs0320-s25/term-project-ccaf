@@ -38,26 +38,26 @@ public class RecommendationHandler implements Route {
                 return GSON.toJson(Map.of("error", "Missing or invalid uid"));
             }
 
-            // Get ALL saved pieces across ALL drafts
-            Set<String> allSavedPieceIds = new HashSet<>();
-            List<Map<String, Object>> drafts = storage.getCollection(uid, "drafts");
+            // Get ALL IDs to exclude (both saved and clicked pieces)
+            Set<String> excludedIds = new HashSet<>();
 
-            // Enhanced piece ID collection from drafts
+            // Get clicked pieces to exclude but use their tags for recommendations
+            List<Piece> clickedPieces = storage.getClickedPieces(uid);
+            clickedPieces.forEach(piece -> excludedIds.add(piece.getId()));
+
+            // Add saved pieces to excluded IDs
+            List<Map<String, Object>> drafts = storage.getCollection(uid, "drafts");
             if (drafts != null) {
                 for (Map<String, Object> draft : drafts) {
-                    // Get pieces array from draft
                     Object piecesObj = draft.get("pieces");
                     if (piecesObj instanceof List<?>) {
                         List<?> pieces = (List<?>) piecesObj;
                         for (Object piece : pieces) {
-                            // Handle both String IDs and Map objects
-                            if (piece instanceof String) {
-                                allSavedPieceIds.add((String) piece);
-                            } else if (piece instanceof Map) {
+                            if (piece instanceof Map) {
                                 @SuppressWarnings("unchecked")
                                 Map<String, Object> pieceMap = (Map<String, Object>) piece;
                                 if (pieceMap.containsKey("id")) {
-                                    allSavedPieceIds.add(pieceMap.get("id").toString());
+                                    excludedIds.add(pieceMap.get("id").toString());
                                 }
                             }
                         }
@@ -65,31 +65,25 @@ public class RecommendationHandler implements Route {
                 }
             }
 
-            // Debug log
-            System.out.println("Excluded piece IDs: " + allSavedPieceIds);
-
-            // Filter global pieces BEFORE processing
+            // Filter available pieces BEFORE processing
             List<Piece> availablePieces = storage.getGlobalPieces()
                 .stream()
-                .filter(piece -> !allSavedPieceIds.contains(piece.getId()))
+                .filter(piece -> !excludedIds.contains(piece.getId()))
                 .collect(Collectors.toList());
 
             // Create recommendation palette
             Map<String, Double> palette = PaletteCreator.createPalette(
                 storage.getSavedPieces(uid),
                 extractOnboardingKeywords(storage.getOnboardingResponses(uid)),
-                storage.getClickedPieces(uid)
+                clickedPieces  // Use clicked pieces for taste but don't show them
             );
 
-            // Get recommendations from filtered piece list
             List<Piece> recommendations = RecommendationCreator.recommendPieces(
-                availablePieces,  // Using pre-filtered list
+                availablePieces,
                 palette,
-                allSavedPieceIds, // Double-check exclusion
+                excludedIds,
                 36
             );
-
-            System.out.println("Recommendation count after filtering: " + recommendations.size());
 
             return GSON.toJson(Map.of(
                 "status", "success",
@@ -97,7 +91,6 @@ public class RecommendationHandler implements Route {
             ));
 
         } catch (Exception e) {
-            System.out.println("Error in recommendations: " + e.getMessage());
             e.printStackTrace();
             response.status(500);
             return GSON.toJson(Map.of("error", "Recommendation failed: " + e.getMessage()));
