@@ -5,8 +5,19 @@ import { useEffect, useState } from "react";
 import { ProductCard, Piece } from "@/components/product-card";
 import { SearchBar } from "@/components/search-bar";
 import { ChevronDown } from "lucide-react";
+import { useUser } from "@clerk/clerk-react";
 
 export default function SearchPage() {
+  const { user } = useUser();
+  const uid = user?.id;
+
+  // Add this to see the user ID in console
+  useEffect(() => {
+    if (uid) {
+      console.log("Current User ID:", uid);
+    }
+  }, [uid]);
+  
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
 
