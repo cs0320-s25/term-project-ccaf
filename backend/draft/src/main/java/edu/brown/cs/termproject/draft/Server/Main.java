@@ -16,7 +16,7 @@ import com.google.gson.JsonObject;
 
 import spark.Spark;
 
-public class Main {
+public class  Main {
   // Create empty mock objects instead of loading from files
   private static final JsonObject poshmarkMock = createMockDataP("poshmark");
   private static final JsonObject depopMock = createMockDataD("depop");

@@ -44,6 +44,9 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
   const [errMessage, setErrMessage] = useState("");
 
   const { createDraft, addToDraftWrapper, drafts } = useDrafts(uid);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
 
   // validate and sanitize the image URL
   const isValidUrl = (url: string) => {
@@ -89,6 +92,10 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
     addToDraftWrapper(uid, draftId, piece);
     setSaved(true);
     setShowModal(false);
+    setShowConfirmation(true);
+    setTimeout(() => {
+    setShowConfirmation(false);
+  }, 2500);
   };
 
   const handleNewDraft = () => {
@@ -104,6 +111,10 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
       .catch((err) => {
         setErrMessage(err.message);
       });
+  
+    createDraft(trimmedName); // triggers the state update async
+    setPendingSaveDraftName(trimmedName); // track the draft we're waiting for
+    setDraftName("");
   };
 
   useEffect(() => {
@@ -152,7 +163,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                onRemove?.(piece.id);
+                setShowDeleteConfirm(true);
               }}
               className="absolute top-2 left-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
               aria-label="button to remove piece from draft"
@@ -171,13 +182,21 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
         </div>
       </Link>
 
-      {/* Modal */}
+      {showConfirmation && (
+      <div className="absolute bottom-2 left-2 bg-white text-sm text-green-600 border border-green-300 px-3 py-1 rounded shadow transition">
+        saved to draft!
+      </div>
+    )}
+
+      {/* save modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-80">
             <div className="flex justify-between items-center mb-4">
               <h2 aria-label="modal title">save to a draft</h2>
-              <button onClick={() => setShowModal(false)} aria-label="close modal">
+              <button onClick={() => setShowModal(false)} aria-label="close modal"> </button
+              <h2 className="modal-header">save to a draft</h2>
+              <button onClick={() => setShowModal(false)}>
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -210,13 +229,14 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
               <input
                 type="text"
                 placeholder="new draft name"
+                placeholder="new draft name"
                 value={draftName}
                 onChange={(e) => setDraftName(e.target.value)}
                 className="w-full border px-2 py-1 rounded mb-2"
                 aria-label="input for new draft name"
               />
               <button
-                className="btn-outline-rounded"
+                className="btn-outline-rounded mt-2"
                 onClick={handleNewDraft}
                 aria-label="button to create and save new draft"
               >
@@ -226,6 +246,34 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
           </div>
         </div>
       )}
+
+      {showDeleteConfirm && (
+      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-md w-80">
+          <h2 className="modal-header">are you sure?</h2>
+          <p className="modal-body">
+            once you delete a piece, you can't undo!
+          </p>
+          <div className="flex justify-center space-x-3">
+            <button
+              className="px-4 py-2 text-sm bg-gray-100 rounded hover:bg-gray-200"
+              onClick={() => setShowDeleteConfirm(false)}
+            >
+              no
+            </button>
+            <button
+              className="px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 flex justify-center"
+              onClick={() => {
+                onRemove?.(piece.id);
+                setShowDeleteConfirm(false);
+              }}
+            >
+              yes, delete
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 }
