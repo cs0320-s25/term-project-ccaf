@@ -43,7 +43,7 @@ export function DraftGrid() {
   return (
     <div>
       {loading ? (
-        <p className="mt-8 text-center text-muted-foreground">loading drafts...</p>
+        <p className="mt-8 text-center text-muted-foreground" aria-label="view drafts is loading">loading drafts...</p>
       ) : drafts.length === 0 ? (
         <div>
           <p className="text-muted-foreground text-center mt-8" aria-label="no draft prompt">
