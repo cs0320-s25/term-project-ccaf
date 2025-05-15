@@ -33,27 +33,28 @@ public class RecommendationHandler implements Route {
 
         try {
             String uid = request.queryParams("uid");
+            System.out.println("Processing recommendations for uid: " + uid);
+
             if (uid == null || uid.trim().isEmpty()) {
                 response.status(400);
                 return GSON.toJson(Map.of("error", "Missing or invalid uid"));
             }
 
-            // Get ALL IDs to exclude (both saved and clicked pieces)
+            // Get ALL saved piece IDs from ALL drafts
             Set<String> excludedIds = new HashSet<>();
-
-            // Get clicked pieces to exclude but use their tags for recommendations
-            List<Piece> clickedPieces = storage.getClickedPieces(uid);
-            clickedPieces.forEach(piece -> excludedIds.add(piece.getId()));
-
-            // Add saved pieces to excluded IDs
             List<Map<String, Object>> drafts = storage.getCollection(uid, "drafts");
+
+            // Extract ALL piece IDs from ALL drafts
             if (drafts != null) {
                 for (Map<String, Object> draft : drafts) {
                     Object piecesObj = draft.get("pieces");
                     if (piecesObj instanceof List<?>) {
                         List<?> pieces = (List<?>) piecesObj;
                         for (Object piece : pieces) {
-                            if (piece instanceof Map) {
+                            // Handle both String IDs and full piece objects
+                            if (piece instanceof String) {
+                                excludedIds.add((String) piece);
+                            } else if (piece instanceof Map) {
                                 @SuppressWarnings("unchecked")
                                 Map<String, Object> pieceMap = (Map<String, Object>) piece;
                                 if (pieceMap.containsKey("id")) {
@@ -65,29 +66,54 @@ public class RecommendationHandler implements Route {
                 }
             }
 
-            // Filter available pieces BEFORE processing
+            System.out.println("Excluded piece IDs: " + excludedIds);
+
+            // Get available pieces AFTER filtering out saved ones
             List<Piece> availablePieces = storage.getGlobalPieces()
                 .stream()
                 .filter(piece -> !excludedIds.contains(piece.getId()))
                 .collect(Collectors.toList());
 
-            // Create recommendation palette
-            Map<String, Double> palette = PaletteCreator.createPalette(
-                storage.getSavedPieces(uid),
-                extractOnboardingKeywords(storage.getOnboardingResponses(uid)),
-                clickedPieces  // Use clicked pieces for taste but don't show them
-            );
+            System.out.println("Available pieces after filtering: " + availablePieces.size());
 
+            // Create recommendation palette
+            Map<String, Double> palette;
+            List<Piece> savedPieces = storage.getSavedPieces(uid);
+
+            if (!savedPieces.isEmpty()) {
+                palette = PaletteCreator.createPalette(
+                    savedPieces,
+                    extractOnboardingKeywords(storage.getOnboardingResponses(uid)),
+                    storage.getClickedPieces(uid)
+                );
+            } else {
+                // Fallback palette for new users
+                palette = Map.of(
+                    "casual", 1.0,
+                    "vintage", 0.9,
+                    "streetwear", 0.8,
+                    "trendy", 0.7
+                );
+            }
+
+            // Get recommendations
             List<Piece> recommendations = RecommendationCreator.recommendPieces(
                 availablePieces,
                 palette,
                 excludedIds,
-                36
+                50  // Increased limit for more recommendations
             );
+
+            System.out.println("Final recommendation count: " + recommendations.size());
 
             return GSON.toJson(Map.of(
                 "status", "success",
-                "recommendations", recommendations
+                "recommendations", recommendations,
+                "debugInfo", Map.of(
+                    "excludedCount", excludedIds.size(),
+                    "availableCount", availablePieces.size(),
+                    "recommendationCount", recommendations.size()
+                )
             ));
 
         } catch (Exception e) {

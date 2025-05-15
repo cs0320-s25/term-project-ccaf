@@ -29,16 +29,21 @@ public class RecommendationCreator {
             return 0.0;
         }
 
+        // Skip test/mock pieces
+        if (piece.getTitle().toLowerCase().contains("test") ||
+            piece.getSourceWebsite().toLowerCase().contains("test")) {
+            return 0.0;
+        }
+
         double score = 0.0;
         List<String> pieceTags = piece.getTags();
         Set<String> matchedCategories = new HashSet<>();
 
-        // Score based on tag matches with palette
+        // Score based on tag matches
         for (String tag : pieceTags) {
             if (palette.containsKey(tag.toLowerCase())) {
                 score += palette.get(tag.toLowerCase());
 
-                // Track matched category
                 String category = getCategoryFromTags(List.of(tag));
                 if (!category.equals("other")) {
                     matchedCategories.add(category);
@@ -46,16 +51,16 @@ public class RecommendationCreator {
             }
         }
 
-        // Boost score for items matching multiple categories
+        // Apply bonuses for better recommendations
         if (matchedCategories.size() > 1) {
-            score *= 1.2; // 20% boost for versatile items
+            score *= 1.3; // 30% boost for versatile items
         }
 
-        // Consider title keywords as additional signals
+        // Consider title keywords
         String[] titleWords = piece.getTitle().toLowerCase().split("\\s+");
         for (String word : titleWords) {
             if (palette.containsKey(word)) {
-                score += palette.get(word) * 0.5; // Half weight for title matches
+                score += palette.get(word) * 0.5;
             }
         }
 
