@@ -1,7 +1,13 @@
 package edu.brown.cs.termproject.draft.Handlers;
 
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.FieldValue;
+import com.google.cloud.firestore.Firestore;
+import com.google.firebase.cloud.FirestoreClient;
 import com.google.gson.Gson;
 import edu.brown.cs.termproject.draft.Utilities.Storage.FirebaseUtilities;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import spark.Request;
@@ -9,30 +15,76 @@ import spark.Response;
 import spark.Route;
 
 public class CheckUserHandler implements Route {
-
   @Override
   public Object handle(Request request, Response response) throws Exception {
-    Gson gson = new Gson();
-    Map<String, Object> responseMap = new HashMap<>();
+    response.type("application/json");
+    String uid = request.queryParams("uid");
+
+    if (uid == null || uid.trim().isEmpty()) {
+      response.status(400);
+      return new Gson().toJson(Map.of("error", "Missing uid parameter"));
+    }
 
     try {
-      String uid = request.queryParams("uid");
+      Firestore db = FirestoreClient.getFirestore();
+      DocumentReference userRef = db.collection("users").document(uid);
 
-      if (uid == null || uid.isEmpty()) {
-        responseMap.put("status", "error");
-        responseMap.put("message", "Missing user ID");
-        return gson.toJson(responseMap);
+      // Check if user exists
+      DocumentSnapshot snapshot = userRef.get().get();
+      boolean exists = snapshot.exists();
+
+      if (!exists) {
+        // Create new user document
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("createdAt", FieldValue.serverTimestamp());
+        userData.put("drafts", new ArrayList<>());
+        userData.put("saved", new ArrayList<>());
+
+        userRef.set(userData).get();
+        System.out.println("Created new user document for: " + uid);
+
+        return new Gson().toJson(Map.of(
+            "status", "success",
+            "message", "New user created",
+            "isNew", true
+        ));
       }
 
-      FirebaseUtilities db = new FirebaseUtilities();
-      db.createUser(uid);  // will only create if it doesn't exist
-      responseMap.put("status", "success");
-      responseMap.put("message", "User checked and created if not already existing.");
-      return gson.toJson(responseMap);
+      return new Gson().toJson(Map.of(
+          "status", "success",
+          "message", "User already exists",
+          "isNew", false
+      ));
+
     } catch (Exception e) {
-      responseMap.put("status", "error");
-      responseMap.put("message", "[CheckUserHandler] Server error: " + e.getMessage());
-      return gson.toJson(responseMap);
+      e.printStackTrace();
+      response.status(500);
+      return new Gson().toJson(Map.of("error", "Failed to check/create user: " + e.getMessage()));
     }
   }
+//  @Override
+//  public Object handle(Request request, Response response) throws Exception {
+//    Gson gson = new Gson();
+//    Map<String, Object> responseMap = new HashMap<>();
+//
+//    try {
+//      String uid = request.queryParams("uid");
+//
+//      if (uid == null || uid.isEmpty()) {
+//        responseMap.put("status", "error");
+//        responseMap.put("message", "Missing user ID");
+//        return gson.toJson(responseMap);
+//      }
+//
+//      FirebaseUtilities db = new FirebaseUtilities();
+//      db.createUser(uid);  // will only create if it doesn't exist
+//      responseMap.put("status", "success");
+//      responseMap.put("message", "User checked and created if not already existing.");
+//      return gson.toJson(responseMap);
+//    } catch (Exception e) {
+//      responseMap.put("status", "error");
+//      responseMap.put("message", "[CheckUserHandler] Server error: " + e.getMessage());
+//      return gson.toJson(responseMap);
+//    }
+//  }
 }
