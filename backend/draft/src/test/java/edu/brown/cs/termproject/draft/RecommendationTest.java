@@ -9,11 +9,15 @@ import edu.brown.cs.termproject.draft.Exceptions.*;
 public class RecommendationTest {
     private List<Piece> allPieces;
     private Set<String> alreadySaved;
+    private Map<String, Double> clickWeights;
+    private RecommendationCreator creator;
 
      @BeforeEach
     public void setUp() {
         allPieces = new ArrayList<>();
         alreadySaved = new HashSet<>();
+        clickWeights = new HashMap<>();
+        creator = new RecommendationCreator();
     }
 
     @Test
@@ -86,6 +90,68 @@ public class RecommendationTest {
         assertEquals("4", recommendations.get(0).getId());
         assertEquals("5", recommendations.get(1).getId());
         assertEquals("6", recommendations.get(2).getId());
+    }
+
+    @Test
+    public void testExcludesAlreadySaved() throws DraftException {
+            Piece savedPiece = new Piece("7", "Saved Skirt", 30.0, "Depop", "url7", "img7", "M", "Black", "Good",
+                            List.of("skirt"), new ArrayList<>());
+            Piece candidatePiece = new Piece("8", "Candidate Jeans", 45.0, "eBay", "url8", "img8", "L", "Blue", "Good",
+                            List.of("jeans"), new ArrayList<>());
+
+            allPieces.add(savedPiece);
+            allPieces.add(candidatePiece);
+            alreadySaved.add("7");
+
+            Map<String, Double> palette = Map.of("skirt", 1.0, "jeans", 0.5);
+
+            List<Piece> recommendations = RecommendationCreator.recommendPieces(allPieces, palette, alreadySaved, 2);
+
+            // The saved piece should not be recommended
+            for (Piece p : recommendations) {
+                    assertNotEquals("7", p.getId(), "Saved piece was recommended");
+            }
+    }
+
+    @Test
+    public void testExcludeAlreadyClickedPieces() throws DraftException {
+            Piece clickedPiece = new Piece("13", "Clicked Hoodie", 55.0, "eBay", "url13", "img13", "L", "Green", "Good",
+                            List.of("hoodie"), new ArrayList<>());
+            Piece newPiece = new Piece("14", "New Scarf", 15.0, "eBay", "url14", "img14", "S", "Red", "Good",
+                            List.of("scarf"), new ArrayList<>());
+
+            allPieces.add(clickedPiece);
+            allPieces.add(newPiece);
+
+            // Instead of clickWeights, simulate exclusion by adding clicked piece ID to
+            // excluded set
+            alreadySaved.add("13");
+
+            Map<String, Double> palette = Map.of("hoodie", 1.0, "scarf", 0.5);
+
+            List<Piece> recommendations = RecommendationCreator.recommendPieces(allPieces, palette, alreadySaved, 2);
+
+            for (Piece p : recommendations) {
+                    assertNotEquals("13", p.getId(), "Clicked piece was recommended but should be excluded");
+            }
+            assertTrue(recommendations.stream().anyMatch(p -> p.getId().equals("14")),
+                            "New piece should be recommended");
+    }
+
+    @Test
+    public void testEmptyPaletteStillReturnsPieces() throws DraftException {
+            Piece simplePiece = new Piece("10", "Simple Tee", 10.0, "eBay", "url10", "img10", "M", "White", "Good",
+                            List.of("tee", "white"), new ArrayList<>());
+
+            allPieces.add(simplePiece);
+
+            Map<String, Double> emptyPalette = new HashMap<>();
+
+            List<Piece> recommendations = RecommendationCreator.recommendPieces(allPieces, emptyPalette, alreadySaved,
+                            1);
+
+            assertEquals(1, recommendations.size());
+            assertEquals("10", recommendations.get(0).getId());
     }
 
 }

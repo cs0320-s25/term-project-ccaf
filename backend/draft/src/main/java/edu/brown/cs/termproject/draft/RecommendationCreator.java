@@ -22,12 +22,12 @@ public class RecommendationCreator {
     * its tags and title keywords match the user's weighted preference palette. 
     * 
     * 
-    * @param allPieces       is all available pieces
+    *
     * @param palette         is the user's weighted preference map
     * @param alreadySavedIds is a set of item IDs the user already saved (exclude
     *                        from
     *                        results)
-    * @param limit           is the number of top recommendations to return
+    * n
     * @return a ranked list of recommended pieces
     * @throws DraftException if any input is invalid
     */
@@ -119,11 +119,13 @@ public class RecommendationCreator {
 
         // Get top pieces from each category to ensure variety
         List<Piece> recommendations = new ArrayList<>();
+        Set<String> recommendedIds = new HashSet<>();
         int piecesPerCategory = limit / categorizedPieces.size();
 
         categorizedPieces.forEach((category, pieces) -> {
             pieces.stream()
                 .sorted((p1, p2) -> Double.compare(scores.get(p2), scores.get(p1)))
+                .filter(p -> recommendedIds.add(p.getId()))
                 .limit(piecesPerCategory)
                 .forEach(recommendations::add);
         });
@@ -131,6 +133,7 @@ public class RecommendationCreator {
         // Fill remaining slots with highest scoring pieces overall
         while (recommendations.size() < limit) {
             Optional<Piece> nextBest = scores.entrySet().stream()
+                .filter(e -> recommendedIds.add(e.getKey().getId()))
                 .filter(e -> !recommendations.contains(e.getKey()))
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey);
