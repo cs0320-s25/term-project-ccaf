@@ -1,8 +1,7 @@
 package edu.brown.cs.termproject.draft.Server;
 
-
-import static edu.brown.cs.termproject.draft.Handlers.SearchHandler.createMockDataD;
-import static edu.brown.cs.termproject.draft.Handlers.SearchHandler.createMockDataP;
+import static edu.brown.cs.termproject.draft.Handlers.SearchHandler.createDepopMockData;
+import static edu.brown.cs.termproject.draft.Handlers.SearchHandler.createPoshmarkMockData;
 
 import edu.brown.cs.termproject.draft.Handlers.PieceHandlers.*;
 import edu.brown.cs.termproject.draft.Handlers.*;
@@ -16,35 +15,34 @@ import com.google.gson.JsonObject;
 
 import spark.Spark;
 
-public class  Main {
+public class Main {
   // Create empty mock objects instead of loading from files
-  private static final JsonObject poshmarkMock = createMockDataP("poshmark");
-  private static final JsonObject depopMock = createMockDataD("depop");
-
+  private static final JsonObject poshmarkMock = createPoshmarkMockData("Poshmark");
+  private static final JsonObject depopMock = createDepopMockData("depop");
 
   public static void main(String[] args) {
-//    List<Piece> allPieces = List.of(
-//        new Piece(
-//            "1", "Blue Denim Jacket", 39.99, "example.com",
-//            "https://example.com/denim", "M", "Blue", "Used",
-//            "/img/denim.jpg", List.of("denim", "jacket", "blue")
-//        ),
-//        new Piece(
-//            "2", "Red Flannel Shirt", 29.99, "example.com",
-//            "https://example.com/flannel", "L", "Red", "New",
-//            "/img/flannel.jpg", List.of("flannel", "shirt", "red")
-//        ),
-//        new Piece(
-//            "3", "Black Jeans", 24.99, "example.com",
-//            "https://example.com/jeans", "32", "Black", "Used",
-//            "/img/jeans.jpg", List.of("black", "jeans", "pants")
-//        ),
-//        new Piece(
-//            "3", "Blue Jeans", 25.99, "example.com",
-//            "https://example.com/jeans", "32", "Black", "Used",
-//            "/img/jeans.jpg", List.of("blue", "jeans", "pants")
-//        )
-//    );
+    // List<Piece> allPieces = List.of(
+    // new Piece(
+    // "1", "Blue Denim Jacket", 39.99, "example.com",
+    // "https://example.com/denim", "M", "Blue", "Used",
+    // "/img/denim.jpg", List.of("denim", "jacket", "blue")
+    // ),
+    // new Piece(
+    // "2", "Red Flannel Shirt", 29.99, "example.com",
+    // "https://example.com/flannel", "L", "Red", "New",
+    // "/img/flannel.jpg", List.of("flannel", "shirt", "red")
+    // ),
+    // new Piece(
+    // "3", "Black Jeans", 24.99, "example.com",
+    // "https://example.com/jeans", "32", "Black", "Used",
+    // "/img/jeans.jpg", List.of("black", "jeans", "pants")
+    // ),
+    // new Piece(
+    // "3", "Blue Jeans", 25.99, "example.com",
+    // "https://example.com/jeans", "32", "Black", "Used",
+    // "/img/jeans.jpg", List.of("blue", "jeans", "pants")
+    // )
+    // );
 
     int port = 3232;
     Spark.port(port);

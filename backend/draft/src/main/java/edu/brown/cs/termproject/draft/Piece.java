@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents a fashion item with metadata, including tags and tracking info for
+ * draft usage.
+ * 
+ */
 public class Piece {
 
     private String id;
@@ -38,6 +43,13 @@ public class Piece {
         this.usedInDrafts = usedInDrafts;
     }
 
+    /**
+     * Parses a map to construct a Piece object.
+     * 
+     * 
+     * @param data is map from a Firestore document
+     * @return a Piece object with the details from the Firestore details
+     */
     public static Piece fromMap(Map<String, Object> data) {
         try {
             String id = (String) data.get("id");
@@ -81,7 +93,12 @@ public class Piece {
         }
     }
 
-    // Converts a Piece object into a Firestore-compatible map
+    /**
+     * Converts a Piece object into a Firestore-compatible map.
+     * 
+     * 
+     * @return a map of piece detail titles to their respective datum
+     */
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("id", id);
