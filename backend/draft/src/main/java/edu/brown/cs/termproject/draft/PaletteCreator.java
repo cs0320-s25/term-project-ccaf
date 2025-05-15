@@ -4,13 +4,21 @@ import java.util.*;
 
 import edu.brown.cs.termproject.draft.Exceptions.PaletteException;
 
+/**
+ * Generates a weighted map of keywords representing user style preferences from
+ * saved, clicked, and onboarding data.
+ * 
+ * 
+ */
 public class PaletteCreator {
     // used to filter out words with little semantic value
     private static final Set<String> STOPWORDS = Set.of("the", "a", "and", "in", "of", "with", "to");
 
     /**
-     * Builds weighted keyword map from saved pieces, clicked pieces, and onboarding
-     * keywords.
+     * Builds a weighted keyword palette to represent the user's preferences.
+     * Keywords come from saved pieces, onboarding responses, and clicked pieces.
+     * 
+     * 
      * 
      * @param savedPieces        list of pieces the user has saved
      * @param onboardingKeywords list of onboarding keywords

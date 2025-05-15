@@ -14,6 +14,21 @@ import java.util.*;
 import java.io.IOException;
 import io.github.cdimascio.dotenv.Dotenv;
 
+/**
+ * 
+ * eBayFetcher handles querying the eBay Browse API to retrieve item data
+ * related to fashion (clothing, shoes, and accessories). It provides methods
+ * for sending search queries and parsing responses into Piece objects.
+ *
+ * API credentials are loaded from environment variables using dotenv.
+ * 
+ * Endpoint: https://api.ebay.com/buy/browse/v1/item_summary/search
+ * Category: 11450 (Clothing, Shoes & Accessories)
+ * 
+ * Dependencies:
+ * - com.google.gson for JSON parsing
+ * - io.github.cdimascio.dotenv for environment variable loading
+ */
 public class eBayFetcher {
   // https://svcs.ebay.com/services/search/FindingService/v1
 
@@ -24,7 +39,17 @@ public class eBayFetcher {
   private static final String SERVICE_VERSION = "1.0.0";
 
 
-
+  /**
+   * Sends a search query to the eBay Browse API and returns the raw JSON
+   * response.
+   *
+   * @param query The keyword-based search string.
+   * @return JsonObject containing the eBay API response.
+   * @throws Exception         if there is an error during the API request or
+   *                           response parsing.
+   * @throws APIFetchException wraps lower-level I/O issues with a contextual
+   *                           message.
+   */
   public JsonObject searchEbay(String query) throws Exception {
     System.out.println("eBay APP_ID: " + APP_ID);
     if (APP_ID == null || APP_ID.isBlank()) {
@@ -98,6 +123,14 @@ public class eBayFetcher {
     }
   }
 
+  /**
+   * Parses the JSON response from the eBay API into a list of Piece objects.
+   * Fields not directly provided by eBay (e.g., size, color) are left blank or
+   * filled with placeholders.
+   *
+   * @param json The JsonObject returned from searchEbay.
+   * @return List of Piece objects representing the parsed eBay items.
+   */
   public static List<Piece> parseEbayResults(JsonObject json) {
     List<Piece> pieces = new ArrayList<>();
 

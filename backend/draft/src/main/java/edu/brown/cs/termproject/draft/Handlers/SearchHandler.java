@@ -13,10 +13,22 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * A Spark route handler for responding to search queries using both
+ * external APIs (eBay) and mock datasets (Depop and Poshmark).
+ * This class performs keyword matching and relevance scoring on listings
+ * and returns a ranked list of matching pieces.
+ */
 public class SearchHandler implements Route {
   private final JsonObject poshmarkMock;
   private final JsonObject depopMock;
 
+  /**
+   * Constructs a SearchHandler with specific mock data for Depop and Poshmark.
+   *
+   * @param poshmarkMock the mock JSON object representing Poshmark listings
+   * @param depopMock    the mock JSON object representing Depop listings
+   */
   public SearchHandler(JsonObject poshmarkMock, JsonObject depopMock) {
     this.poshmarkMock = poshmarkMock;
     this.depopMock = depopMock;
@@ -26,15 +38,22 @@ public class SearchHandler implements Route {
 
   }
 
-  // Default constructor for backward compatibility
+  /**
+   * Default constructor that initializes the handler with built-in mock data.
+   */
   public SearchHandler() {
-    this.poshmarkMock = createMockDataP("poshmark");
-    this.depopMock = createMockDataD("depop");
+    this.poshmarkMock = createPoshmarkMockData("poshmark");
+    this.depopMock = createDepopMockData("depop");
     System.out.println("SearchHandler initialized with default mock data");
-
   }
 
-  public static JsonObject createMockDataP(String source) {
+  /**
+   * Creates mock listing data for Poshmark.
+   *
+   * @param source the source name (e.g., "poshmark")
+   * @return a JsonObject representing listings from the source
+   */
+  public static JsonObject createPoshmarkMockData(String source) {
     JsonObject mockData = new JsonObject();
     JsonArray listings = new JsonArray();
 
@@ -42,14 +61,16 @@ public class SearchHandler implements Route {
     JsonObject listing1 = new JsonObject();
     listing1.addProperty("id", source + "_1");
     listing1.addProperty("title", "Nike Vintage Windbreaker Jacket");
-    listing1.addProperty("description", "Rare vintage Nike windbreaker in excellent condition. Perfect for spring weather.");
+    listing1.addProperty("description",
+        "Rare vintage Nike windbreaker in excellent condition. Perfect for spring weather.");
     listing1.addProperty("price", 45.99);
     listing1.addProperty("source", source);
     listing1.addProperty("url", "https://" + source + ".com/listing/1");
     listing1.addProperty("size", "Medium");
     listing1.addProperty("color", "Blue and White");
     listing1.addProperty("condition", "Excellent");
-    listing1.addProperty("imageUrl", "https://media-photos.depop.com/b1/43410517/2643968328_9295e1fb86ba4762b56fd40f896b2e32/P0.jpg");
+    listing1.addProperty("imageUrl",
+        "https://media-photos.depop.com/b1/43410517/2643968328_9295e1fb86ba4762b56fd40f896b2e32/P0.jpg");
     listing1.addProperty("seller", "VintageFinds" + source);
 
     JsonArray tags1 = new JsonArray();
@@ -72,7 +93,8 @@ public class SearchHandler implements Route {
     listing2.addProperty("size", "Small");
     listing2.addProperty("color", "Floral Print");
     listing2.addProperty("condition", "New with tags");
-    listing2.addProperty("imageUrl", "https://media-photos.depop.com/b1/23291182/2646014590_4bf1b7c7b7a045678d1aa4ee3ff86d4d/P0.jpg");
+    listing2.addProperty("imageUrl",
+        "https://media-photos.depop.com/b1/23291182/2646014590_4bf1b7c7b7a045678d1aa4ee3ff86d4d/P0.jpg");
     listing2.addProperty("seller", "FashionForward" + source);
 
     JsonArray tags2 = new JsonArray();
@@ -91,11 +113,13 @@ public class SearchHandler implements Route {
     listing3.addProperty("description", "Air Jordan 1 Mid in white and red colorway. Barely worn, great condition.");
     listing3.addProperty("price", 89.99);
     listing3.addProperty("source", source);
-    listing3.addProperty("url", "https://media-photos.depop.com/b1/29282984/2647600876_a3ae58d8c82d4d96a4a422190084d8ba/P0.jpg");
+    listing3.addProperty("url",
+        "https://media-photos.depop.com/b1/29282984/2647600876_a3ae58d8c82d4d96a4a422190084d8ba/P0.jpg");
     listing3.addProperty("size", "US 9");
     listing3.addProperty("color", "White/Red");
     listing3.addProperty("condition", "Like new");
-    listing3.addProperty("imageUrl", "https://media-photos.depop.com/b1/27314354/2619379562_2c88245092534ab8aa9fceecf2d8a757/P0.jpg");
+    listing3.addProperty("imageUrl",
+        "https://media-photos.depop.com/b1/27314354/2619379562_2c88245092534ab8aa9fceecf2d8a757/P0.jpg");
     listing3.addProperty("seller", "SneakerHead" + source);
 
     JsonArray tags3 = new JsonArray();
@@ -111,7 +135,13 @@ public class SearchHandler implements Route {
     return mockData;
   }
 
-  public static JsonObject createMockDataD(String source) {
+  /**
+   * Creates mock listing data for Depop.
+   *
+   * @param source the source name (e.g., "depop")
+   * @return a JsonObject representing listings from the source
+   */
+  public static JsonObject createDepopMockData(String source) {
     JsonObject mockData = new JsonObject();
     JsonArray listings = new JsonArray();
 
@@ -119,14 +149,16 @@ public class SearchHandler implements Route {
     JsonObject listing1 = new JsonObject();
     listing1.addProperty("id", source + "_1");
     listing1.addProperty("title", "Nike Vintage Windbreaker Jacket");
-    listing1.addProperty("description", "Rare vintage Nike windbreaker in excellent condition. Perfect for spring weather.");
+    listing1.addProperty("description",
+        "Rare vintage Nike windbreaker in excellent condition. Perfect for spring weather.");
     listing1.addProperty("price", 45.99);
     listing1.addProperty("source", source);
     listing1.addProperty("url", "https://" + source + ".com/listing/1");
     listing1.addProperty("size", "Medium");
     listing1.addProperty("color", "Blue and White");
     listing1.addProperty("condition", "Excellent");
-    listing1.addProperty("imageUrl", "https://media-photos.depop.com/b1/426653966/2609935701_71f30b4e13dc4b99918f08263320f8e8/P0.jpg");
+    listing1.addProperty("imageUrl",
+        "https://media-photos.depop.com/b1/426653966/2609935701_71f30b4e13dc4b99918f08263320f8e8/P0.jpg");
     listing1.addProperty("seller", "VintageFinds" + source);
 
     JsonArray tags1 = new JsonArray();
@@ -149,7 +181,8 @@ public class SearchHandler implements Route {
     listing2.addProperty("size", "Small");
     listing2.addProperty("color", "Floral Print");
     listing2.addProperty("condition", "New with tags");
-    listing2.addProperty("imageUrl", "https://media-photos.depop.com/b1/7335144/2565484007_04b31cb627184e0a88bdd5817fd26708/P0.jpg");
+    listing2.addProperty("imageUrl",
+        "https://media-photos.depop.com/b1/7335144/2565484007_04b31cb627184e0a88bdd5817fd26708/P0.jpg");
     listing2.addProperty("seller", "FashionForward" + source);
 
     JsonArray tags2 = new JsonArray();
@@ -168,11 +201,13 @@ public class SearchHandler implements Route {
     listing3.addProperty("description", "Air Jordan 1 Mid in white and red colorway. Barely worn, great condition.");
     listing3.addProperty("price", 89.99);
     listing3.addProperty("source", source);
-    listing3.addProperty("url", "https://media-photos.depop.com/b1/247913937/2546476104_c551917875734314bc56f383a4a4b0f2/P0.jpg");
+    listing3.addProperty("url",
+        "https://media-photos.depop.com/b1/247913937/2546476104_c551917875734314bc56f383a4a4b0f2/P0.jpg");
     listing3.addProperty("size", "US 9");
     listing3.addProperty("color", "White/Red");
     listing3.addProperty("condition", "Like new");
-    listing3.addProperty("imageUrl", "https://media-photos.depop.com/b1/38665915/2648849832_307b9848f49840428c9f604119fb5153/P0.jpg");
+    listing3.addProperty("imageUrl",
+        "https://media-photos.depop.com/b1/38665915/2648849832_307b9848f49840428c9f604119fb5153/P0.jpg");
     listing3.addProperty("seller", "SneakerHead" + source);
 
     JsonArray tags3 = new JsonArray();
@@ -187,12 +222,21 @@ public class SearchHandler implements Route {
     mockData.add("listings", listings);
     return mockData;
   }
-  
+
+  /**
+   * Handles a GET request to perform a search based on the query parameter "q".
+   * Responds with a JSON array of matching listings from eBay, Depop, and
+   * Poshmark.
+   *
+   * @param request  the Spark HTTP request object
+   * @param response the Spark HTTP response object
+   * @return a JSON string containing ranked matching listings or an error message
+   * @throws Exception if an unexpected error occurs during query processing
+   */
   @Override
   public Object handle(Request request, Response response) throws Exception {
     String query = request.queryParams("q");
     System.out.println("Received search query: " + query);
-
 
     if (query == null || query.trim().isEmpty()) {
       response.status(400);
@@ -340,21 +384,24 @@ public class SearchHandler implements Route {
 
     for (String token : searchTokens) {
       // Title matches are most important
-      if (title.contains(token)) score += 5;
+      if (title.contains(token))
+        score += 5;
 
       // Tag matches are next most important
-      if (tags.stream().anyMatch(tag -> tag.toLowerCase().contains(token))) score += 3;
+      if (tags.stream().anyMatch(tag -> tag.toLowerCase().contains(token)))
+        score += 3;
 
       // Other field matches provide additional relevance
-      if (color.contains(token)) score += 2;
-      if (size.contains(token)) score += 2;
-      if (condition.contains(token)) score += 1;
+      if (color.contains(token))
+        score += 2;
+      if (size.contains(token))
+        score += 2;
+      if (condition.contains(token))
+        score += 1;
     }
 
     return score;
   }
-
-
 
   private Piece convertJsonToPiece(JsonObject listing) {
     try {
@@ -381,8 +428,8 @@ public class SearchHandler implements Route {
       }
 
       // Create new Piece with all fields
-      return new Piece( id,  title,  price,  source,  url,
-           imageUrl,  size,  color,  condition,  tags, new ArrayList<String>());
+      return new Piece(id, title, price, source, url,
+          imageUrl, size, color, condition, tags, new ArrayList<String>());
     } catch (Exception e) {
       System.err.println("Error converting listing to Piece: " + e.getMessage());
       return null;
