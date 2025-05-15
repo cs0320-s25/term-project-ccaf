@@ -190,16 +190,15 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
 
       {/* save modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-80">
-            <div className="flex justify-between items-center mb-4">
-              <h2 aria-label="modal title">save to a draft</h2>
-              <button onClick={() => setShowModal(false)} aria-label="close modal"> </button
-              <h2 className="modal-header">save to a draft</h2>
-              <button onClick={() => setShowModal(false)}>
-                <X className="h-5 w-5" />
-              </button>
-            </div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg w-80">
+          {/* Modal Header */}
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="modal-header" aria-label="modal title">save to a draft</h2>
+            <button onClick={() => setShowModal(false)} aria-label="close modal">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
 
             <div className="space-y-2">
               {drafts.length > 0 ? (
