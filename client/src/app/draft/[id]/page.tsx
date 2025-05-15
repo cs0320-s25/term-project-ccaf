@@ -17,15 +17,18 @@ interface Draft {
 export default function DraftPage() {
   const { user } = useUser();
   const uid = user?.id;
-  const { id } = useParams();
+  const { id } = useParams(); // get the draft id from URL
+
+  // state for current draft data
   const [draft, setDraft] = useState<Draft | null>(null);
 
+  // state for delete modal visibility and redirect
   const [showModal, setShowModal] = useState(false);
   const [deleted, setDeleted] = useState(false);
 
-
   const router = useRouter();
 
+   // fetch pieces for this draft on mount or when id/user changes
   useEffect(() => {
     if (!uid || !id) return;
     console.log(uid);
@@ -33,6 +36,7 @@ export default function DraftPage() {
     viewPiecesInDraft(uid, id as string)
       .then((res) => {
         if (res.status === "success") {
+        // if draft has no pieces, set up empty draft
           if (res.message.includes("no pieces")) { 
             setDraft({
               id: id as string,
@@ -44,6 +48,7 @@ export default function DraftPage() {
             //   console.log("Image URL for piece", piece.id, ":", piece.imageUrl);
             // });
             
+            // if draft has pieces, populate them
             setDraft({
               id: id as string,
               name: res.draftData.name || `draft ${id}`,
@@ -61,7 +66,7 @@ export default function DraftPage() {
       });
   }, [uid, id]);
 
-
+ // handle full draft deletion
   const handleDelete = () => {
     if (!uid || !draft?.id) return;
 
@@ -75,7 +80,8 @@ export default function DraftPage() {
         setShowModal(false);
       });
   };
-
+  
+  // handle single piece deletion within a draft
   const handlePieceRemove = (pieceId: string) => {
     if (!draft || !uid) return;
     removeFromDraft(uid, draft.id, pieceId)

@@ -16,13 +16,13 @@ export function OnboardingSurvey({ onComplete }: OnboardingSurveyProps) {
     {
       title: "how would you describe your style?",
       description: "this helps us find relevant search results",
-      options: ["Casual", "Vintage", "Streetwear", "Minimalist", "Other"],
+      options: ["casual", "vintage", "streetwear", "minimalist", "other"],
       type: "select",
     },
     {
       title: "how often do you shop secondhand?",
       description: "help us understand how draft can support u!",
-      options: ["Frequently", "Occasionally", "Rarely", "Never"],
+      options: ["frequently", "occasionally", "rarely", "never"],
       type: "select",
     },
     {
