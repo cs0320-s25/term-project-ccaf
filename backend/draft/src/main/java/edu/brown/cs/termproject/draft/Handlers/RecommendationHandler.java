@@ -35,11 +35,6 @@ public class RecommendationHandler implements Route {
             String uid = request.queryParams("uid");
             System.out.println("Processing recommendations for uid: " + uid);
 
-            if (uid == null || uid.trim().isEmpty()) {
-                response.status(400);
-                return GSON.toJson(Map.of("error", "Missing or invalid uid"));
-            }
-
             // Get ALL saved piece IDs from ALL drafts
             Set<String> excludedIds = new HashSet<>();
             List<Map<String, Object>> drafts = storage.getCollection(uid, "drafts");
@@ -51,7 +46,6 @@ public class RecommendationHandler implements Route {
                     if (piecesObj instanceof List<?>) {
                         List<?> pieces = (List<?>) piecesObj;
                         for (Object piece : pieces) {
-                            // Handle both String IDs and full piece objects
                             if (piece instanceof String) {
                                 excludedIds.add((String) piece);
                             } else if (piece instanceof Map) {
@@ -66,11 +60,16 @@ public class RecommendationHandler implements Route {
                 }
             }
 
-            System.out.println("Excluded piece IDs: " + excludedIds);
+            // Get eBay pieces and combine with global pieces
+            List<Piece> ebayPieces = APIUtilities.fetchFromEbay("vintage fashion");
+            List<Piece> allAvailablePieces = new ArrayList<>();
+            allAvailablePieces.addAll(storage.getGlobalPieces());
+            allAvailablePieces.addAll(ebayPieces);
 
-            // Get available pieces AFTER filtering out saved ones
-            List<Piece> availablePieces = storage.getGlobalPieces()
-                .stream()
+            System.out.println("Total available pieces before filtering: " + allAvailablePieces.size());
+
+            // Filter out saved pieces
+            List<Piece> availablePieces = allAvailablePieces.stream()
                 .filter(piece -> !excludedIds.contains(piece.getId()))
                 .collect(Collectors.toList());
 
@@ -96,12 +95,12 @@ public class RecommendationHandler implements Route {
                 );
             }
 
-            // Get recommendations
+            // Get recommendations with all available pieces
             List<Piece> recommendations = RecommendationCreator.recommendPieces(
                 availablePieces,
                 palette,
                 excludedIds,
-                50  // Increased limit for more recommendations
+                100  // Increased limit
             );
 
             System.out.println("Final recommendation count: " + recommendations.size());
@@ -110,8 +109,8 @@ public class RecommendationHandler implements Route {
                 "status", "success",
                 "recommendations", recommendations,
                 "debugInfo", Map.of(
-                    "excludedCount", excludedIds.size(),
-                    "availableCount", availablePieces.size(),
+                    "totalPieces", allAvailablePieces.size(),
+                    "availableAfterFiltering", availablePieces.size(),
                     "recommendationCount", recommendations.size()
                 )
             ));
@@ -122,6 +121,55 @@ public class RecommendationHandler implements Route {
             return GSON.toJson(Map.of("error", "Recommendation failed: " + e.getMessage()));
         }
     }
+//    @Override
+//    public Object handle(Request request, Response response) throws ProtocolException {
+//        response.type("application/json");
+//
+//        try {
+//            String uid = request.queryParams("uid");
+//            System.out.println("Processing recommendations for uid: " + uid);
+//
+//            // Get eBay pieces first
+//            List<Piece> ebayPieces = APIUtilities.fetchFromEbay("vintage fashion");
+//            System.out.println("Fetched eBay pieces: " + ebayPieces.size());
+//
+//            // Get global pieces and combine with eBay results
+//            List<Piece> allAvailablePieces = new ArrayList<>();
+//            allAvailablePieces.addAll(storage.getGlobalPieces());
+//            allAvailablePieces.addAll(ebayPieces);
+//
+//            System.out.println("Total available pieces before filtering: " + allAvailablePieces.size());
+//
+//            // Filter out saved pieces
+//            List<Piece> availablePieces = allAvailablePieces.stream()
+//                .filter(piece -> !excludedIds.contains(piece.getId()))
+//                .collect(Collectors.toList());
+//
+//            System.out.println("Available pieces after filtering: " + availablePieces.size());
+//
+//            // Get recommendations with increased limit
+//            List<Piece> recommendations = RecommendationCreator.recommendPieces(
+//                availablePieces,
+//                palette,
+//                excludedIds,
+//                100  // Increased limit
+//            );
+//
+//            return GSON.toJson(Map.of(
+//                "status", "success",
+//                "recommendations", recommendations,
+//                "debugInfo", Map.of(
+//                    "totalPieces", allAvailablePieces.size(),
+//                    "availableAfterFiltering", availablePieces.size(),
+//                    "recommendationCount", recommendations.size()
+//                )
+//            ));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            response.status(500);
+//            return GSON.toJson(Map.of("error", "Recommendation failed: " + e.getMessage()));
+//        }
+//    }
 //    @Override
 //    public Object handle(Request request, Response response) throws ProtocolException {
 //        response.type("application/json");
