@@ -1,109 +1,95 @@
 package edu.brown.cs.termproject.draft.Handlers;
 
-import edu.brown.cs.termproject.draft.Utilities.APIUtilities;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
-import edu.brown.cs.termproject.draft.PaletteCreator;
 import edu.brown.cs.termproject.draft.Piece;
 import edu.brown.cs.termproject.draft.RecommendationCreator;
-import edu.brown.cs.termproject.draft.API.eBayFetcher;
+import edu.brown.cs.termproject.draft.Utilities.APIUtilities;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
-import spark.*;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class RecommendationHandler implements Route {
 
     private final StorageInterface storage;
     private static final Gson GSON = new Gson();
+    private static final int DEFAULT_RECOMMENDATION_LIMIT = 50;
+    private static final String FALLBACK_SEARCH_TERM = "vintage clothing";
+    private static final int MAX_TAGS_TO_USE = 5;
 
     public RecommendationHandler(StorageInterface storage) {
         this.storage = storage;
     }
+
     @Override
-    public Object handle(Request request, Response response) throws ProtocolException {
+    public Object handle(Request request, Response response) {
         response.type("application/json");
 
         try {
             String uid = request.queryParams("uid");
-            System.out.println("Processing recommendations for uid: " + uid);
+            if (uid == null || uid.trim().isEmpty()) {
+                response.status(400);
+                return GSON.toJson(Map.of("error", "Missing or invalid uid"));
+            }
 
-            // Get ALL saved piece IDs from ALL drafts
-            Set<String> excludedIds = new HashSet<>();
-            List<Map<String, Object>> drafts = storage.getCollection(uid, "drafts");
+            // Get user's draft pieces to analyze their tags
+            List<String> searchTerms = generateSearchTerms(uid);
+            System.out.println("Generated search terms: " + String.join(", ", searchTerms));
 
-            // Extract ALL piece IDs from ALL drafts
-            if (drafts != null) {
-                for (Map<String, Object> draft : drafts) {
-                    Object piecesObj = draft.get("pieces");
-                    if (piecesObj instanceof List<?>) {
-                        List<?> pieces = (List<?>) piecesObj;
-                        for (Object piece : pieces) {
-                            if (piece instanceof String) {
-                                excludedIds.add((String) piece);
-                            } else if (piece instanceof Map) {
-                                @SuppressWarnings("unchecked")
-                                Map<String, Object> pieceMap = (Map<String, Object>) piece;
-                                if (pieceMap.containsKey("id")) {
-                                    excludedIds.add(pieceMap.get("id").toString());
-                                }
-                            }
-                        }
+            List<Piece> allAvailablePieces = new ArrayList<>();
+
+            // Fetch pieces for each search term
+            for (String searchTerm : searchTerms) {
+                try {
+                    List<Piece> ebayPieces = APIUtilities.fetchFromEbay(searchTerm);
+                    if (ebayPieces != null && !ebayPieces.isEmpty()) {
+                        allAvailablePieces.addAll(ebayPieces);
+                        System.out.println(
+                            "Fetched " + ebayPieces.size() + " pieces for term: " + searchTerm);
                     }
+                } catch (Exception e) {
+                    System.err.println(
+                        "eBay fetch failed for term '" + searchTerm + "': " + e.getMessage());
                 }
             }
 
-            // Get eBay pieces and combine with global pieces
-            List<Piece> ebayPieces = APIUtilities.fetchFromEbay("vintage fashion");
-            List<Piece> allAvailablePieces = new ArrayList<>();
+            // Add global pieces
             allAvailablePieces.addAll(storage.getGlobalPieces());
-            allAvailablePieces.addAll(ebayPieces);
 
-            System.out.println("Total available pieces before filtering: " + allAvailablePieces.size());
+            // Remove duplicates
+            allAvailablePieces = new ArrayList<>(new LinkedHashSet<>(allAvailablePieces));
 
-            // Filter out saved pieces
+            System.out.println(
+                "Total available pieces before filtering: " + allAvailablePieces.size());
+
+            // Get saved pieces and create excluded IDs set
+            List<Piece> savedPieces = storage.getSavedPieces(uid);
+            Set<String> excludedIds = savedPieces.stream()
+                .map(Piece::getId)
+                .collect(Collectors.toSet());
+
+            // Filter out saved pieces and pieces used in drafts
             List<Piece> availablePieces = allAvailablePieces.stream()
-                .filter(piece -> !excludedIds.contains(piece.getId()))
+                .filter(piece -> !excludedIds.contains(piece.getId()) &&
+                    (piece.getUsedInDrafts() == null || piece.getUsedInDrafts().isEmpty()))
                 .collect(Collectors.toList());
+
+            Collections.shuffle(availablePieces);
 
             System.out.println("Available pieces after filtering: " + availablePieces.size());
 
-            // Create recommendation palette
-            Map<String, Double> palette;
-            List<Piece> savedPieces = storage.getSavedPieces(uid);
+            // TODO: Get user's palette from storage when implemented
+            Map<String, Double> palette = new HashMap<>();
 
-            if (!savedPieces.isEmpty()) {
-                palette = PaletteCreator.createPalette(
-                    savedPieces,
-                    extractOnboardingKeywords(storage.getOnboardingResponses(uid)),
-                    storage.getClickedPieces(uid)
-                );
-            } else {
-                // Fallback palette for new users
-                palette = Map.of(
-                    "casual", 1.0,
-                    "vintage", 0.9,
-                    "streetwear", 0.8,
-                    "trendy", 0.7
-                );
-            }
-
-            // Get recommendations with all available pieces
             List<Piece> recommendations = RecommendationCreator.recommendPieces(
                 availablePieces,
                 palette,
                 excludedIds,
-                100  // Increased limit
+                DEFAULT_RECOMMENDATION_LIMIT
             );
-
-            System.out.println("Final recommendation count: " + recommendations.size());
 
             return GSON.toJson(Map.of(
                 "status", "success",
@@ -111,7 +97,8 @@ public class RecommendationHandler implements Route {
                 "debugInfo", Map.of(
                     "totalPieces", allAvailablePieces.size(),
                     "availableAfterFiltering", availablePieces.size(),
-                    "recommendationCount", recommendations.size()
+                    "recommendationCount", recommendations.size(),
+                    "searchTermsUsed", searchTerms
                 )
             ));
 
@@ -121,6 +108,55 @@ public class RecommendationHandler implements Route {
             return GSON.toJson(Map.of("error", "Recommendation failed: " + e.getMessage()));
         }
     }
+
+    private List<String> generateSearchTerms(String uid) throws Exception {
+        Set<String> uniqueTags = new HashSet<>();
+        List<String> searchTerms = new ArrayList<>();
+
+        // Get user's drafts and their pieces
+        List<Piece> draftPieces = storage.getSavedPieces(uid);
+
+        // Collect tags from draft pieces
+        for (Piece piece : draftPieces) {
+            if (piece.getTags() != null) {
+                uniqueTags.addAll(piece.getTags());
+            }
+        }
+
+        // Remove common words and clean up tags
+        uniqueTags.removeIf(tag -> tag == null || tag.trim().isEmpty()
+            || tag.equalsIgnoreCase("clothing")
+            || tag.equalsIgnoreCase("fashion")
+            || tag.equalsIgnoreCase("men")
+            || tag.equalsIgnoreCase("women")
+            || tag.equalsIgnoreCase("men's")
+            || tag.equalsIgnoreCase("women's")
+            || tag.equalsIgnoreCase("shoes & accessories")
+            || tag.equalsIgnoreCase("accessories"));
+
+        // Convert unique tags to search terms
+        List<String> tagList = new ArrayList<>(uniqueTags);
+        Collections.shuffle(tagList); // Randomize tag selection
+
+        // Use up to MAX_TAGS_TO_USE tags
+        for (int i = 0; i < Math.min(MAX_TAGS_TO_USE, tagList.size()); i++) {
+            searchTerms.add(tagList.get(i));
+        }
+
+        // If no tags were found or too few, add fallback terms
+        if (searchTerms.isEmpty()) {
+            searchTerms.add(FALLBACK_SEARCH_TERM);
+            searchTerms.add("fashion");
+            searchTerms.add("vintage");
+        }
+
+        return searchTerms;
+    }
+
+
+
+
+
 //    @Override
 //    public Object handle(Request request, Response response) throws ProtocolException {
 //        response.type("application/json");
