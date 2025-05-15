@@ -18,17 +18,21 @@ export default function SearchPage() {
     }
   }, [uid]);
   
+  // get query string from URL
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
 
+   // local state to store search results and filter selections
   const [results, setResults] = useState<Piece[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // filters for dropdowns
   const [sizeFilter, setSizeFilter] = useState("all");
   const [colorFilter, setColorFilter] = useState("all");
   const [conditionFilter, setConditionFilter] = useState("all");
 
+  // fetch results from the backend when query changes
   useEffect(() => {
     if (!query) return;
 
@@ -49,6 +53,7 @@ export default function SearchPage() {
       .finally(() => setLoading(false));
   }, [query]);
 
+  // apply filtering based on dropdown selections (check product properties from results)
   const filteredResults = results.filter((item) => {
     const sizeMatch = sizeFilter === "all" || item.size?.toLowerCase() === sizeFilter;
     const colorMatch = colorFilter === "all" || item.color?.toLowerCase() === colorFilter;
@@ -71,9 +76,9 @@ export default function SearchPage() {
         <select
           value={sizeFilter}
           onChange={(e) => setSizeFilter(e.target.value)}
-          className="btn-outline-rounded"
+          className="filter-select"
         >
-          <option value="all">All Sizes</option>
+          <option value="all">all sizes</option>
           <option value="xs">XS</option>
           <option value="s">S</option>
           <option value="m">M</option>
@@ -84,27 +89,27 @@ export default function SearchPage() {
         <select
           value={colorFilter}
           onChange={(e) => setColorFilter(e.target.value)}
-          className="btn-outline-rounded"
+          className="filter-select"
         >
-          <option value="all">All Colors</option>
-          <option value="black">Black</option>
-          <option value="blue">Blue</option>
-          <option value="white">White</option>
-          <option value="red">Red</option>
-          <option value="green">Green</option>
-          <option value="pink">Pink</option>
+          <option value="all">all colors</option>
+          <option value="black">black</option>
+          <option value="blue">blue</option>
+          <option value="white">white</option>
+          <option value="red">red</option>
+          <option value="green">green</option>
+          <option value="pink">pink</option>
         </select>
 
         <select
           value={conditionFilter}
           onChange={(e) => setConditionFilter(e.target.value)}
-          className="btn-outline-rounded"
+          className="filter-select"
         >
-          <option value="all">All Conditions</option>
-          <option value="new with tags">New with Tags</option>
-          <option value="like new">Like New</option>
-          <option value="good">Good</option>
-          <option value="used">Used</option>
+          <option value="all">all conditions</option>
+          <option value="new with tags">new with tags</option>
+          <option value="like new">like new</option>
+          <option value="good">good</option>
+          <option value="used">used</option>
         </select>
       </div>
 
