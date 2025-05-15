@@ -43,9 +43,8 @@ public class RecommendationHandler implements Route {
             // Get ALL saved pieces across all drafts
             Set<String> allSavedPieceIds = new HashSet<>();
             List<Map<String, Object>> drafts = storage.getCollection(uid, "drafts");
-            System.out.println("Raw drafts data: " + GSON.toJson(drafts));
 
-            // Safely process the drafts
+            // Collect ALL piece IDs from ALL drafts
             if (drafts != null) {
                 for (Map<String, Object> draft : drafts) {
                     Object piecesObj = draft.get("pieces");
@@ -55,41 +54,45 @@ public class RecommendationHandler implements Route {
                             if (pieceObj instanceof Map) {
                                 @SuppressWarnings("unchecked")
                                 Map<String, Object> piece = (Map<String, Object>) pieceObj;
-                                Object idObj = piece.get("id");
-                                if (idObj instanceof String) {
-                                    allSavedPieceIds.add((String) idObj);
+                                if (piece.containsKey("id")) {
+                                    allSavedPieceIds.add(piece.get("id").toString());
                                 }
                             }
                         }
                     }
                 }
             }
-            System.out.println("Total saved piece IDs: " + allSavedPieceIds.size());
 
-            // Get global pieces
-            List<Piece> globalPieces = storage.getGlobalPieces();
-            System.out.println("Global pieces available: " + (globalPieces != null ? globalPieces.size() : "null"));
+            System.out.println("Excluded piece IDs: " + allSavedPieceIds);
 
-            // Create palette
+            // Get global pieces and filter out saved ones
+            List<Piece> globalPieces = storage.getGlobalPieces()
+                .stream()
+                .filter(piece -> !allSavedPieceIds.contains(piece.getId()))
+                .collect(Collectors.toList());
+
+            // Create palette from saved pieces for recommendation context
             Map<String, Double> palette = PaletteCreator.createPalette(
                 storage.getSavedPieces(uid),
                 extractOnboardingKeywords(storage.getOnboardingResponses(uid)),
                 storage.getClickedPieces(uid)
             );
-            System.out.println("Created palette: " + palette);
 
-            // Get recommendations
+            // Get recommendations excluding saved pieces
             List<Piece> recommendations = RecommendationCreator.recommendPieces(
-                globalPieces,
+                globalPieces, // Already filtered list
                 palette,
-                allSavedPieceIds,
+                allSavedPieceIds, // Double-check exclusion
                 36
             );
+
+            System.out.println("Recommendation count: " + recommendations.size());
 
             return GSON.toJson(Map.of(
                 "status", "success",
                 "recommendations", recommendations
             ));
+
         } catch (Exception e) {
             System.out.println("Error occurred: " + e.getMessage());
             e.printStackTrace();
