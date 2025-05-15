@@ -15,8 +15,9 @@ import java.io.IOException;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class eBayFetcher {
+  // https://svcs.ebay.com/services/search/FindingService/v1
 
-  private static final String EBAY_API_URL = "https://svcs.ebay.com/services/search/FindingService/v1";
+  private static final String EBAY_API_URL = "https://api.ebay.com/buy/browse/v1/item_summary/search";
   private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
   private static final String APP_ID = dotenv.get("EBAY_APP_ID");
   private static final String GLOBAL_ID = "EBAY-US"; 
