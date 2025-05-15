@@ -194,7 +194,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
           <div className="bg-white p-6 rounded-lg w-80">
             <div className="flex justify-between items-center mb-4">
               <h2 aria-label="modal title">save to a draft</h2>
-              <button onClick={() => setShowModal(false)} aria-label="close modal">
+              <button onClick={() => setShowModal(false)} aria-label="close modal"> </button
               <h2 className="modal-header">save to a draft</h2>
               <button onClick={() => setShowModal(false)}>
                 <X className="h-5 w-5" />
@@ -236,11 +236,10 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
                 aria-label="input for new draft name"
               />
               <button
-                className="btn-outline-rounded"
+                className="btn-outline-rounded mt-2"
                 onClick={handleNewDraft}
                 aria-label="button to create and save new draft"
               >
-              <button className="btn-outline-rounded mt-2" onClick={handleNewDraft}>
                 create & save
               </button>
             </div>
