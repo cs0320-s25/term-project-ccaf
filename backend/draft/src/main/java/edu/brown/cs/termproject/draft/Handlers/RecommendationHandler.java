@@ -80,7 +80,7 @@ public class RecommendationHandler implements Route {
                     draftPieces,
                     globalPieces,
                     getSavedPieceIds(savedPieces),
-                    20 // limit to top 20 recommendations
+                    36 // limit to 33 recommendations
                 );
             } else {
                 // Get general recommendations based on palette
@@ -88,7 +88,7 @@ public class RecommendationHandler implements Route {
                     globalPieces,
                     palette,
                     getSavedPieceIds(savedPieces),
-                    20 // limit to top 20 recommendations
+                    36 // limit to top 20 recommendations
                 );
             }
 
