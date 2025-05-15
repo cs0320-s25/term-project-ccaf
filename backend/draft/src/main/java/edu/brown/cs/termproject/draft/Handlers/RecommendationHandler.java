@@ -33,29 +33,31 @@ public class RecommendationHandler implements Route {
 
         try {
             String uid = request.queryParams("uid");
-            System.out.println("Received uid: " + uid);
-
             if (uid == null || uid.trim().isEmpty()) {
                 response.status(400);
                 return GSON.toJson(Map.of("error", "Missing or invalid uid"));
             }
 
-            // Get ALL saved pieces across all drafts
+            // Get ALL saved pieces across ALL drafts
             Set<String> allSavedPieceIds = new HashSet<>();
             List<Map<String, Object>> drafts = storage.getCollection(uid, "drafts");
 
-            // Collect ALL piece IDs from ALL drafts
+            // Enhanced piece ID collection from drafts
             if (drafts != null) {
                 for (Map<String, Object> draft : drafts) {
+                    // Get pieces array from draft
                     Object piecesObj = draft.get("pieces");
                     if (piecesObj instanceof List<?>) {
                         List<?> pieces = (List<?>) piecesObj;
-                        for (Object pieceObj : pieces) {
-                            if (pieceObj instanceof Map) {
+                        for (Object piece : pieces) {
+                            // Handle both String IDs and Map objects
+                            if (piece instanceof String) {
+                                allSavedPieceIds.add((String) piece);
+                            } else if (piece instanceof Map) {
                                 @SuppressWarnings("unchecked")
-                                Map<String, Object> piece = (Map<String, Object>) pieceObj;
-                                if (piece.containsKey("id")) {
-                                    allSavedPieceIds.add(piece.get("id").toString());
+                                Map<String, Object> pieceMap = (Map<String, Object>) piece;
+                                if (pieceMap.containsKey("id")) {
+                                    allSavedPieceIds.add(pieceMap.get("id").toString());
                                 }
                             }
                         }
@@ -63,30 +65,31 @@ public class RecommendationHandler implements Route {
                 }
             }
 
+            // Debug log
             System.out.println("Excluded piece IDs: " + allSavedPieceIds);
 
-            // Get global pieces and filter out saved ones
-            List<Piece> globalPieces = storage.getGlobalPieces()
+            // Filter global pieces BEFORE processing
+            List<Piece> availablePieces = storage.getGlobalPieces()
                 .stream()
                 .filter(piece -> !allSavedPieceIds.contains(piece.getId()))
                 .collect(Collectors.toList());
 
-            // Create palette from saved pieces for recommendation context
+            // Create recommendation palette
             Map<String, Double> palette = PaletteCreator.createPalette(
                 storage.getSavedPieces(uid),
                 extractOnboardingKeywords(storage.getOnboardingResponses(uid)),
                 storage.getClickedPieces(uid)
             );
 
-            // Get recommendations excluding saved pieces
+            // Get recommendations from filtered piece list
             List<Piece> recommendations = RecommendationCreator.recommendPieces(
-                globalPieces, // Already filtered list
+                availablePieces,  // Using pre-filtered list
                 palette,
                 allSavedPieceIds, // Double-check exclusion
                 36
             );
 
-            System.out.println("Recommendation count: " + recommendations.size());
+            System.out.println("Recommendation count after filtering: " + recommendations.size());
 
             return GSON.toJson(Map.of(
                 "status", "success",
@@ -94,7 +97,7 @@ public class RecommendationHandler implements Route {
             ));
 
         } catch (Exception e) {
-            System.out.println("Error occurred: " + e.getMessage());
+            System.out.println("Error in recommendations: " + e.getMessage());
             e.printStackTrace();
             response.status(500);
             return GSON.toJson(Map.of("error", "Recommendation failed: " + e.getMessage()));

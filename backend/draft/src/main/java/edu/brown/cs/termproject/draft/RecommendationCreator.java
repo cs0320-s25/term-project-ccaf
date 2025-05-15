@@ -31,42 +31,54 @@ public class RecommendationCreator {
 
         double score = 0.0;
         List<String> pieceTags = piece.getTags();
-
-        // Consider title keywords as additional tags
-        Set<String> allKeywords = new HashSet<>(pieceTags);
-        String[] titleWords = piece.getTitle().toLowerCase().split("\\s+");
-        allKeywords.addAll(Arrays.asList(titleWords));
+        Set<String> matchedCategories = new HashSet<>();
 
         // Score based on tag matches with palette
-        for (String keyword : allKeywords) {
-            if (palette.containsKey(keyword)) {
-                score += palette.get(keyword);
+        for (String tag : pieceTags) {
+            if (palette.containsKey(tag.toLowerCase())) {
+                score += palette.get(tag.toLowerCase());
+
+                // Track matched category
+                String category = getCategoryFromTags(List.of(tag));
+                if (!category.equals("other")) {
+                    matchedCategories.add(category);
+                }
             }
         }
 
-        // Boost score for items matching color or style of existing items
-        if (palette.containsKey(piece.getColor().toLowerCase())) {
-            score *= 1.5; // 50% boost for matching color
+        // Boost score for items matching multiple categories
+        if (matchedCategories.size() > 1) {
+            score *= 1.2; // 20% boost for versatile items
         }
 
-        // Consider price range similarity
-        double avgPrice = palette.getOrDefault("avgPrice", 0.0);
-        if (avgPrice > 0 && Math.abs(piece.getPrice() - avgPrice) < 20) {
-            score *= 1.2; // 20% boost for similar price range
+        // Consider title keywords as additional signals
+        String[] titleWords = piece.getTitle().toLowerCase().split("\\s+");
+        for (String word : titleWords) {
+            if (palette.containsKey(word)) {
+                score += palette.get(word) * 0.5; // Half weight for title matches
+            }
         }
 
         return score;
     }
 
-    public static List<Piece> recommendPieces(List<Piece> allPieces, Map<String, Double> palette,
-        Set<String> alreadySavedIds, int limit) throws DraftException {
+    public static List<Piece> recommendPieces(
+        List<Piece> allPieces,
+        Map<String, Double> palette,
+        Set<String> alreadySavedIds,
+        int limit
+    ) throws DraftException {
         if (allPieces == null || palette == null || alreadySavedIds == null) {
             throw new DraftException("Inputs to recommendation engine cannot be null.");
         }
 
-        // Group pieces by category
-        Map<String, List<Piece>> categorizedPieces = allPieces.stream()
+        // Double-check filtering of saved pieces
+        List<Piece> availablePieces = allPieces.stream()
             .filter(p -> p != null && !alreadySavedIds.contains(p.getId()))
+            .collect(Collectors.toList());
+
+        // Group filtered pieces by category
+        Map<String, List<Piece>> categorizedPieces = availablePieces.stream()
             .collect(Collectors.groupingBy(p -> getCategoryFromTags(p.getTags())));
 
         // Score pieces within each category
@@ -107,11 +119,21 @@ public class RecommendationCreator {
     }
 
     private static String getCategoryFromTags(List<String> tags) {
-        // Define category keywords
-        Set<String> topCategories = Set.of("dress", "top", "bottom", "outerwear", "shoes", "accessories");
+        // Define specific category mappings
+        Map<String, List<String>> categoryMappings = Map.of(
+            "dress", List.of("dress", "gown", "midi-dress", "maxi-dress", "mini-dress", "sundress"),
+            "top", List.of("blouse", "shirt", "t-shirt", "tank-top", "sweater", "cardigan", "crop-top", "turtleneck", "polo"),
+            "bottom", List.of("pants", "jeans", "shorts", "skirt", "trousers", "leggings", "joggers", "culottes"),
+            "outerwear", List.of("jacket", "coat", "blazer", "hoodie", "vest", "windbreaker", "parka", "raincoat"),
+            "shoes", List.of("sneakers", "boots", "sandals", "heels", "flats", "loafers", "pumps", "oxfords"),
+            "accessories", List.of("bag", "purse", "scarf", "hat", "belt", "jewelry", "necklace", "earrings", "bracelet", "watch")
+        );
 
+        // Check tags against specific subcategories and return the main category
         return tags.stream()
-            .filter(topCategories::contains)
+            .flatMap(tag -> categoryMappings.entrySet().stream()
+                .filter(entry -> entry.getValue().contains(tag.toLowerCase()))
+                .map(Map.Entry::getKey))
             .findFirst()
             .orElse("other");
     }
