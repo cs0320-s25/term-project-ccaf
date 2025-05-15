@@ -32,89 +32,162 @@ public class RecommendationHandler implements Route {
         response.type("application/json");
 
         try {
-            // 1. Get and validate parameters
             String uid = request.queryParams("uid");
+            System.out.println("Received uid: " + uid);
+
             if (uid == null || uid.trim().isEmpty()) {
                 response.status(400);
                 return GSON.toJson(Map.of("error", "Missing or invalid uid"));
             }
 
-            // 2. Parse request body
-            JsonObject body = new JsonObject();
-            String requestBody = request.body();
-            if (requestBody != null && !requestBody.trim().isEmpty()) {
-                try {
-                    body = GSON.fromJson(requestBody, JsonObject.class);
-                } catch (Exception e) {
-                    response.status(400);
-                    return GSON.toJson(Map.of("error", "Invalid request body"));
+            // Get ALL saved pieces across all drafts
+            Set<String> allSavedPieceIds = new HashSet<>();
+            List<Map<String, Object>> drafts = storage.getCollection(uid, "drafts");
+            System.out.println("Raw drafts data: " + GSON.toJson(drafts));
+
+            // Safely process the drafts
+            if (drafts != null) {
+                for (Map<String, Object> draft : drafts) {
+                    Object piecesObj = draft.get("pieces");
+                    if (piecesObj instanceof List<?>) {
+                        List<?> pieces = (List<?>) piecesObj;
+                        for (Object pieceObj : pieces) {
+                            if (pieceObj instanceof Map) {
+                                @SuppressWarnings("unchecked")
+                                Map<String, Object> piece = (Map<String, Object>) pieceObj;
+                                Object idObj = piece.get("id");
+                                if (idObj instanceof String) {
+                                    allSavedPieceIds.add((String) idObj);
+                                }
+                            }
+                        }
+                    }
                 }
             }
+            System.out.println("Total saved piece IDs: " + allSavedPieceIds.size());
 
-
-            // 3. Initialize user if needed
-            if (!storage.userExists(uid)) {
-                storage.createUser(uid);
-            }
-
-            // 4. Get user's pieces and data
-            List<Piece> savedPieces = storage.getSavedPieces(uid);
-            List<Piece> clickedPieces = storage.getClickedPieces(uid);
-            List<Piece> onboardingPieces = storage.getOnboardingResponses(uid);
+            // Get global pieces
             List<Piece> globalPieces = storage.getGlobalPieces();
+            System.out.println("Global pieces available: " + (globalPieces != null ? globalPieces.size() : "null"));
 
-            // 5. Create palette for recommendations
+            // Create palette
             Map<String, Double> palette = PaletteCreator.createPalette(
-                savedPieces,
-                extractOnboardingKeywords(onboardingPieces),
-                clickedPieces
+                storage.getSavedPieces(uid),
+                extractOnboardingKeywords(storage.getOnboardingResponses(uid)),
+                storage.getClickedPieces(uid)
+            );
+            System.out.println("Created palette: " + palette);
+
+            // Get recommendations
+            List<Piece> recommendations = RecommendationCreator.recommendPieces(
+                globalPieces,
+                palette,
+                allSavedPieceIds,
+                36
             );
 
-            // 6. Get recommendations
-            List<Piece> recommendations;
-            if (body.has("draftId")) {
-                // Get draft-specific recommendations
-                String draftId = body.get("draftId").getAsString();
-                List<Piece> draftPieces = getDraftPieces(uid, draftId);
-                recommendations = RecommendationCreator.recommendForDraft(
-                    draftPieces,
-                    globalPieces,
-                    getSavedPieceIds(savedPieces),
-                    36 // limit to 33 recommendations
-                );
-            } else {
-                // Get general recommendations based on palette
-                recommendations = RecommendationCreator.recommendPieces(
-                    globalPieces,
-                    palette,
-                    getSavedPieceIds(savedPieces),
-                    36 // limit to top 20 recommendations
-                );
-            }
-
-            // 7. Build response
-            Map<String, Object> responseMap = new HashMap<>();
-            responseMap.put("status", "success");
-            responseMap.put("recommendations", recommendations);
-
-            if (body.has("draftId")) {
-                List<Map<String, Object>> draftData = storage.getCollection(
-                    uid,
-                    "drafts/" + body.get("draftId").getAsString()
-                );
-                responseMap.put("draftData", draftData);
-            }
-
-            return GSON.toJson(responseMap);
-
-        } catch (Exception e) {
-            response.status(500);
             return GSON.toJson(Map.of(
-                "error", "Internal server error",
-                "message", e.getMessage()
+                "status", "success",
+                "recommendations", recommendations
             ));
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e.getMessage());
+            e.printStackTrace();
+            response.status(500);
+            return GSON.toJson(Map.of("error", "Recommendation failed: " + e.getMessage()));
         }
     }
+//    @Override
+//    public Object handle(Request request, Response response) throws ProtocolException {
+//        response.type("application/json");
+//
+//        try {
+//            // 1. Get and validate parameters
+//            String uid = request.queryParams("uid");
+//            if (uid == null || uid.trim().isEmpty()) {
+//                response.status(400);
+//                return GSON.toJson(Map.of("error", "Missing or invalid uid"));
+//            }
+//
+//            // 2. Parse request body
+//            JsonObject body = new JsonObject();
+//            String requestBody = request.body();
+//            if (requestBody != null && !requestBody.trim().isEmpty()) {
+//                try {
+//                    body = GSON.fromJson(requestBody, JsonObject.class);
+//                } catch (Exception e) {
+//                    response.status(400);
+//                    return GSON.toJson(Map.of("error", "Invalid request body"));
+//                }
+//            }
+//
+//
+//            // 3. Initialize user if needed
+//            if (!storage.userExists(uid)) {
+//                storage.createUser(uid);
+//            }
+//
+//            // 4. Get user's pieces and data
+//            List<Piece> savedPieces = storage.getSavedPieces(uid);
+//            List<Piece> clickedPieces = storage.getClickedPieces(uid);
+//            List<Piece> onboardingPieces = storage.getOnboardingResponses(uid);
+//            List<Piece> globalPieces = storage.getGlobalPieces();
+//
+//            // 5. Create palette for recommendations
+//            Map<String, Double> palette = PaletteCreator.createPalette(
+//                savedPieces,
+//                extractOnboardingKeywords(onboardingPieces),
+//                clickedPieces
+//            );
+//
+//            // 6. Get recommendations
+//            List<Piece> recommendations;
+//            if (body.has("draftId")) {
+//                // Get draft-specific recommendations
+//                String draftId = body.get("draftId").getAsString();
+//                List<Piece> draftPieces = getDraftPieces(uid, draftId);
+//                recommendations = RecommendationCreator.recommendForDraft(
+//                    draftPieces,
+//                    globalPieces,
+//                    getSavedPieceIds(savedPieces),
+//                    36 // limit to 33 recommendations
+//                );
+//            } else {
+//                // Get general recommendations based on palette
+//                recommendations = RecommendationCreator.recommendPieces(
+//                    globalPieces,
+//                    palette,
+//                    getSavedPieceIds(savedPieces),
+//                    36 // limit to top 20 recommendations
+//                );
+//            }
+//
+//            // 7. Build response
+//            Map<String, Object> responseMap = new HashMap<>();
+//            responseMap.put("status", "success");
+//            responseMap.put("recommendations", recommendations);
+//
+//            if (body.has("draftId")) {
+//                List<Map<String, Object>> draftData = storage.getCollection(
+//                    uid,
+//                    "drafts/" + body.get("draftId").getAsString()
+//                );
+//                responseMap.put("draftData", draftData);
+//            }
+//
+//            return GSON.toJson(responseMap);
+//
+//        } catch (Exception e) {
+//            response.status(500);
+//            return GSON.toJson(Map.of(
+//                "error", "Internal server error",
+//                "message", e.getMessage()
+//            ));
+//        }
+//    }
+
+
+
 
     // Helper method to extract onboarding keywords from pieces
     private List<String> extractOnboardingKeywords(List<Piece> onboardingPieces) {
