@@ -1,0 +1,2467 @@
+{
+	"info": {
+		"_postman_id": "3c7bbd28-5fb5-406e-97d7-65c2fa60df7c",
+		"name": "term project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42019937"
+	},
+	"item": [
+		{
+			"name": "create draft integration tests",
+			"item": [
+				{
+					"name": "missing draftName",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/create-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"create-draft"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/create-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"create-draft"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:07:11 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"response_type\":\"failure\",\"error\":\"Missing userId or name\"}"
+						}
+					]
+				},
+				{
+					"name": "valid creation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/create-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftName=test draft %231",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"create-draft"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								},
+								{
+									"key": "draftName",
+									"value": "test draft %231"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/create-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftName=test draft %231",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"create-draft"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										},
+										{
+											"key": "draftName",
+											"value": "test draft %231"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:02:26 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Invalid Date"
+								}
+							],
+							"body": "{\"draft\":{\"pieces\":[],\"name\":\"test draft #1\",\"id\":\"8b67663d-f9e5-4005-908f-3b8d03778b98\",\"thumbnails\":[]},\"response_type\":\"success\"}"
+						}
+					]
+				},
+				{
+					"name": "tests missing userId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/create-draft?draftName=missingUserId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"create-draft"
+							],
+							"query": [
+								{
+									"key": "draftName",
+									"value": "missingUserId"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/create-draft?draftName=missingUserId",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"create-draft"
+									],
+									"query": [
+										{
+											"key": "draftName",
+											"value": "missingUserId"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:05:42 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"response_type\":\"failure\",\"error\":\"Missing userId or name\"}"
+						}
+					]
+				},
+				{
+					"name": "tests duplicate drafts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/create-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftName=test%20draft%20%231",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"create-draft"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								},
+								{
+									"key": "draftName",
+									"value": "test%20draft%20%231"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/create-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftName=test%20draft%20%231",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"create-draft"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										},
+										{
+											"key": "draftName",
+											"value": "test%20draft%20%231"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:07:47 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"response_type\":\"failure\",\"error\":\"Draft name is not available\"}"
+						}
+					]
+				},
+				{
+					"name": "tests long name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/create-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftName=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"create-draft"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								},
+								{
+									"key": "draftName",
+									"value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "tests long name (300 c)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/create-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftName=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"create-draft"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										},
+										{
+											"key": "draftName",
+											"value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:09:37 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"draft\":{\"pieces\":[],\"name\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"id\":\"cfcf6a98-341f-4b9a-b02e-2235f2fe5483\",\"thumbnails\":[]},\"response_type\":\"success\"}"
+						}
+					]
+				},
+				{
+					"name": "tests empty name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/create-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftName=",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"create-draft"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								},
+								{
+									"key": "draftName",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/create-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftName=",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"create-draft"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										},
+										{
+											"key": "draftName",
+											"value": ""
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:13:31 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"response_type\":\"failure\",\"error\":\"Missing userId or name\"}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "delete draft integration tests",
+			"item": [
+				{
+					"name": "valid deletion req",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/remove-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftId=new draft %231",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"remove-draft"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								},
+								{
+									"key": "draftId",
+									"value": "new draft #1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "successful deletion",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/remove-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftId=new draft %231",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"remove-draft"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										},
+										{
+											"key": "draftId",
+											"value": "new draft #1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:34:40 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"response_type\":\"success\",\"message\":\"Draft removed successfully.\"}"
+						}
+					]
+				},
+				{
+					"name": "no userId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/remove-draft?draftId=draft_abc123",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"remove-draft"
+							],
+							"query": [
+								{
+									"key": "draftId",
+									"value": "draft_abc123"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/remove-draft?draftId=draft_abc123",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"remove-draft"
+									],
+									"query": [
+										{
+											"key": "draftId",
+											"value": "draft_abc123"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:36:49 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"response_type\":\"failure\",\"error\":\"Missing required parameters.\"}"
+						}
+					]
+				},
+				{
+					"name": "no draftId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/remove-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"remove-draft"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/remove-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"remove-draft"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:38:29 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"response_type\":\"failure\",\"error\":\"Missing required parameters.\"}"
+						}
+					]
+				},
+				{
+					"name": "bad draftId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/remove-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftId=nonexistent_draft",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"remove-draft"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								},
+								{
+									"key": "draftId",
+									"value": "nonexistent_draft"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/remove-draft?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftId=nonexistent_draft",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"remove-draft"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										},
+										{
+											"key": "draftId",
+											"value": "nonexistent_draft"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:43:08 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"response_type\":\"failure\",\"error\":\"no draft with that id\"}"
+						}
+					]
+				},
+				{
+					"name": "empty params",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/remove-draft?userId=&draftId=",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"remove-draft"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": ""
+								},
+								{
+									"key": "draftId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/remove-draft?userId=&draftId=",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"remove-draft"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": ""
+										},
+										{
+											"key": "draftId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:44:29 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"response_type\":\"failure\",\"error\":\"Missing required parameters.\"}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "view draft integration tests",
+			"item": [
+				{
+					"name": "valid req",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/view-drafts?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"view-drafts"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/view-drafts?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"view-drafts"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:47:05 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"response_type\":\"success\",\"drafts\":[{\"pieces\":[],\"name\":\"test draft #1\",\"id\":\"8b67663d-f9e5-4005-908f-3b8d03778b98\",\"thumbnails\":[]},{\"pieces\":[],\"name\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"id\":\"cfcf6a98-341f-4b9a-b02e-2235f2fe5483\",\"thumbnails\":[]}]}"
+						}
+					]
+				},
+				{
+					"name": "no userId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/view-drafts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"view-drafts"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/view-drafts",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"view-drafts"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:48:38 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"response_type\":\"failure\",\"error\":\"Missing userId\"}"
+						}
+					]
+				},
+				{
+					"name": "empty userId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/view-drafts?userId=",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"view-drafts"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/view-drafts?userId=",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"view-drafts"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:49:43 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"response_type\":\"failure\",\"error\":\"Missing userId\"}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "create/save piece integration tests",
+			"item": [
+				{
+					"name": "valid save piece",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/save-piece?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftId=8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc&pieceId=piece_fake_001&title=Test%20Shirt&price=14.99&sourceWebsite=example.com&url=https://example.com/test-shirt&imageUrl=https://example.com/test-shirt.jpg&size=M&color=Blue&condition=Like%20New&tags=casual,shirt,summer\n",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"save-piece"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								},
+								{
+									"key": "draftId",
+									"value": "8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc"
+								},
+								{
+									"key": "pieceId",
+									"value": "piece_fake_001"
+								},
+								{
+									"key": "title",
+									"value": "Test%20Shirt"
+								},
+								{
+									"key": "price",
+									"value": "14.99"
+								},
+								{
+									"key": "sourceWebsite",
+									"value": "example.com"
+								},
+								{
+									"key": "url",
+									"value": "https://example.com/test-shirt"
+								},
+								{
+									"key": "imageUrl",
+									"value": "https://example.com/test-shirt.jpg"
+								},
+								{
+									"key": "size",
+									"value": "M"
+								},
+								{
+									"key": "color",
+									"value": "Blue"
+								},
+								{
+									"key": "condition",
+									"value": "Like%20New"
+								},
+								{
+									"key": "tags",
+									"value": "casual,shirt,summer\n"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/save-piece?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftId=8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc&pieceId=piece_fake_001&title=Test%20Shirt&price=14.99&sourceWebsite=example.com&url=https://example.com/test-shirt&imageUrl=https://example.com/test-shirt.jpg&size=M&color=Blue&condition=Like%20New&tags=casual,shirt,summer\n",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"save-piece"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										},
+										{
+											"key": "draftId",
+											"value": "8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc"
+										},
+										{
+											"key": "pieceId",
+											"value": "piece_fake_001"
+										},
+										{
+											"key": "title",
+											"value": "Test%20Shirt"
+										},
+										{
+											"key": "price",
+											"value": "14.99"
+										},
+										{
+											"key": "sourceWebsite",
+											"value": "example.com"
+										},
+										{
+											"key": "url",
+											"value": "https://example.com/test-shirt"
+										},
+										{
+											"key": "imageUrl",
+											"value": "https://example.com/test-shirt.jpg"
+										},
+										{
+											"key": "size",
+											"value": "M"
+										},
+										{
+											"key": "color",
+											"value": "Blue"
+										},
+										{
+											"key": "condition",
+											"value": "Like%20New"
+										},
+										{
+											"key": "tags",
+											"value": "casual,shirt,summer\n"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 02:58:09 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"message\":\"Piece saved to draft in Firestore\",\"status\":\"success\"}"
+						}
+					]
+				},
+				{
+					"name": "no userId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/save-piece?draftId=draft_test123&pieceId=piece_fake_001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"save-piece"
+							],
+							"query": [
+								{
+									"key": "draftId",
+									"value": "draft_test123"
+								},
+								{
+									"key": "pieceId",
+									"value": "piece_fake_001"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/save-piece?draftId=draft_test123&pieceId=piece_fake_001",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"save-piece"
+									],
+									"query": [
+										{
+											"key": "draftId",
+											"value": "draft_test123"
+										},
+										{
+											"key": "pieceId",
+											"value": "piece_fake_001"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 03:01:39 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"error\":\"Missing or empty parameter: userId\",\"status\":\"error\"}"
+						}
+					]
+				},
+				{
+					"name": "bad price / input",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/save-piece?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftId=draft_test123&pieceId=piece_fake_002&title=Test%20Shirt&price=FREE&sourceWebsite=example.com&url=https://example.com/test-shirt&imageUrl=https://example.com/test-shirt.jpg&size=M&color=Blue&condition=Like%20New&tags=casual,shirt,summer",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"save-piece"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								},
+								{
+									"key": "draftId",
+									"value": "draft_test123"
+								},
+								{
+									"key": "pieceId",
+									"value": "piece_fake_002"
+								},
+								{
+									"key": "title",
+									"value": "Test%20Shirt"
+								},
+								{
+									"key": "price",
+									"value": "FREE"
+								},
+								{
+									"key": "sourceWebsite",
+									"value": "example.com"
+								},
+								{
+									"key": "url",
+									"value": "https://example.com/test-shirt"
+								},
+								{
+									"key": "imageUrl",
+									"value": "https://example.com/test-shirt.jpg"
+								},
+								{
+									"key": "size",
+									"value": "M"
+								},
+								{
+									"key": "color",
+									"value": "Blue"
+								},
+								{
+									"key": "condition",
+									"value": "Like%20New"
+								},
+								{
+									"key": "tags",
+									"value": "casual,shirt,summer"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/save-piece?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftId=draft_test123&pieceId=piece_fake_002&title=Test%20Shirt&price=FREE&sourceWebsite=example.com&url=https://example.com/test-shirt&imageUrl=https://example.com/test-shirt.jpg&size=M&color=Blue&condition=Like%20New&tags=casual,shirt,summer",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"save-piece"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										},
+										{
+											"key": "draftId",
+											"value": "draft_test123"
+										},
+										{
+											"key": "pieceId",
+											"value": "piece_fake_002"
+										},
+										{
+											"key": "title",
+											"value": "Test%20Shirt"
+										},
+										{
+											"key": "price",
+											"value": "FREE"
+										},
+										{
+											"key": "sourceWebsite",
+											"value": "example.com"
+										},
+										{
+											"key": "url",
+											"value": "https://example.com/test-shirt"
+										},
+										{
+											"key": "imageUrl",
+											"value": "https://example.com/test-shirt.jpg"
+										},
+										{
+											"key": "size",
+											"value": "M"
+										},
+										{
+											"key": "color",
+											"value": "Blue"
+										},
+										{
+											"key": "condition",
+											"value": "Like%20New"
+										},
+										{
+											"key": "tags",
+											"value": "casual,shirt,summer"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 03:02:57 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"error\":\"Invalid price\",\"status\":\"error\"}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "delete piece integration tests",
+			"item": [
+				{
+					"name": "valid deletion",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/remove-piece?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&pieceId=piece_fake_001&draftId=8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc\n",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"remove-piece"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								},
+								{
+									"key": "pieceId",
+									"value": "piece_fake_001"
+								},
+								{
+									"key": "draftId",
+									"value": "8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc\n"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/remove-piece?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&pieceId=piece_fake_001&draftId=8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc\n",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"remove-piece"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										},
+										{
+											"key": "pieceId",
+											"value": "piece_fake_001"
+										},
+										{
+											"key": "draftId",
+											"value": "8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc\n"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 03:06:25 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"message\":\"piece with id piece_fake_001 was removed!\",\"status\":\"success\"}"
+						}
+					]
+				},
+				{
+					"name": "no userId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/remove-piece?pieceId=piece123&draftId=draftA",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"remove-piece"
+							],
+							"query": [
+								{
+									"key": "pieceId",
+									"value": "piece123"
+								},
+								{
+									"key": "draftId",
+									"value": "draftA"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/remove-piece?pieceId=piece123&draftId=draftA",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"remove-piece"
+									],
+									"query": [
+										{
+											"key": "pieceId",
+											"value": "piece123"
+										},
+										{
+											"key": "draftId",
+											"value": "draftA"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 03:07:57 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"message\":\"Missing or empty required parameter(s): userId, pieceId, draftId\",\"status\":\"error\"}"
+						}
+					]
+				},
+				{
+					"name": "bad userId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/remove-piece?userId=errorUser&pieceId=piece123&draftId=draftA",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"remove-piece"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "errorUser"
+								},
+								{
+									"key": "pieceId",
+									"value": "piece123"
+								},
+								{
+									"key": "draftId",
+									"value": "draftA"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/remove-piece?userId=errorUser&pieceId=piece123&draftId=draftA",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"remove-piece"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "errorUser"
+										},
+										{
+											"key": "pieceId",
+											"value": "piece123"
+										},
+										{
+											"key": "draftId",
+											"value": "draftA"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 03:08:55 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"message\":\"[RemovePieceHandler] Server error: com.google.api.gax.rpc.NotFoundException: io.grpc.StatusRuntimeException: NOT_FOUND: No document to update: projects/term-project-ccaf-724a1/databases/(default)/documents/pieces/piece123\",\"status\":\"failure\"}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "view piece integration tests",
+			"item": [
+				{
+					"name": "no params",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/view-piece",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"view-piece"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/view-piece",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"view-piece"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 03:14:36 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"error\":\"missing required params\",\"status\":\"failure\"}"
+						}
+					]
+				},
+				{
+					"name": "empty params",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/view-piece?userId=&draftId=",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"view-piece"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": ""
+								},
+								{
+									"key": "draftId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/view-piece?userId=&draftId=",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"view-piece"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": ""
+										},
+										{
+											"key": "draftId",
+											"value": ""
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 03:16:32 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"error\":\"missing required params\",\"status\":\"failure\"}"
+						}
+					]
+				},
+				{
+					"name": "bad draftId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/view-piece?userId=testuser&draftId=notARealDraft\n",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"view-piece"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "testuser"
+								},
+								{
+									"key": "draftId",
+									"value": "notARealDraft\n"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "error message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/view-piece?userId=testuser&draftId=notARealDraft\n",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"view-piece"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "testuser"
+										},
+										{
+											"key": "draftId",
+											"value": "notARealDraft\n"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 03:18:44 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"error\":\"no draft found\",\"status\":\"failure\"}"
+						}
+					]
+				},
+				{
+					"name": "valid no pieces",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/view-piece?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftId=8b67663d-f9e5-4005-908f-3b8d03778b98",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"view-piece"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								},
+								{
+									"key": "draftId",
+									"value": "8b67663d-f9e5-4005-908f-3b8d03778b98"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "no pieces found message",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/view-piece?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftId=8b67663d-f9e5-4005-908f-3b8d03778b98",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"view-piece"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										},
+										{
+											"key": "draftId",
+											"value": "8b67663d-f9e5-4005-908f-3b8d03778b98"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 03:21:03 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"pieces\":[],\"draftData\":{\"pieces\":[],\"name\":\"test draft #1\",\"id\":\"8b67663d-f9e5-4005-908f-3b8d03778b98\",\"thumbnails\":[]},\"message\":\"no pieces found!\",\"status\":\"success\"}"
+						}
+					]
+				},
+				{
+					"name": "valid with pieces",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3232/view-piece?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftId=8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3232",
+							"path": [
+								"view-piece"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+								},
+								{
+									"key": "draftId",
+									"value": "8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "pieces in the return",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3232/view-piece?userId=user_2x71gkiaGw68jTLtig8WNkDjUnc&draftId=8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3232",
+									"path": [
+										"view-piece"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "user_2x71gkiaGw68jTLtig8WNkDjUnc"
+										},
+										{
+											"key": "draftId",
+											"value": "8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "html",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 15 May 2025 03:21:51 GMT"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Access-Control-Allow-Methods",
+									"value": "GET, POST, OPTIONS"
+								},
+								{
+									"key": "Access-Control-Allow-Headers",
+									"value": "Content-Type, Authorization"
+								},
+								{
+									"key": "Content-Type",
+									"value": "text/html;charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Server",
+									"value": "Jetty(9.4.48.v20220622)"
+								}
+							],
+							"cookie": [],
+							"body": "{\"pieces\":[{\"id\":\"piece_fake_001\",\"title\":\"Test Shirt\",\"price\":14.99,\"sourceWebsite\":\"example.com\",\"url\":\"https://example.com/test-shirt\",\"imageUrl\":\"https://example.com/test-shirt.jpg\",\"size\":\"M\",\"color\":\"Blue\",\"condition\":\"Like New\",\"tags\":[\"casual\",\"shirt\",\"summer\\n\"],\"usedInDrafts\":[\"8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc\"]}],\"draftData\":{\"pieces\":[\"piece_fake_001\"],\"name\":\"draft_test123\",\"id\":\"8e188ffe-305d-4b3e-b8b7-3c31e15b1cdc\",\"thumbnails\":[\"https://example.com/test-shirt.jpg\"]},\"message\":\"pieces found!\",\"status\":\"success\"}"
+						}
+					]
+				}
+			]
+		}
+	]
+}
