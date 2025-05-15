@@ -30,6 +30,7 @@ public class ClickHandler implements Route {
         }
 
         storage.logPieceClick(userId, pieceId, timestamp);
+        System.out.println(pieceId + " has been clicked at " + timestamp);
 
         response.status(200);
         return gson.toJson(Map.of("status", "success"));

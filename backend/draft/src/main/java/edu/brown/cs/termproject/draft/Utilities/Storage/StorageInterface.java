@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import edu.brown.cs.termproject.draft.Piece;
+import edu.brown.cs.termproject.draft.Exceptions.DatabaseOperationException;
 
 public interface StorageInterface {
 
@@ -17,18 +18,18 @@ public interface StorageInterface {
 
   boolean isDraftNameAvailable(String draftName);
 
-  List<Piece> getSavedPieces(String uid) throws Exception;
+  List<Piece> getSavedPieces(String uid) throws DatabaseOperationException;
 
-  List<Piece> getClickedPieces(String uid) throws Exception;
+  List<Piece> getClickedPieces(String uid) throws DatabaseOperationException;
 
-  List<Piece> getOnboardingResponses(String uid) throws Exception;
+  List<Piece> getOnboardingResponses(String uid) throws DatabaseOperationException;
 
-  List<Piece> getGlobalPieces() throws Exception;
+  List<Piece> getGlobalPieces() throws DatabaseOperationException;
 
   boolean userExists(String uid);
 
-  void createUser(String uid) throws Exception;
+  void createUser(String uid) throws DatabaseOperationException;
 
-  void logPieceClick(String userId, String pieceId, long timestamp) throws Exception;
+  void logPieceClick(String userId, String pieceId, long timestamp) throws DatabaseOperationException;
 
 }

@@ -69,7 +69,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
   const logClick = async () => {
     if (!uid || !piece?.id) return;
     try {
-      await fetch("/log-click", {
+      await fetch("http://localhost:3232/log-click", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: uid, pieceId: piece.id }),

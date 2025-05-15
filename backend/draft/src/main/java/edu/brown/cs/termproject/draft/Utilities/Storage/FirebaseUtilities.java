@@ -14,6 +14,8 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 import edu.brown.cs.termproject.draft.Piece;
+import edu.brown.cs.termproject.draft.Exceptions.DatabaseOperationException;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -217,7 +219,7 @@ public class FirebaseUtilities implements StorageInterface {
    * @param draftId id of the draft the piece is being saved to
    * @param piece piece object being saved
    */
-  public static void savePieceToDraft(String userId, String draftId, Piece piece) throws Exception {
+  public static void savePieceToDraft(String userId, String draftId, Piece piece) throws DatabaseOperationException {
     Firestore db = getDb();
     DocumentReference draftDoc = db
         .collection("users")
@@ -228,12 +230,21 @@ public class FirebaseUtilities implements StorageInterface {
     Map<String, Object> update1 = new HashMap<>();
     update1.put("pieces", FieldValue.arrayUnion(piece.getId())); // store just the ID...?
 
-    draftDoc.update(update1).get();
+    try{
+      draftDoc.update(update1).get();
+    } catch (Exception e){
+      throw new DatabaseOperationException("[FirebaseUtilities] " + e.getMessage());
+    }
 
     DocumentReference piecesDoc = db.collection("pieces").document(piece.getId());
     Map<String, Object> update2 = new HashMap<>();
     update2.put("usedInDrafts", FieldValue.arrayUnion(draftId));
-    piecesDoc.update(update2).get();
+
+    try {
+      piecesDoc.update(update2).get();
+    } catch (Exception e) {
+      throw new DatabaseOperationException("[FirebaseUtilities] " + e.getMessage());
+    }
   }
 
   /**
@@ -244,7 +255,7 @@ public class FirebaseUtilities implements StorageInterface {
    * @param draftId id of the draft the piece is being removed from
    * @param pieceId id of the piece object being removed
    */
-  public static void removePieceFromDraft(String userId, String draftId, String pieceId) throws Exception {
+  public static void removePieceFromDraft(String userId, String draftId, String pieceId) throws DatabaseOperationException {
     Firestore db = getDb();
 
     DocumentReference draftDoc = db
@@ -253,7 +264,12 @@ public class FirebaseUtilities implements StorageInterface {
         .collection("drafts")
         .document(draftId);
 
-    DocumentSnapshot draftSnapshot = draftDoc.get().get();
+  DocumentSnapshot draftSnapshot = null;
+    try {
+      draftSnapshot = draftDoc.get().get();
+    } catch (Exception e) {
+      throw new DatabaseOperationException("[FirebaseUtilities] " + e.getMessage());
+    }
 
     // remember that the thumbnails should reflect the piece content, so adjust those too
     if (draftSnapshot.exists()) {
@@ -270,19 +286,41 @@ public class FirebaseUtilities implements StorageInterface {
       Map<String, Object> draftUpdate = new HashMap<>();
       draftUpdate.put("pieces", FieldValue.arrayRemove(pieceId));
       draftUpdate.put("thumbnails", thumbnails);
-      draftDoc.update(draftUpdate).get();
+
+      try {
+        draftDoc.update(draftUpdate).get();
+      } catch (Exception e) {
+        throw new DatabaseOperationException("[FirebaseUtilities] " + e.getMessage());
+      }
     }
 
     DocumentReference pieceDoc = db.collection("pieces").document(pieceId);
     Map<String, Object> pieceUpdate = new HashMap<>();
     pieceUpdate.put("usedInDrafts", FieldValue.arrayRemove(draftId));
-    pieceDoc.update(pieceUpdate).get();
 
-    DocumentSnapshot pieceSnapshot = pieceDoc.get().get();
+    try {
+      pieceDoc.update(pieceUpdate).get();
+    } catch (Exception e) {
+      throw new DatabaseOperationException("[FirebaseUtilities] " + e.getMessage());
+    }
+
+    DocumentSnapshot pieceSnapshot = null;
+
+    try {
+      pieceSnapshot = pieceDoc.get().get();
+    } catch (Exception e) {
+      throw new DatabaseOperationException("[FirebaseUtilities] " + e.getMessage());
+    }
+
     if (pieceSnapshot.exists()) {
       List<String> usedInDrafts = (List<String>) pieceSnapshot.get("usedInDrafts");
       if (usedInDrafts == null || usedInDrafts.isEmpty()) {
-        pieceDoc.delete().get();
+
+        try {
+          pieceDoc.delete().get();
+        } catch (Exception e) {
+          throw new DatabaseOperationException("[FirebaseUtilities] " + e.getMessage());
+        }
       }
     }
   }
@@ -597,7 +635,7 @@ public class FirebaseUtilities implements StorageInterface {
     System.out.println("Saved piece " + piece.getId() + " for user " + uid);
   }
 
-  public static void removePieceForUser(String uid, String pieceId) throws Exception {
+  public static void removePieceForUser(String uid, String pieceId) throws DatabaseOperationException {
     if (uid == null || pieceId == null) {
       throw new IllegalArgumentException("unsavePieceForUser: uid or pieceId cannot be null");
     }
@@ -607,7 +645,11 @@ public class FirebaseUtilities implements StorageInterface {
     DocumentReference savedRef = db.collection("users").document(uid)
         .collection("saved").document(pieceId);
 
-    savedRef.delete().get();
+    try {
+      savedRef.delete().get();
+    } catch (Exception e) {
+      throw new DatabaseOperationException("[FirebaseUtilities] " + e.getMessage());
+    }
 
     System.out.println("Un-saved piece " + pieceId + " for user " + uid);
   }
@@ -636,7 +678,7 @@ public class FirebaseUtilities implements StorageInterface {
   }
 
   @Override
-  public void logPieceClick(String userId, String pieceId, long timestamp) throws Exception {
+  public void logPieceClick(String userId, String pieceId, long timestamp) throws DatabaseOperationException {
     Firestore db = FirestoreClient.getFirestore();
 
     DocumentReference userRef = db.collection("users").document(userId);
