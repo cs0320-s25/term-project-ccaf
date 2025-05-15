@@ -43,29 +43,28 @@ export function useDrafts(uid: string | undefined) {
     fetchDrafts();
   }, [fetchDrafts]);
 
-  const createDraft = (name: string) => {
-    if (!uid || !name.trim()) return;
+  const createDraft = (name: string): Promise<void> => {
+    if (!uid || !name.trim()) {
+      return Promise.reject(new Error("Invalid UID or name"));
+    }
 
-    addDraft(uid, name)
-      .then((res) => {
-        if (res.response_type === "success") {
-          const draft = res.draft;
-          const newDraft = {
-            id: draft.id,
-            name: draft.name,
-            count: (draft.pieces || []).length,
-            pieces: draft.pieces || [],
-            thumbnails: draft.thumbnails || [],
-          };
-          setDrafts((prev) => [...prev, newDraft]);
-        } else {
-          throw new Error(res.error);
-        }
-      })
-      .catch((err: any) => {
-        setError(err.message);
-      });
+    return addDraft(uid, name).then((res) => {
+      if (res.response_type === "success") {
+        const draft = res.draft;
+        const newDraft = {
+          id: draft.id,
+          name: draft.name,
+          count: (draft.pieces || []).length,
+          pieces: draft.pieces || [],
+          thumbnails: draft.thumbnails || [],
+        };
+        setDrafts((prev) => [...prev, newDraft]);
+      } else {
+        throw new Error(res.error);
+      }
+    });
   };
+
 
   const addToDraftWrapper = (uid: string, draftId: string,  piece: Piece) => {
     if (!uid || !draftId.trim() || !piece.id.trim() || !piece.title.trim() || !piece.price || !piece.sourceWebsite.trim() || !piece.url.trim() || !piece.size.trim() || !piece.color.trim() || !piece.condition.trim() || !piece.imageUrl.trim() || !piece.tags) return;
@@ -108,5 +107,5 @@ export function useDrafts(uid: string | undefined) {
   // };
     
 
-  return { drafts, loading, error, createDraft, fetchDrafts, addToDraftWrapper };
+  return { drafts, loading, error, setError, createDraft, fetchDrafts, addToDraftWrapper };
 }

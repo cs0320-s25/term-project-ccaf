@@ -108,21 +108,21 @@ export default function DraftPage() {
   return (
     <div className="container px-4 py-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-2">
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-bold" aria-label="draft title">
           {draft?.name || "Draft not found"}
         </h1>
         {draft && (
           <button
             onClick={() => setShowModal(true)}
             className="text-red-500 hover:text-red-700"
-            aria-label="Delete draft"
+            aria-label="delete draft button"
           >
             <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700" />
           </button>
         )}
       </div>
 
-      <p className="text-sm text-muted-foreground mb-6">
+      <p className="text-sm text-muted-foreground mb-6" aria-label="piece count">
         {draft?.items?.length ?? 0} pieces
       </p>
 
@@ -133,7 +133,7 @@ export default function DraftPage() {
           ))}
         </div>
       ) : (
-        <p className="text-muted-foreground mt-8">
+        <p className="text-muted-foreground mt-8" aria-label="no pieces saved prompt">
           no pieces in this draft yet. time to start saving!
         </p>
       )}
@@ -141,19 +141,21 @@ export default function DraftPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg">
-            <h2 className="modal-header">confirm deletion</h2>
-            <p className="modal-body">are you sure you want to delete this draft?</p>
-            <div className="flex justify-center gap-4">
+          <div className="bg-white p-6 rounded shadow-lg" aria-label="pop up to delete a draft">
+            <h2 className="text-lg font-semibold mb-4">confirm deletion</h2>
+            <p className="mb-4">are you sure you want to delete this draft?</p>
+            <div className="flex justify-end gap-4">
               <button
                 className="px-4 py-2 text-sm bg-gray-100 rounded hover:bg-gray-200"
                 onClick={() => setShowModal(false)}
+                aria-label="button to cancel draft deletion"
               >
                 cancel
               </button>
               <button
                 className="px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 flex justify-center"
                 onClick={handleDelete}
+                aria-label="button to confirm draft deletion"
               >
                 yes, delete
               </button>

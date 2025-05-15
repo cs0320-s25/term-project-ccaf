@@ -41,6 +41,8 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
   const [showModal, setShowModal] = useState(false);
   const [draftName, setDraftName] = useState("");
   const [pendingSaveDraftName, setPendingSaveDraftName] = useState<string | null>(null);
+  const [errMessage, setErrMessage] = useState("");
+
   const { createDraft, addToDraftWrapper, drafts } = useDrafts(uid);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -99,6 +101,16 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
   const handleNewDraft = () => {
     const trimmedName = draftName.trim();
     if (!trimmedName) return;
+    createDraft(draftName)
+      .then(() => {
+        setDraftName("");
+        setShowModal(false);
+        setPendingSaveDraftName(trimmedName); // Track the draft we're waiting for
+        setDraftName("");
+      })
+      .catch((err) => {
+        setErrMessage(err.message);
+      });
   
     createDraft(trimmedName); // triggers the state update async
     setPendingSaveDraftName(trimmedName); // track the draft we're waiting for
@@ -123,6 +135,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
         href={{ pathname: `/product/${piece.id}` }}
         className="block"
         onClick={handleProductClick}
+        aria-label={"piece titled: " + piece.title}
       >
         <div className="relative aspect-square bg-gray-100 overflow-hidden">
           <Image
@@ -136,6 +149,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
           <button
             onClick={toggleModal}
             className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+            aria-label="button to save piece to draft"
           >
             <Star
               className={`h-5 w-5 ${
@@ -152,6 +166,7 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
                 setShowDeleteConfirm(true);
               }}
               className="absolute top-2 left-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+              aria-label="button to remove piece from draft"
             >
               <Trash className="h-5 w-5 text-red-500" />
             </button>
@@ -159,9 +174,11 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
         </div>
 
         <div className="p-4">
-          <p className="text-sm text-muted-foreground">{piece.sourceWebsite}</p>
-          <h3 className="font-semibold">{piece.title}</h3>
-          <p className="text-sm font-medium">${piece.price.toFixed(2)}</p>
+          <p className="text-sm text-muted-foreground" aria-label="source website">
+            {piece.sourceWebsite}
+          </p>
+          <h3 className="font-semibold" aria-label="piece title">{piece.title}</h3>
+          <p className="text-sm font-medium" aria-label="piece price">${piece.price.toFixed(2)}</p>
         </div>
       </Link>
 
@@ -176,6 +193,8 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-80">
             <div className="flex justify-between items-center mb-4">
+              <h2 aria-label="modal title">save to a draft</h2>
+              <button onClick={() => setShowModal(false)} aria-label="close modal">
               <h2 className="modal-header">save to a draft</h2>
               <button onClick={() => setShowModal(false)}>
                 <X className="h-5 w-5" />
@@ -189,23 +208,38 @@ export function ProductCard({ piece, onDraftPage, onRemove }: ProductCardProps) 
                     key={draft.id}
                     onClick={() => handleSave(draft.id, piece)}
                     className="block w-full text-left p-2 border rounded hover:bg-gray-100"
+                    aria-label={"button to save to draft " + draft.name}
                   >
                     {draft.name}
                   </button>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">no drafts yet :(</p>
+                <p className="text-sm text-muted-foreground" aria-label="no drafts available">
+                  no drafts yet :(
+                </p>
               )}
             </div>
 
             <div className="mt-4">
+              {errMessage && (
+                <p className="text-sm text-red-600 mb-2" role="alert" aria-label="error message">
+                  {errMessage}
+                </p>
+              )}
               <input
                 type="text"
+                placeholder="new draft name"
                 placeholder="new draft name"
                 value={draftName}
                 onChange={(e) => setDraftName(e.target.value)}
                 className="w-full border px-2 py-1 rounded mb-2"
+                aria-label="input for new draft name"
               />
+              <button
+                className="btn-outline-rounded"
+                onClick={handleNewDraft}
+                aria-label="button to create and save new draft"
+              >
               <button className="btn-outline-rounded mt-2" onClick={handleNewDraft}>
                 create & save
               </button>
