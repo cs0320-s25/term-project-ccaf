@@ -54,6 +54,21 @@ public class SavePieceHandler implements Route {
          ? List.of(tagsParam.split(","))
          : new ArrayList<>();
 
+       // List of required params
+       String[] requiredParams = {
+           "userId", "draftId", "pieceId", "title", "price",
+           "sourceWebsite", "url", "imageUrl", "size", "color", "condition"
+       };
+
+       // Check if any required param is null or empty
+       for (String param : requiredParams) {
+         String value = request.queryParams(param);
+         if (value == null || value.trim().isEmpty()) {
+           responseMap.put("status", "error");
+           responseMap.put("error", "Missing or empty parameter: " + param);
+           return gson.toJson(responseMap);
+         }
+       }
 
 
      Piece piece = FirebaseUtilities.getPieceById(pieceId);

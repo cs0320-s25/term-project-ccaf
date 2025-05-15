@@ -35,7 +35,7 @@ public class ViewDraftHandler implements Route {
 
     String userId = request.queryParams("userId");
 
-    if (userId == null) {
+    if (userId == null || userId.isEmpty()) {
       responseMap.put("response_type", "failure");
       responseMap.put("error", "Missing userId");
       return gson.toJson(responseMap);
