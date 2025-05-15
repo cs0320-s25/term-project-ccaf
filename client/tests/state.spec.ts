@@ -47,14 +47,22 @@ test.describe("state updates and edge cases", () => {
     await expect(cancelBtn).not.toBeVisible(); // modal should be gone
   });
 
-  test("creating empty draft does not work", async ({ page }) => {
-    await page.getByRole("link", { name: "draft page (gallery)" }).click();
-    await page.getByRole("button", { name: "create draft button" }).click();
-    await page.getByText("create", { exact: true }).click(); // no input
+test("creating duplicate draft does not work", async ({ page }) => {
+  // go to drafts page and create a draft
+  await page.getByRole("link", { name: "draft page (gallery)" }).click();
+  await page.getByRole("button", { name: "create draft button" }).click();
+  await page.getByRole("textbox", { name: /input for/i }).fill("my duplicate draft");
+  await page.getByText("create", { exact: true }).click();
 
-    await expect(page.getByRole("alert", { name: "error message" })).toBeVisible();
-    await expect(page.getByLabel("error message")).toContainText("name is required"); // or whatever your error is
-  });
+  // try to create the same draft again
+  await page.getByRole("button", { name: "create draft button" }).click();
+  await page.getByRole("textbox", { name: /input for/i }).fill("my duplicate draft");
+  await page.getByText("create", { exact: true }).click();
+
+  // expect error message about duplication
+  await expect(page.getByRole("alert", { name: "error message" })).toBeVisible();
+  await expect(page.getByLabel("error message")).toContainText("Draft name is not available");
+});
 
   test("deleting a piece updates state correctly", async ({ page }) => {
     await page.getByRole("link", { name: "draft page (gallery)" }).click();
@@ -162,4 +170,44 @@ test.describe("extended search functionality", () => {
     const afterResetCount = await page.locator(".product-card").count();
     expect(afterResetCount).toBeGreaterThanOrEqual(beforeResetCount);
   });
+});
+
+test("same item can be saved to multiple drafts", async ({ page }) => {
+  // search for product
+  await page.getByRole("searchbox").fill("nike");
+  await page.getByRole("searchbox").press("Enter");
+
+  const firstProduct = page.locator("a").filter({ hasText: "nike" }).first();
+
+  // save to draft one
+  await firstProduct.getByLabel("button to save piece to draft").click();
+  await page.getByRole("textbox", { name: /input for new draft name/i }).fill("draft one");
+  await page.getByRole("button", { name: /create and save/i }).click();
+
+  // save to draft two
+  await firstProduct.getByLabel("button to save piece to draft").click();
+  await page.getByRole("textbox", { name: /input for new draft name/i }).fill("draft two");
+  await page.getByRole("button", { name: /create and save/i }).click();
+
+  // check both drafts have the product
+  await page.getByRole("link", { name: "draft page (gallery)" }).click();
+  await page.getByRole("link", { name: /draft one/i }).click();
+  await expect(page.locator(".product-card")).toHaveCount(1);
+
+  await page.getByRole("link", { name: "draft page (gallery)" }).click();
+  await page.getByRole("link", { name: /draft two/i }).click();
+  await expect(page.locator(".product-card")).toHaveCount(1);
+});
+
+test("saving modal closes on cancel", async ({ page }) => {
+  await page.getByRole("searchbox").fill("nike");
+  await page.getByRole("searchbox").press("Enter");
+
+  const product = page.locator("a").filter({ hasText: "nike" }).first();
+  await product.getByLabel("button to save piece to draft").click();
+
+  await page.getByRole("button", { name: "close modal" }).click();
+
+  // modal should be gone
+  await expect(page.getByRole("dialog")).not.toBeVisible();
 });
