@@ -30,6 +30,14 @@ public class RemovePieceHandler implements Route {
       String pieceId = request.queryParams("pieceId");
       String draftId = request.queryParams("draftId");
 
+      if (userId == null || userId.isEmpty() ||
+          pieceId == null || pieceId.isEmpty() ||
+          draftId == null || draftId.isEmpty()) {
+        responseMap.put("status", "error");
+        responseMap.put("message", "Missing or empty required parameter(s): userId, pieceId, draftId");
+        return gson.toJson(responseMap);
+      }
+
       FirebaseUtilities.removePieceFromDraft(userId, draftId, pieceId);
       FirebaseUtilities.removePieceForUser(userId, pieceId);
 

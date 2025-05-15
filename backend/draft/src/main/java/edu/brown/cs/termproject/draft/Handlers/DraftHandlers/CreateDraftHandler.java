@@ -38,7 +38,7 @@ public class CreateDraftHandler implements Route {
       String userId = request.queryParams("userId");
       String draftName = request.queryParams("draftName");
 
-      if (userId == null || draftName == null) {
+      if (userId == null || draftName == null || userId.isEmpty() || draftName.isEmpty()) {
         responseMap.put("response_type", "failure");
         responseMap.put("error", "Missing userId or name");
         return gson.toJson(responseMap);
@@ -47,7 +47,6 @@ public class CreateDraftHandler implements Route {
       if (!this.storage.isDraftNameAvailable(draftName)) {
         responseMap.put("response_type", "failure");
         responseMap.put("error", "Draft name is not available");
-        System.out.println("WE IN THIS HOE");
         return gson.toJson(responseMap);
       }
 

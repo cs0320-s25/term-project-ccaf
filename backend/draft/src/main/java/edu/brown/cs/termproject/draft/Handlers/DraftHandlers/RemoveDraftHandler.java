@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import edu.brown.cs.termproject.draft.Utilities.Storage.StorageInterface;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -36,7 +37,7 @@ public class RemoveDraftHandler implements Route {
       String userId = request.queryParams("userId");
       String draftId = request.queryParams("draftId");
 
-      if (userId == null || draftId == null) {
+      if (userId == null || draftId == null || userId.isEmpty() || draftId.isEmpty()) {
         responseMap.put("response_type", "failure");
         responseMap.put("error", "Missing required parameters.");
         return gson.toJson(responseMap);
@@ -46,6 +47,9 @@ public class RemoveDraftHandler implements Route {
 
       responseMap.put("response_type", "success");
       responseMap.put("message", "Draft removed successfully.");
+    } catch (NoSuchFieldError e) {
+      responseMap.put("response_type", "failure");
+      responseMap.put("error", e.getMessage());
     } catch (Exception e) {
       e.printStackTrace();
       responseMap.put("response_type", "failure");

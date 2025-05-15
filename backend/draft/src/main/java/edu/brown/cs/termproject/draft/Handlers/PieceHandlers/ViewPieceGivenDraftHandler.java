@@ -53,7 +53,7 @@ public class ViewPieceGivenDraftHandler implements Route {
 
 
       Map<String, Object> draftData = FirebaseUtilities.getDraftById(userId, draftId);
-      if (draftData == null) {
+      if (draftData == null || draftData.isEmpty()) {
         responseMap.put("status", "failure");
         responseMap.put("error", "no draft found");
         return gson.toJson(responseMap);

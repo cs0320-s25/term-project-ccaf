@@ -134,7 +134,7 @@ public class FirebaseUtilities implements StorageInterface {
    * @throws IllegalArgumentException if any vital parameters are null
    */
   public void deleteDraft(String uid, String collection_id, String doc_id)
-      throws InterruptedException, ExecutionException {
+      throws InterruptedException, ExecutionException, NoSuchFieldError {
     if (uid == null || collection_id == null || doc_id == null) {
       throw new IllegalArgumentException("deleteDraft: uid, collection_id, or doc_id cannot be null");
     }
@@ -150,16 +150,22 @@ public class FirebaseUtilities implements StorageInterface {
 
     String draftName;
     if (document.exists()) {
-      draftName = document.getString("name"); // or the actual field name
+      draftName = document.getString("name");
       System.out.println("Draft name before deletion: " + draftName);
-    } else {
-      System.out.println("No such draft found to delete.");
-      return;
-    }
 
-    Iterable<CollectionReference> subcollections = docRef.listCollections();
-    for (CollectionReference subcollection : subcollections) {
-      deleteCollection(subcollection);
+      List<String> pieces = (List<String>) document.get("pieces");
+      if (pieces != null) {
+        for (String pieceId : pieces) {
+          try {
+            removePieceFromDraft(uid, doc_id, pieceId);
+          } catch (Exception e) {
+            System.err.println("Failed to remove piece from draft: " + pieceId + ", reason: " + e.getMessage());
+          }
+        }
+      }
+
+    } else {
+      throw new NoSuchFieldError("no draft with that id");
     }
 
     // Delete the document
