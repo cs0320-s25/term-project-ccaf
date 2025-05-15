@@ -71,7 +71,7 @@ export function DraftGrid() {
                   ))}
                 </div>
                 <div className="mt-3">
-                  <h3 className="font-medium tracking-tight" aria-label="draft name">{draft.name}</h3>
+                  <h3 className="font-medium tracking-tight break-words text-wrap" aria-label="draft name">{draft.name}</h3>
                   <p className="text-sm text-muted-foreground" aria-label="piece count">{draft.count ?? 0} pieces</p>
                 </div>
               </Link>
