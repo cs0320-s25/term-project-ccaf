@@ -3,37 +3,51 @@
 @tailwind utilities;
 
 @layer base {
-    .body-text {
-        @apply text-[1.1rem] tracking-[-0.03em] font-normal;
-      }
-  
-    h1 {
-      @apply text-[2rem] font-semibold tracking-[-0.03em] font-sans;
-    }
-  
-    h2 {
-      @apply text-[1.5rem] font-semibold tracking-[-0.03em] font-sans;
-    }
+  .body-text {
+    @apply text-[1.1rem] tracking-[-0.03em] font-normal;
   }
-  
+
+  h1 {
+    @apply text-[2rem] font-semibold tracking-[-0.03em] font-sans;
+  }
+
+  h2 {
+    @apply text-[1.5rem] font-semibold tracking-[-0.03em] font-sans;
+  }
+}
+
 @layer components {
+  /* rounded gray button used for auth, etc. */
   .btn-outline-rounded {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2 text-base font-semibold rounded-full bg-gray-100 text-black hover:bg-gray-200 transition;
   }
-}
 
-@layer components {
+  /* dropdown-style buttons */
   .dropdown-btn {
     @apply inline-flex items-center justify-center gap-1 px-5 py-2 text-base font-semibold bg-gray-100 text-black hover:bg-gray-200 rounded-full transition;
   }
-}
 
-@layer components {
+  /* modal heading */
   .modal-header {
     @apply text-lg font-semibold text-black mb-2 text-center;
   }
 
+  /* modal body */
   .modal-body {
-    @apply text-sm text-gray-600 leading-relaxed text-left mb-4;
+    @apply text-sm text-gray-600 leading-relaxed text-center mb-4;
+  }
+
+  /* modal wrapper */
+  .modal-popup {
+    @apply bg-white p-6 rounded shadow-lg text-center w-80;
+  }
+
+  /* modal action buttons */
+  .modal-btn-cancel {
+    @apply px-4 py-2 text-sm bg-gray-100 rounded hover:bg-gray-200;
+  }
+
+  .modal-btn-yes {
+    @apply px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600;
   }
 }
