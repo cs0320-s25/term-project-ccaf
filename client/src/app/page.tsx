@@ -12,6 +12,7 @@ import { OnboardingSurvey } from "@/components/onboarding-survey";
 import { SearchBar } from "@/components/search-bar";
 import { RecommendationFeed } from "@/components/recommendation-feed";
 import "./globals.css";
+import { TrendingDrafts } from "@/components/trending-drafts";
 
 interface Piece {
   id: string;
@@ -77,11 +78,11 @@ export default function Home() {
 
       <SignedOut>
         <div className="text-center">
-          <h2>sign in to start drafting!</h2>
           <SignInButton>
-            <button className="btn-outline-rounded mt-4">sign in</button>
+            <button className="btn-outline-rounded mt-2">sign in to start!</button>
           </SignInButton>
         </div>
+        <TrendingDrafts />
       </SignedOut>
 
       <SignedIn>
