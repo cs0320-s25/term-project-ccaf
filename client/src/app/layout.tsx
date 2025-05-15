@@ -2,6 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { Providers } from "./providers";
 import Header from "@/components/header";
+import { UserInitializer } from "@/components/user-initializer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} bg-white text-black`}>
         <Providers>
+          <UserInitializer />
           <Header />
           <main className="min-h-screen pt-16">{children}</main>
         </Providers>
