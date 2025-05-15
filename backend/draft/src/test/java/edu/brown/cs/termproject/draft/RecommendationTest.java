@@ -88,36 +88,4 @@ public class RecommendationTest {
         assertEquals("6", recommendations.get(2).getId());
     }
 
-//     @Test
-//     public void testDraftBasedRecommendations() throws DraftException, PaletteException {
-
-//         // set up the draft with pieces including the keywords "y2k", "mesh", and "butterfly"
-//         Piece draft1 = new Piece("7", "Y2K Mesh Top", 25.0, "eBay", "url7",
-//                 "img7", "S", "Purple", "Great", List.of("y2k", "mesh"), new ArrayList<>());
-//         Piece draft2 = new Piece("8", "Butterfly Crop Top", 30.0, "eBay", "url8",
-//                 "img8", "S", "Blue", "Great", List.of("butterfly", "y2k"), new ArrayList<>());
-
-//         // piece A is mesh + y2k, relevant to the draft
-//         Piece pieceA = new Piece("9", "Mesh Y2K Skirt", 28.0, "eBay", "url9",
-//                 "img9", "S", "Black", "Great", List.of("mesh", "y2k"), new ArrayList<>());
-        
-//         // piece B is denim + vintage, unrelated to the draft
-//         Piece pieceB = new Piece("10", "Vintage Jeans", 40.0, "eBay", "url10",
-//                 "img10", "M", "Blue", "Good", List.of("vintage", "denim"), new ArrayList<>());
-
-//         // piece C is directly related to the draft
-//         Piece pieceC = new Piece("11", "Butterfly Hair Clip", 10.0, "eBay", "url11",
-//                 "img11", "One Size", "Pink", "New", List.of("butterfly"), new ArrayList<>());
-
-//         List<Piece> draft = List.of(draft1, draft2);
-//         allPieces.addAll(List.of(pieceA, pieceB, pieceC));
-
-//         List<Piece> recommendations = RecommendationCreator.recommendForDraft(draft, allPieces, alreadySaved, 3);
-//         // check that piece A was first since it had the strongest overlap (mesh + y2k)
-//         assertEquals("9", recommendations.get(0).getId()); 
-        
-//         // check that piece B, which had one keyword overlap, makes second place
-//         assertEquals("11", recommendations.get(1).getId());
-//     }
-
 }

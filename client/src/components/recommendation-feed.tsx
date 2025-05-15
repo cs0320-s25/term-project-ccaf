@@ -46,7 +46,7 @@ export function RecommendationFeed() {
             />
           ))
         ) : (
-          <p>No recommendations available.</p>
+          <p>No recommendations available. Try searching and saving some times!</p>
         )}
       </div>
     </section>
