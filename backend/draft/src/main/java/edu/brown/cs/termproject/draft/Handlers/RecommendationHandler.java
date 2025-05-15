@@ -47,8 +47,10 @@ public class RecommendationHandler implements Route {
             // Fetch pieces for each search term
             for (String searchTerm : searchTerms) {
                 try {
-                    String encodedTerm = URLEncoder.encode(searchTerm, StandardCharsets.UTF_8);
-                    List<Piece> ebayPieces = APIUtilities.fetchFromEbay(encodedTerm);
+                    String[] styleKeywords = { "vintage", "aesthetic", "rare", "designer"};
+                    String enrichedTerm = searchTerm + " " + String.join(" ", styleKeywords);
+                    String encodedQuery = URLEncoder.encode(enrichedTerm, StandardCharsets.UTF_8);                    
+                    List<Piece> ebayPieces = APIUtilities.fetchFromEbay(encodedQuery);
                     if (ebayPieces != null && !ebayPieces.isEmpty()) {
                         allAvailablePieces.addAll(ebayPieces);
                         System.out.println(
